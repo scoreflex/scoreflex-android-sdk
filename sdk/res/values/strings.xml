@@ -1,0 +1,21 @@
+<resources>
+
+    <string name="app_name">Scoreflex</string>
+    <string name="SCOREFLEX_ERROR_INVALID_PARAMETER">When an invalid parameter is given</string>
+    <string name="SCOREFLEX_ERROR_MISSING_MANDATORY_PARAMETER">When a mandatory parameter has been omitted</string>
+    <string name="SCOREFLEX_ERROR_SECURE_CONNECTION_REQUIRED">When http is used for a method where https is mandatory</string>
+    <string name="SCOREFLEX_ERROR_INVALID_PREV_NEXT_PARAMETER">When a developer try to use the API with wrong prev/next parameter</string>
+    <string name="SCOREFLEX_ERROR_INVALID_SID">When receiving an invalid sid</string>
+    <string name="SCOREFLEX_ERROR_SANDBOX_URL_REQUIRED">When using production API for a game in dev mode</string>
+    <string name="SCOREFLEX_ERROR_INACTIVE_GAME">When using API for an inactive game</string>
+    <string name="SCOREFLEX_ERROR_MISSING_PERMISSIONS">When the provided sid has insufficient scope for a specific operation requiring more authorization</string>
+    <string name="SCOREFLEX_ERROR_PLAYER_DOES_NOT_EXIST">When a player does not exist</string>
+    <string name="SCOREFLEX_ERROR_DEVELOPER_DOES_NOT_EXIST">When a developer does not exist</string>
+    <string name="SCOREFLEX_ERROR_GAME_DOES_NOT_EXIST">When a game does not exist</string>
+    <string name="SCOREFLEX_ERROR_LEADERBOARD_CONFIG_DOES_NOT_EXIST">When a leaderboard config does not exist</string>
+    <string name="SCOREFLEX_ERROR_SERVICE_EXCEPTION">When there is a service exception</string>
+
+    <string name="scoreflex_cancel">Cancel</string>
+    <string name="scoreflex_retry">Retry</string>
+    <string name="scoreflex_network_error">Could not load this page, please check your Internet connectivity.</string>
+</resources>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="javadoc">
+<!--     <target name="javadoc">
+        <javadoc access="public" author="true" classpath="/Users/julien/Dev/android-sdk-macosx-r20/extras/google/google_play_services/libproject/google-play-services_lib/bin/classes:libs/social-wrapper.jar:libs/android-async-http-1.4.3.jar:/Users/julien/Dev/android-sdk-macosx-r20/extras/google/google_play_services/libproject/google-play-services_lib/libs/google-play-services.jar:libs/openudid.jar:/Users/julien/Dev/android-sdk-macosx-r20/extras/google/google_play_services/libproject/google-play-services_lib/bin/google-play-services_lib.jar:libs/android-support-v4.jar:/Users/julien/Dev/android-sdk-macosx-r20/platforms/android-15/android.jar:/Users/julien/Dev/android-sdk-macosx-r20/tools/support/annotations.jar" destdir="doc" nodeprecated="false" nodeprecatedlist="false" noindex="false" nonavbar="false" notree="false" source="1.6" splitindex="true" use="true" version="true">
+            <fileset dir="src" defaultexcludes="yes">
+                <include name="com/scoreflex/*"/>
+                <exclude name="com/scoreflex/R.java"/>
+            </fileset>
+        </javadoc>
+    </target> -->
+<!--             source="1.6"
+                            splitindex="true"
+                                        use="true"
+-->
+    <target name="javadoc">
+        <javadoc
+            access="public"
+            sourcepath="src"
+            destdir="doc"
+            nodeprecated="false"
+            nodeprecatedlist="false"
+            noindex="false"
+            nonavbar="false"
+            notree="false"
+            version="true"
+            docletpath="/Users/julien/doclava-1.0.6/doclava-1.0.6.jar"
+            classpath="/Users/julien/Dev/android-sdk-macosx-r20/extras/google/google_play_services/libproject/google-play-services_lib/bin/classes:libs/social-wrapper.jar:libs/android-async-http-1.4.3.jar:/Users/julien/Dev/android-sdk-macosx-r20/extras/google/google_play_services/libproject/google-play-services_lib/libs/google-play-services.jar:libs/openudid.jar:/Users/julien/Dev/android-sdk-macosx-r20/extras/google/google_play_services/libproject/google-play-services_lib/bin/google-play-services_lib.jar:libs/android-support-v4.jar:/Users/julien/Dev/android-sdk-macosx-r20/platforms/android-15/android.jar:/Users/julien/Dev/android-sdk-macosx-r20/tools/support/annotations.jar"
+            >
+            <doclet name="com.google.doclava.Doclava">
+                <param name="-stubs" value="build/stubs" />
+                <param name="-hdf"/> <param name="project.name"/> <param name="Doclava"/>
+                <!-- versioning -->
+                <param name="-since"/> <param name="doclava/previous.xml"/> <param name="v1" />
+                <param name="-apiversion" value="v2"/>
+                <!-- federation -->
+                <param name="-federate" /><param name="JDK"/>
+                <param name="http://download.oracle.com/javase/6/docs/api/index.html?"/>
+                <param name="-federationxml"/><param name="JDK"/>
+                <param name="http://doclava.googlecode.com/svn/static/api/openjdk-6.xml"/>
+            </doclet>
+             <fileset dir="src" defaultexcludes="yes">
+                <include name="com/scoreflex/*"/>
+                <exclude name="com/scoreflex/R.java"/>
+            </fileset>
+        </javadoc>
+    </target>
+
+</project>
