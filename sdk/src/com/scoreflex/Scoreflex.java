@@ -56,7 +56,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.scoreflex.facebook.ScoreflexFacebookWrapper;
 import com.scoreflex.google.ScoreflexGoogleWrapper;
-
+import android.content.res.Configuration;
 import org.OpenUDID.*;
 
 /**
@@ -286,7 +286,6 @@ public class Scoreflex {
 	 */
 	public static void initialize(Context context, final String clientId,
 			String clientSecret, boolean useSandbox) {
-
 		setNetworkAvailable(false);
 		sApplicationContext = context.getApplicationContext();
 		sClientId = clientId;
@@ -306,7 +305,6 @@ public class Scoreflex {
 							.fetchAnonymousAccessTokenIfNeeded(new ResponseHandler() {
 								@Override
 								public void onFailure(Throwable e, Response errorResponse) {
-
 								}
 
 								@Override
@@ -323,7 +321,6 @@ public class Scoreflex {
 						Scoreflex.get("/network/ping", null, new ResponseHandler() {
 							@Override
 							public void onFailure(Throwable e, Response errorResponse) {
-
 							}
 
 							@Override
@@ -1799,8 +1796,15 @@ public class Scoreflex {
 
 	protected static int getDensityIndependantPixel(int size) {
 		Point screenSize = getScreenSize();
-		float xRatio = (float) ((float) screenSize.x / 320.0);
-		float yRatio = (float) ((float) screenSize.y / 480.0);
+		float width = 480.0f;
+		float height = 320.0f;
+		if (getApplicationContext().getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+			width = 320.0f;
+			height = 480.0f;
+		}
+
+		float xRatio = (float) ((float) screenSize.x / width);
+		float yRatio = (float) ((float) screenSize.y / height);
 		float ratio = yRatio < xRatio ? yRatio : xRatio;
 		return (int) ratio * size;
 	}

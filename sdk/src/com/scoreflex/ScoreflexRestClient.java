@@ -256,9 +256,7 @@ class ScoreflexRestClient {
 
 				@Override
 				public void onFailure(Throwable e, Scoreflex.Response errorResponse) {
-
 					Log.e("Scoreflex", "Request failed", e);
-
 					if (null != errorResponse
 							&& Scoreflex.ERROR_INVALID_ACCESS_TOKEN == errorResponse
 									.getErrorCode()) {
@@ -807,7 +805,6 @@ class ScoreflexRestClient {
 				sb.append('&');
 				// TODO: add the body here when we support other content types
 				// than application/x-www-form-urlencoded
-				// Log.d("Scoreflex", "signature: " + sb.toString());
 				Mac mac = Mac.getInstance("HmacSHA1");
 				SecretKeySpec secret = new SecretKeySpec(Scoreflex.getClientSecret()
 						.getBytes("UTF-8"), mac.getAlgorithm());
