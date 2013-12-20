@@ -363,7 +363,6 @@ class ScoreflexRestClient {
 
 		// TODO: support other contentTypes such as "application/json"
 		String contentType = "application/x-www-form-urlencoded";
-
 		switch (request.getMethod()) {
 		case GET:
 			sClient.get(null, url, headers, request.getParams(), jsonHandler);

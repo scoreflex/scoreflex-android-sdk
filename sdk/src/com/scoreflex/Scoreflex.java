@@ -20,6 +20,7 @@
 package com.scoreflex;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -42,8 +43,10 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.content.LocalBroadcastManager;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
@@ -55,6 +58,7 @@ import android.widget.FrameLayout;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.scoreflex.facebook.ScoreflexFacebookWrapper;
+import com.scoreflex.facebook.ScoreflexFacebookWrapper.FacebookException;
 import com.scoreflex.google.ScoreflexGoogleWrapper;
 import android.content.res.Configuration;
 import org.OpenUDID.*;
@@ -83,6 +87,7 @@ public class Scoreflex {
 			+ API_VERSION;
 	private static final String SANDBOX_API_URL = "https://sandbox.api.scoreflex.com/"
 			+ API_VERSION;
+
 	private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 
 	private static final String PREF_FILE = "scoreflex";
@@ -101,6 +106,8 @@ public class Scoreflex {
 	protected static final int SUCCESS_NEEDS_CLIENT_AUTH = 200006;
 	protected static final int SUCCESS_START_CHALLENGE = 200007;
 	protected static final int SUCCESS_LINK_SERVICE = 200008;
+	protected static final int SUCCESS_INVITE_WITH_SERVICE = 200009;
+	protected static final int SUCCESS_SHARE_WITH_SERVICE = 200010;
 
 	protected static final int ERROR_INVALID_PARAMETER = 10001;
 	protected static final int ERROR_MISSING_MANDATORY_PARAMETER = 10002;
@@ -1675,8 +1682,9 @@ public class Scoreflex {
 				} else if (NOTIFICATION_TYPE_FRIEND_BEAT_YOUR_HIGHSCORE == code) {
 					Scoreflex.RequestParams params = new RequestParams();
 					params.put("friendsOnly", "true");
+					params.put("focus", data.getString("friendId"));
 					showFullScreenView(activity,
-							"/web/games/leaderboards/" + data.getString("leaderboardId"),
+							"/web/leaderboards/" + data.getString("leaderboardId"),
 							params);
 				} else if (NOTIFICATION_TYPE_PLAYER_LEVEL_CHANGED == code) {
 					showFullScreenView(activity, "/web/players/me", null);
@@ -1807,6 +1815,43 @@ public class Scoreflex {
 		float yRatio = (float) ((float) screenSize.y / height);
 		float ratio = yRatio < xRatio ? yRatio : xRatio;
 		return (int) ratio * size;
+	}
+
+	/**
+	 * Sends a google interactive post inviting a user (or a list of users) to install the game 
+	 * 
+	 * @param activity the current activity
+	 * @param text the message that will be prefilled in the invitation
+	 * @param friendIds a list of friend you want to invite
+	 * @param url the url your want to share on the interactive post button
+	 * @param deeplinkPath the deeplink that your application will receive on launch
+	 */
+	public static void sendGoogleInvitation(Activity activity, String text,List<String> friendIds, String url, String deeplinkPath) {
+		ScoreflexGoogleWrapper.sendInvitation(activity, text, friendIds, url, deeplinkPath);
+	}
+
+	/**
+	 * Sends a facebook app requesst inviting a user (or a list of users) to install the game 
+	 * 
+	 * @param activity the current activity
+	 * @param text the message that will be prefilled in the invitation
+	 * @param friendIds a list of friend you want to invite
+	 * @param suggestedFriendIds the suggested friend (appears in the invitation dialog) 
+	 * @param data any data you want to attach to the invitation (deeplink) 
+	 */
+	public static void sendFacebookInvitation(Activity activity, String text, List<String> friendIds, List<String> suggestedFriendIds, String data)  {
+		try {
+			ScoreflexFacebookWrapper.sendInvitation(activity, text, friendIds, suggestedFriendIds, data, new SocialShareCallback() {
+
+				@Override
+				public void OnSuccessShare(List<String> invitedFriends) {
+					String concatenatedFriends = "Facebook:"+TextUtils.join(",Facebook:", invitedFriends);
+					Scoreflex.postEventually("/social/invitations/" + concatenatedFriends, null, null);
+				}
+			});
+		} catch (FacebookException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**

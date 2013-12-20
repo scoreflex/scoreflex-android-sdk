@@ -39,7 +39,7 @@ import android.util.Log;
  */
 public class ConnectivityReceiver extends BroadcastReceiver {
 
-	@SuppressLint("InlinedApi")
+	@SuppressLint({ "InlinedApi", "NewApi" })
 	private boolean checkCaptivePortalSafe(NetworkInfo.DetailedState state) {
 		Class<?> c = NetworkInfo.DetailedState.class;
 		Object[] l = c.getEnumConstants();

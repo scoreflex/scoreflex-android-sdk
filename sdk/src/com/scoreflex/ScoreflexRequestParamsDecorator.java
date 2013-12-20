@@ -26,6 +26,7 @@ import com.scoreflex.facebook.ScoreflexFacebookWrapper;
 import com.scoreflex.google.ScoreflexGoogleWrapper;
 
 import android.location.Location;
+import android.util.Log;
 
 /**
  * A static helper class that will add parameters to a
@@ -53,12 +54,13 @@ class ScoreflexRequestParamsDecorator {
 		List<String> handledServices = new ArrayList<String>();
 		// Supported client-side authentication methods
 		if (ScoreflexFacebookWrapper.isFacebookAvailable(Scoreflex
-				.getApplicationContext()))
-			handledServices.add("Facebook");
-
+				.getApplicationContext())) {
+			handledServices.add("Facebook:login|invite|share");
+		}
 		if (ScoreflexGoogleWrapper.isGoogleAvailable(Scoreflex
-				.getApplicationContext()))
-			handledServices.add("Google");
+				.getApplicationContext())) {
+			handledServices.add("Google:login|invite|share");
+		}
 
 		if (0 < handledServices.size()) {
 			StringBuffer buf = new StringBuffer();

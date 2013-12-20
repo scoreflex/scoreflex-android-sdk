@@ -21,18 +21,22 @@ package com.scoreflex;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
 
 import android.net.Uri;
+import android.text.TextUtils;
 import android.util.Log;
 
 /**
  * A collection of static helpers that manipulate Uri's and resources.
- *
- *
+ * 
+ * 
  */
 class ScoreflexUriHelper {
 
@@ -40,8 +44,11 @@ class ScoreflexUriHelper {
 
 	/**
 	 * Extracts the resource path from a Uri.
+	 * 
 	 * @param uri
-	 * @return The resource path for that Uri, starting with a '/' after the API version number. null if the provided Uri is not a Scoreflex uri (isAPIUri returns false).
+	 * @return The resource path for that Uri, starting with a '/' after the API
+	 *         version number. null if the provided Uri is not a Scoreflex uri
+	 *         (isAPIUri returns false).
 	 */
 	protected static String getResource(Uri uri) {
 		if (!isAPIUri(uri))
@@ -67,27 +74,59 @@ class ScoreflexUriHelper {
 		return uri.getPath().substring(getBaseUri().getPath().length());
 	}
 
+	private static Set<String> getQueryParameterNames(Uri uri) {
+		if (uri.isOpaque()) {
+			throw new UnsupportedOperationException("This isn't a hierarchical URI.");
+		}
+
+		String query = uri.getEncodedQuery();
+		if (query == null) {
+			return Collections.emptySet();
+		}
+
+		Set<String> names = new LinkedHashSet<String>();
+		int start = 0;
+		do {
+			int next = query.indexOf('&', start);
+			int end = (next == -1) ? query.length() : next;
+
+			int separator = query.indexOf('=', start);
+			if (separator > end || separator == -1) {
+				separator = end;
+			}
+
+			String name = query.substring(start, separator);
+			names.add(Uri.decode(name));
+
+			// Move start to end of name.
+			start = end + 1;
+		} while (start < query.length());
+
+		return Collections.unmodifiableSet(names);
+	}
+
 	/**
 	 * Extracts the query parameters as {@link Scoreflex.RequestParams}
+	 * 
 	 * @param uri
 	 * @return
 	 */
 	protected static Scoreflex.RequestParams getParams(Uri uri) {
 		Scoreflex.RequestParams params = new Scoreflex.RequestParams();
-		try {
-			List<NameValuePair> parsedParams = URLEncodedUtils.parse(new URI(uri.toString()), "UTF-8");
-			for (NameValuePair pair : parsedParams) {
-				params.put(pair.getName(), pair.getValue());
-
+		Set<String> keys = getQueryParameterNames(uri);
+		for (String key : keys) {
+			String value = uri.getQueryParameter(key);
+			if (TextUtils.isEmpty(value)) {
+				value = null;
 			}
-		} catch (URISyntaxException e) {
-			Log.e("Scoreflex", "Invalid URI", e);
+			params.put(key, value);
 		}
 		return params;
 	}
 
 	/**
 	 * Checks that the provided URI points to the Scoreflex REST server
+	 * 
 	 * @param uri
 	 * @return
 	 */
@@ -109,22 +148,28 @@ class ScoreflexUriHelper {
 
 	/**
 	 * Returns the absolute url for the given resource
-	 * @param resource The resource path, which may or may not start with "/"+Scoreflex.API_VERSION
+	 * 
+	 * @param resource
+	 *          The resource path, which may or may not start with
+	 *          "/"+Scoreflex.API_VERSION
 	 * @return
 	 */
 	public static String getAbsoluteUrl(String resource) {
-		if (resource.startsWith("/"+Scoreflex.API_VERSION))
+		if (resource.startsWith("/" + Scoreflex.API_VERSION))
 			resource = resource.substring(1 + Scoreflex.API_VERSION.length());
 		return Scoreflex.getBaseURL() + resource;
 	}
 
 	/**
 	 * Returns the non secure absolute url for the given resource
-	 * @param resource The resource path, which may or may not start with "/"+Scoreflex.API_VERSION
+	 * 
+	 * @param resource
+	 *          The resource path, which may or may not start with
+	 *          "/"+Scoreflex.API_VERSION
 	 * @return
 	 */
 	public static String getNonSecureAbsoluteUrl(String resource) {
-		if (resource.startsWith("/"+Scoreflex.API_VERSION))
+		if (resource.startsWith("/" + Scoreflex.API_VERSION))
 			resource = resource.substring(1 + Scoreflex.API_VERSION.length());
 		return Scoreflex.getNonSecureBaseURL() + resource;
 	}

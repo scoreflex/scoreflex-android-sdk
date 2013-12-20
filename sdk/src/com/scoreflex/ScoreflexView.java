@@ -26,6 +26,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -48,6 +49,7 @@ import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
 import android.provider.MediaStore;
@@ -773,7 +775,6 @@ public class ScoreflexView extends FrameLayout {
 		private String mAuthState;
 
 		protected boolean handleWebCallback(Uri uri) {
-
 			// Only handle when uri is the callback resource
 			if (!sCallbackResource.equals(ScoreflexUriHelper.getResource(uri)))
 				return false;
@@ -822,6 +823,12 @@ public class ScoreflexView extends FrameLayout {
 				if (handleLinkService(uri, status, code))
 					return true;
 
+				if (handleSocialInvite(uri, status, code)) 
+					return true;
+				
+				if (handleSocialShare(uri, status, code))
+					return true;
+				
 			} else {
 
 				// 404 errors: let the user see them
@@ -856,6 +863,7 @@ public class ScoreflexView extends FrameLayout {
 		 * case Scoreflex.ERROR_INACTIVE_GAME: res =
 		 * R.string.SCOREFLEX_ERROR_INACTIVE_GAME; break;
 		 */
+
 
 		private boolean handlePlayLevel(Uri uri, int status, int code) {
 			if (Scoreflex.SUCCESS_PLAY_LEVEL != code)
@@ -896,6 +904,7 @@ public class ScoreflexView extends FrameLayout {
 								// You can also include some extra data.
 								intent.putExtra(Scoreflex.INTENT_START_CHALLENGE_EXTRA_CONFIG,
 										challengeInstance.toString());
+								intent.<Bundle>getParcelableExtra("test");
 								intent.putExtra(
 										Scoreflex.INTENT_START_CHALLENGE_EXTRA_CONFIG_ID, configId);
 								LocalBroadcastManager.getInstance(
@@ -1252,9 +1261,6 @@ public class ScoreflexView extends FrameLayout {
 							}
 							setResource(nextResource, params);
 						}
-
-						// TODO: error management here
-
 					}
 				};
 				if ("Facebook".equals(service))
@@ -1269,6 +1275,62 @@ public class ScoreflexView extends FrameLayout {
 			return true;
 		}
 
+		private List<String> JSONArrayToList(JSONArray array) throws JSONException {
+			ArrayList<String> targetsList = new ArrayList<String>();     
+			if (array != null) { 
+			   for (int i=0;i<array.length();i++){ 
+			  	 targetsList.add(array.get(i).toString());
+			   } 
+			}
+			return targetsList;
+		}
+
+		private boolean handleSocialInvite(Uri uri, int status, int code) {
+			if (code != Scoreflex.SUCCESS_INVITE_WITH_SERVICE)
+				return false;
+
+			JSONObject dataJson;
+			String dataString = uri.getQueryParameter("data");
+			try {
+				dataJson = new JSONObject(dataString);
+				String service = dataJson.optString("service"); 
+				if ("Facebook".equals(service)) {
+					List<String> suggestedList = JSONArrayToList(dataJson.optJSONArray("targetIds"));
+					String data = dataJson.optString("data");
+					Scoreflex.sendFacebookInvitation(mParentActivity, dataJson.getString("text"), null, suggestedList, data);
+//					ScoreflexFacebookWrapper.sendInvitation(
+				} 
+				if ("Google".equals(service)) {
+					List<String> friendIds = JSONArrayToList(dataJson.optJSONArray("targetIds"));
+					Scoreflex.sendGoogleInvitation(mParentActivity, dataJson.getString("text"),friendIds, dataJson.optString("url"), "/invite");
+				}
+			} catch (JSONException e) {
+				Log.e("Scoreflex", "Invalid json received in the data parameter", e);
+				
+				return true;
+			}
+			
+			return true;
+		}
+
+		private boolean handleSocialShare(Uri uri, int status, int code) {
+			if (code != Scoreflex.SUCCESS_SHARE_WITH_SERVICE)
+				return false;
+
+			JSONObject dataJson;
+			String dataString = uri.getQueryParameter("data");
+			try {
+				dataJson = new JSONObject(dataString);
+			} catch (JSONException e) {
+				Log.e("Scoreflex", "Invalid json received in the data parameter", e);
+				// Handle by doing nothing
+				return true;
+			}
+
+
+			return true;
+		}
+		
 		private boolean handleNeedsAuth(Uri uri, int status, int code) {
 			if (code != Scoreflex.SUCCESS_NEEDS_AUTH)
 				return false;
