@@ -207,6 +207,28 @@ public class ScoreflexGoogleWrapper {
 		mPlusClient.connect();
 	}
 	
+	
+	public static void shareUrl(final Activity activity, final String text, final String url) {
+		ensureConnectedAndRun(activity, new Runnable() {
+			@Override
+			public void run() {
+				PlusShare.Builder builder = new PlusShare.Builder(activity, mPlusClient);
+				Uri uri = null;
+				if (!TextUtils.isEmpty(url)) {
+					uri = Uri.parse(url);
+				} else {
+					uri = Uri.parse("http://www.scoreflex.com");
+				}
+
+				builder.setType("text/plain");
+				builder.setText(text);
+				if (uri != null) {
+					builder.setContentUrl(uri);
+				} 
+				activity.startActivityForResult(builder.getIntent(), ScoreflexGoogleWrapper.REQUEST_CODE_SHARING);
+			}
+		});
+	}
 
 	public static void sendInvitation(final Activity activity, final String text, final List<String> friendIds, final String url ,final String deepLinkPath) {
 		ensureConnectedAndRun(activity, new Runnable() {

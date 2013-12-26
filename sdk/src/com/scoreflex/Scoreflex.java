@@ -83,9 +83,13 @@ public class Scoreflex {
 
 	protected static final String API_VERSION = "v1";
 
-	private static final String PRODUCTION_API_URL = "https://api.scoreflex.com/"
+//	private static final String PRODUCTION_API_URL = "https://api.scoreflex.com/"
+//			+ API_VERSION;
+//	private static final String SANDBOX_API_URL = "https://sandbox.api.scoreflex.com/"
+//			+ API_VERSION;
+	private static final String PRODUCTION_API_URL = "https://api.scoreflakes.com/"
 			+ API_VERSION;
-	private static final String SANDBOX_API_URL = "https://sandbox.api.scoreflex.com/"
+	private static final String SANDBOX_API_URL = "https://sandbox.api.scoreflakes.com/"
 			+ API_VERSION;
 
 	private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
@@ -1831,7 +1835,33 @@ public class Scoreflex {
 	}
 
 	/**
-	 * Sends a facebook app requesst inviting a user (or a list of users) to install the game 
+	 * Share a link on google plus
+	 * @param activity the current activity
+	 * @param text the message that will be prefilled in the invitation
+	 * @param url the url your want to share
+	 */
+	public static void shareOnGoogle(Activity activity, String text, String url) {
+		ScoreflexGoogleWrapper.shareUrl(activity, text, url);
+	}
+	
+	
+	/**
+	 * Post on the facebook feed of the current logged user  
+	 * @param activity the current activity
+	 * @param title the title of the link 
+	 * @param text the message that will be prefilled in the invitation
+	 * @param url the url your want to share
+	 */
+	public static void shareOnFacebook(Activity activity, String title, String text, String url) {
+		try {
+			ScoreflexFacebookWrapper.shareUrl(activity, title, text, url);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Sends a facebook app request inviting a user (or a list of users) to install the game 
 	 * 
 	 * @param activity the current activity
 	 * @param text the message that will be prefilled in the invitation

@@ -1284,7 +1284,7 @@ public class ScoreflexView extends FrameLayout {
 			}
 			return targetsList;
 		}
-
+		
 		private boolean handleSocialInvite(Uri uri, int status, int code) {
 			if (code != Scoreflex.SUCCESS_INVITE_WITH_SERVICE)
 				return false;
@@ -1319,8 +1319,18 @@ public class ScoreflexView extends FrameLayout {
 
 			JSONObject dataJson;
 			String dataString = uri.getQueryParameter("data");
+			Log.d("Scoreflex", "receivedData: " + dataString);
 			try {
 				dataJson = new JSONObject(dataString);
+				String text = dataJson.optString("text");
+				String url = dataJson.optString("url");
+				if ("Facebook".equals(dataJson.optString("service"))) {
+					String title = dataJson.optString("title");
+					Scoreflex.shareOnFacebook(mParentActivity, title, text, url);
+				}
+				if ("Google".equals(dataJson.optString("service"))) {
+					Scoreflex.shareOnGoogle(mParentActivity, text, url);
+				}
 			} catch (JSONException e) {
 				Log.e("Scoreflex", "Invalid json received in the data parameter", e);
 				// Handle by doing nothing

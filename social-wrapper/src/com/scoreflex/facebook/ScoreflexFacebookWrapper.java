@@ -61,18 +61,18 @@ public class ScoreflexFacebookWrapper {
 							return;
 						}
 						else if (callback != null) {
-						List<String> invitedFriends = new ArrayList<String>();
-						String to = "";
-						int i = 0;
-						while (to != null) {
-							to = values.getString("to[" +i + "]");  
-							if(!TextUtils.isEmpty(to)) 
-							{
-								invitedFriends.add(to);
-								//            	Log.d("Scoreflex", "Successfull id: " + to);
+							List<String> invitedFriends = new ArrayList<String>();
+							String to = "";
+							int i = 0;
+							while (to != null) {
+								to = values.getString("to[" +i + "]");  
+								if(!TextUtils.isEmpty(to)) 
+								{
+									invitedFriends.add(to);
+								//            		Log.d("Scoreflex", "Successfull id: " + to);
+								}
+								i++;
 							}
-							i++;
-						}
 							callback.OnSuccessShare(invitedFriends);
 						}
 						// dialog.dismiss();
@@ -160,6 +160,23 @@ public class ScoreflexFacebookWrapper {
 		}
 	}
 
+	public static void shareUrl(Activity activity, String title, String text, String url) throws ScoreflexFacebookWrapper.FacebookException {
+		if (!isFacebookAvailable(activity)) 
+			throw new ScoreflexFacebookWrapper.FacebookException(
+					"Facebook SDK is not available");
+		
+		try {
+			Bundle params = new Bundle();
+			params.putString("name", title);
+			params.putString("caption", title);
+			params.putString("description", text);
+			params.putString("link", url);
+			showDialogWithoutNotificationBar(activity, "feed", params, null);
+		} catch (Exception e) {
+			throw new FacebookException(e);
+		}
+	}
+	
 	public static void logout(Activity activity)
 			throws ScoreflexFacebookWrapper.FacebookException {
 		if (!isFacebookAvailable(activity))
