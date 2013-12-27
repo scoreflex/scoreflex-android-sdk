@@ -55,10 +55,9 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.scoreflex.facebook.ScoreflexFacebookWrapper;
 import com.scoreflex.facebook.ScoreflexFacebookWrapper.FacebookException;
+import com.scoreflex.google.ScoreflexGcmWrapper;
 import com.scoreflex.google.ScoreflexGoogleWrapper;
 import android.content.res.Configuration;
 import org.OpenUDID.*;
@@ -1520,20 +1519,7 @@ public class Scoreflex {
 	}
 
 	private static boolean checkPlayService(Activity activity) {
-		int resultCode = GooglePlayServicesUtil
-				.isGooglePlayServicesAvailable(activity);
-		if (resultCode != ConnectionResult.SUCCESS) {
-			if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
-				GooglePlayServicesUtil.getErrorDialog(resultCode, activity,
-						PLAY_SERVICES_RESOLUTION_REQUEST).show();
-			} else {
-				Log.d(
-						"Scoreflex",
-						"this device does not support google play service no push notification will be received");
-			}
-			return false;
-		}
-		return true;
+		return  ScoreflexGcmWrapper.isGooglePlayServiceAvailable(activity);
 	}
 
 	/**

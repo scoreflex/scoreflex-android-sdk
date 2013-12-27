@@ -1319,7 +1319,6 @@ public class ScoreflexView extends FrameLayout {
 
 			JSONObject dataJson;
 			String dataString = uri.getQueryParameter("data");
-			Log.d("Scoreflex", "receivedData: " + dataString);
 			try {
 				dataJson = new JSONObject(dataString);
 				String text = dataJson.optString("text");

@@ -24,7 +24,8 @@ import java.io.IOException;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.google.android.gms.gcm.GoogleCloudMessaging;
+import com.scoreflex.google.ScoreflexGcmWrapper;
+import com.scoreflex.google.ScoreflexGoogleWrapper;
 import com.scoreflex.Scoreflex.Response;
 
 import android.annotation.SuppressLint;
@@ -55,9 +56,6 @@ public class ScoreflexGcmClient {
 	private static final String GCM_REGISTRATION_APP_VERSION_PREF_NAME = "__scoreflex_gxm_registration_app_version";
 	private static final String SCOREFLEX_CUSTOM_DATA_EXTRA_KEY = "custom";
 	private static final String SCOREFLEX_NOTIFICATION_EXTRA_KEY = "_sfx";
-  
-	
-	private static GoogleCloudMessaging mGcm;
 	
 
 	private static int getAppVersion(Context context) {
@@ -192,12 +190,12 @@ public class ScoreflexGcmClient {
         protected Object doInBackground(Object... arg0) {
             String msg = "";
             try {
-                if (mGcm == null) {
-                	mGcm = GoogleCloudMessaging.getInstance(Scoreflex.getApplicationContext());
+                String regid = ScoreflexGcmWrapper.register(Scoreflex.getApplicationContext(), senderId); 
+                if (regid == null) {
+                	return null;
                 }
-                String regid = mGcm.register(senderId);
                 msg = "Device registered, registration ID=" + regid;
-
+                
                 storeRegistrationId(regid, activity);
                 storeRegistrationIdToScoreflex(regid);
             } catch (IOException ex) {
@@ -222,7 +220,7 @@ public class ScoreflexGcmClient {
 	@SuppressLint("NewApi")
 	public static void registerForPushNotification(String senderID, Context context) {
 	   String regid = getRegistrationId(context);
-	   mGcm = GoogleCloudMessaging.getInstance(context);
+//	   mGcm = GoogleCloudMessaging.getInstance(context);
 
      if (regid.isEmpty()) {
          registerInBackground(senderID, context);
