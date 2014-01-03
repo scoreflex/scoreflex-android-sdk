@@ -20,6 +20,7 @@
 package com.scoreflex;
 
 import java.lang.ref.WeakReference;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -1753,8 +1754,9 @@ public class Scoreflex {
 		Display d = w.getDefaultDisplay();
 
 		try {
-			d.getSize(size);
-		} catch (java.lang.NoSuchMethodError ignore) { // Older device
+			Method getSizeMethod = d.getClass().getDeclaredMethod("getSize", Point.class);
+			getSizeMethod.invoke(d, size);
+		} catch (Exception e) {
 			size.x = d.getWidth();
 			size.y = d.getHeight();
 		}

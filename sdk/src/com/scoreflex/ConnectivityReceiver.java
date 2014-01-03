@@ -19,12 +19,9 @@
 
 package com.scoreflex;
 
-import java.util.List;
-
 import com.scoreflex.Scoreflex.Response;
 import com.scoreflex.Scoreflex.ResponseHandler;
 
-import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -34,24 +31,19 @@ import android.util.Log;
 
 
 /**
- * A class that monitors the connectivity state of the device 
+ * A class that monitors the connectivity state of the device
  *
  */
 public class ConnectivityReceiver extends BroadcastReceiver {
 
-	@SuppressLint({ "InlinedApi", "NewApi" })
 	private boolean checkCaptivePortalSafe(NetworkInfo.DetailedState state) {
-		Class<?> c = NetworkInfo.DetailedState.class;
-		Object[] l = c.getEnumConstants();
-		
-		for (int i = 0; i < l.length; i++) {
-			if (l.toString().equals("CAPTIVE_PORTAL_CHECK")) { 
-				return state == NetworkInfo.DetailedState.CAPTIVE_PORTAL_CHECK;
-			}
+		try {
+			return state == NetworkInfo.DetailedState.valueOf("CAPTIVE_PORTAL_CHECK");
+		} catch (Exception e) {
+			return false;
 		}
-		return false;
 	}
-	
+
 	/**
 	 * Method called by the {@link #android.net.ConnectivityManager} to notify connectivity changes.
 	 */
