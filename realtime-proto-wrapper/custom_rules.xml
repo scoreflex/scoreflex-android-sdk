@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+
+    <property name="protobuf.dir" value="${basedir}/protobuf"/>
+    <property name="src.dir" value="${basedir}/src"/>
+    <property name="antlib.dir" value="${basedir}/ant-libs"/>
+    <property name="lib.dir" value="${basedir}/libs"/>
+    <property name="gen.dir" value="${basedir}/gen"/>
+
+    <target name="-pre-compile">
+        <!-- Compile realtime protocol buffers -->
+        <exec executable="protoc">
+            <arg value="--proto_path=${protobuf.dir}/"/>
+            <arg value="--java_out=${gen.dir}"/>
+            <arg value="${protobuf.dir}/realtime.proto"/>
+        </exec>
+    </target>
+
+    <target name="-post-build">
+        <!-- Embed dependencies -->
+        <taskdef name="jarjar" classname="com.tonicsystems.jarjar.JarJarTask" classpath="${antlib.dir}/jarjar-1.4.jar"/>
+        <move file="${out.library.jar.file}" tofile="${out.library.jar.file}-tmp.jar"/>
+        <jarjar jarfile="${out.library.jar.file}">
+            <zipfileset src="${out.library.jar.file}-tmp.jar"/>
+            <zipgroupfileset dir="${lib.dir}" includes="*.jar"/>
+        </jarjar>
+        <delete file="${out.library.jar.file}-tmp.jar"/>
+    </target>
+
+</project>

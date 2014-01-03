@@ -1,0 +1,410 @@
+package realtime.proto;
+option java_package = "com.scoreflex.realtime";
+option java_outer_classname = "Proto";
+option optimize_for = LITE_RUNTIME;
+
+// ====================================================================
+message MapEntry {
+  enum Type {
+    VOID   = 0;
+    INT32  = 1;
+    UINT32 = 2;
+    SINT32 = 3;
+
+    INT64  = 4;
+    UINT64 = 5;
+    SINT64 = 6;
+
+    DOUBLE = 7;
+    BOOL   = 8;
+    STRING = 9;
+    BYTES  = 10;
+  }
+
+  required Type   type = 1;
+  required string name = 2;
+
+  optional int32  int32_val  = 11;
+  optional uint32 uint32_val = 12;
+  optional sint32 sint32_val = 13;
+  optional int64  int64_val  = 14;
+  optional uint64 uint64_val = 15;
+  optional sint64 sint64_val = 16;
+  optional double double_val = 17;
+  optional bool   bool_val   = 18;
+  optional string string_val = 19;
+  optional bytes  bytes_val  = 20;
+}
+
+
+// ====================================================================
+message InMessage {
+  enum Type {
+    CONNECT      = 1;
+    DISCONNECT   = 2;
+    PING         = 3;
+    PONG         = 4;
+
+    CREATE_ROOM         = 5;
+    JOIN_ROOM           = 6;
+    LEAVE_ROOM          = 7;
+    WATCH_ROOM          = 8;
+    UNWATCH_ROOM        = 9;
+    START_GAME          = 10;
+    STOP_GAME           = 11;
+    RESET_GAME          = 12;
+    ROOM_MESSAGE        = 13;
+    SET_ROOM_PROPERTY   = 14;
+    SET_PLAYER_PROPERTY = 15;
+  }
+
+  required Type   type  = 1;
+  optional uint32 msgid = 2 [ default = 0 ];
+
+  optional Connect    connect    = 10;
+  optional Disconnect disconnect = 11;
+  optional Ping       ping       = 12;
+  optional Pong       pong       = 13;
+
+  optional CreateRoom        create_room         = 14;
+  optional JoinRoom          join_room           = 15;
+  optional LeaveRoom         leave_room          = 16;
+  optional WatchRoom         watch_room          = 17;
+  optional UnwatchRoom       unwatch_room        = 18;
+  optional StartGame         start_game          = 19;
+  optional StopGame          stop_game           = 20;
+  optional ResetGame         reset_game          = 21;
+  optional RoomMessage       room_message        = 22;
+  optional SetRoomProperty   set_room_property   = 23;
+  optional SetPlayerProperty set_player_property = 24;
+}
+
+
+// ====================================================================
+message OutMessage {
+  enum Type {
+    CONNECTED         = 1;
+    CONNECTION_CLOSED = 2;
+    CONNECTION_FAILED = 3;
+
+    SYNC = 5;
+    PING = 6;
+    PONG = 7;
+    ACK  = 8;
+
+    ROOM_CREATED            = 9;
+    ROOM_CLOSED             = 10;
+    ROOM_JOINED             = 11;
+    ROOM_LEFT               = 12;
+    ROOM_WATCHED            = 13;
+    ROOM_UNWATCHED          = 14;
+    PEER_JOINED_ROOM        = 15;
+    PEER_LEFT_ROOM          = 16;
+    GAME_STATE_CHANGED      = 17;
+    ROOM_MESSAGE            = 18;
+    ROOM_PROPERTY_UPDATED   = 19;
+    PLAYER_PROPERTY_UPDATED = 20;
+  }
+
+  required Type   type  = 1;
+  optional uint32 msgid = 2 [ default = 0 ];
+
+  optional Connected        connected         = 10;
+  optional ConnectionClosed connection_closed = 11;
+  optional ConnectionFailed connection_failed = 12;
+
+  optional Sync sync = 13;
+  optional Ping ping = 14;
+  optional Pong pong = 15;
+  optional Ack  ack  = 16;
+
+  optional RoomCreated           room_created            = 17;
+  optional RoomClosed            room_closed             = 18;
+  optional RoomJoined            room_joined             = 19;
+  optional RoomLeft              room_left               = 20;
+  optional RoomWatched           room_watched            = 21;
+  optional RoomUnwatched         room_unwatched          = 22;
+  optional PeerJoinedRoom        peer_joined_room        = 23;
+  optional PeerLeftRoom          peer_left_room          = 24;
+  optional GameStateChanged      game_state_changed      = 25;
+  optional RoomMessage           room_message            = 26;
+  optional RoomPropertyUpdated   room_property_updated   = 27;
+  optional PlayerPropertyUpdated player_property_updated = 28;
+}
+
+
+// ====================================================================
+message Connect {
+  required string client_id    = 1;
+  required string game_id      = 2;
+  required string access_token = 3;
+}
+
+message Disconnect {
+}
+
+
+message Connected {
+  required uint32   mm_time = 1;
+  repeated MapEntry info    = 2;
+}
+
+message ConnectionClosed {
+  enum StatusCode {
+    SESSION_CLOSED             = 1;
+    REPLACED_BY_NEW_CONNECTION = 2;
+    UNRESPONSIVE_CLIENT        = 3;
+    NEW_SERVER_LOCATION        = 4;
+  }
+
+  required StatusCode status   = 1;
+  optional string     hostname = 2;
+  optional uint32     port     = 3;
+}
+
+message ConnectionFailed {
+  enum StatusCode {
+    INTERNAL_ERROR    = 1;
+    INVALID_MESSAGE   = 2;
+    PROTOCOL_ERROR    = 3;
+    NETWORK_ERROR     = 4;
+    CONNECT_TIMEOUT   = 5;
+    PERMISSION_DENIED = 6;
+    ALREADY_CONNECTED = 7;
+  }
+
+  required StatusCode status = 1;
+}
+
+
+// ====================================================================
+message Sync {
+  required uint32 mm_time = 1;
+  required uint32 latency = 2;
+}
+
+message Ping {
+  required uint32 id        = 1;
+  required uint32 timestamp = 2;
+}
+
+message Pong {
+  required uint32 id        = 1;
+  required uint32 timestamp = 2;
+}
+
+message Ack {
+  enum StatusCode {
+    SUCCESS         = 0;
+    INTERNAL_ERROR  = 1;
+    NETWORK_ERROR   = 2;
+    ROOM_NOT_JOINED = 3;
+    PEER_NOT_FOUND  = 4;
+    INVALID_MESSAGE = 5;
+  }
+
+  required uint32     msgid  = 1;
+  optional StatusCode status = 2 [ default = SUCCESS ];
+}
+
+// ====================================================================
+enum GameState {
+  PENDING  = 1;
+  READY    = 2;
+  RUNNING  = 3;
+  FINISHED = 4;
+}
+
+message Player {
+  required string   client_id  = 1;
+  repeated MapEntry properties = 2;
+}
+
+message Room {
+  required string    room_id    = 1;
+  optional GameState game_state = 2;
+
+  repeated MapEntry  config     = 10;
+  repeated MapEntry  properties = 11;
+  repeated Player    players    = 12;
+}
+
+message CreateRoom {
+  required string room_id = 1;
+
+  repeated MapEntry room_config       = 10;
+  repeated MapEntry room_properties   = 11;
+  repeated MapEntry player_properties = 12;
+}
+
+message JoinRoom {
+  required string room_id = 1;
+
+  repeated MapEntry player_properties = 10;
+}
+
+message LeaveRoom {
+  required string room_id = 1;
+}
+
+message WatchRoom {
+  required string room_id = 1;
+}
+
+message UnwatchRoom {
+  required string room_id = 1;
+}
+
+message RoomCreated {
+  enum StatusCode {
+    SUCCESS           = 0;
+    INTERNAL_ERROR    = 1;
+    PERMISSION_DENIED = 2;
+    ALREADY_CREATED   = 3;
+    INVALID_DATA      = 4;
+  }
+
+  required Room       room   = 1;
+  optional StatusCode status = 2 [ default = SUCCESS ];
+}
+
+message RoomClosed {
+  enum StatusCode {
+    INTERNAL_ERROR = 1;
+    ROOM_CLOSED    = 2;
+    EMPTY_ROOM     = 3;
+  }
+
+  required string     room_id = 1;
+  required StatusCode status  = 2;
+}
+
+message RoomJoined {
+  enum StatusCode {
+    SUCCESS           = 0;
+    INTERNAL_ERROR    = 1;
+    ROOM_NOT_FOUND    = 2;
+    PERMISSION_DENIED = 3;
+    ROOM_FULL         = 4;
+  }
+
+  required Room       room   = 1;
+  optional StatusCode status = 2 [ default = SUCCESS ];
+}
+
+message RoomLeft {
+  enum StatusCode {
+    SUCCESS         = 0;
+    INTERNAL_ERROR  = 1;
+    ROOM_NOT_JOINED = 2;
+  }
+
+  required string     room_id = 1;
+  optional StatusCode status  = 2 [ default = SUCCESS ];
+}
+
+
+message RoomWatched {
+  enum StatusCode {
+    SUCCESS           = 0;
+    INTERNAL_ERROR    = 1;
+    ROOM_NOT_FOUND    = 2;
+    PERMISSION_DENIED = 3;
+    ALREADY_JOINED    = 4;
+    TOO_MANY_WATCHERS = 5;
+  }
+
+  required Room       room   = 1;
+  optional StatusCode status = 2 [ default = SUCCESS ];
+}
+
+message RoomUnwatched {
+  enum StatusCode {
+    SUCCESS          = 0;
+    INTERNAL_ERROR   = 1;
+    ROOM_NOT_WATCHED = 3;
+  }
+
+  required string     room_id = 1;
+  optional StatusCode status  = 2 [ default = SUCCESS ];
+}
+
+message PeerJoinedRoom {
+  required string room_id = 1;
+  required Player player  = 2;
+}
+
+message PeerLeftRoom {
+  required string room_id   = 1;
+  required string client_id = 2;
+}
+
+message StartGame {
+  required string room_id = 1;
+}
+
+message StopGame {
+  required string room_id = 1;
+}
+
+message ResetGame {
+  required string room_id = 1;
+}
+
+message GameStateChanged {
+  enum StatusCode {
+    SUCCESS = 0;
+    FAILED  = 1;
+  }
+
+  required string     room_id    = 1;
+  optional GameState  game_state = 2;
+  optional StatusCode status     = 3 [ default = SUCCESS ];
+}
+
+
+// ====================================================================
+message RoomMessage {
+  required string room_id   = 1;
+  required uint32 timestamp = 2;
+  optional string from_id   = 3;
+  optional string to_id     = 4;
+  optional uint32 flags     = 5 [ default = 0];
+  optional uint32 tag       = 6;
+
+  repeated MapEntry payload = 10;
+}
+
+message SetRoomProperty {
+  required string   room_id  = 1;
+  required MapEntry property = 2;
+}
+
+message SetPlayerProperty {
+  required string   room_id  = 1;
+  required MapEntry property = 2;
+}
+
+message RoomPropertyUpdated {
+  enum StatusCode {
+    SUCCESS = 0;
+    FAILED  = 1;
+  }
+
+  required string     room_id   = 1;
+  required string     client_id = 2;
+  required MapEntry   property  = 3;
+  optional StatusCode status    = 4 [ default = SUCCESS ];
+}
+
+message PlayerPropertyUpdated {
+  enum StatusCode {
+    SUCCESS = 0;
+    FAILED  = 1;
+  }
+
+  required string     room_id   = 1;
+  required string     client_id = 2;
+  required MapEntry   property  = 3;
+  optional StatusCode status    = 4 [ default = SUCCESS ];
+}
