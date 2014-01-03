@@ -11,7 +11,7 @@ public class JSONParcelable implements Parcelable {
 
 	public static final String TAG = "JSONParcelable";
 
-	public final JSONObject json;
+	protected final JSONObject json;
 
 	public JSONParcelable(Parcel in) throws JSONException {
 		this(in.readString());
@@ -39,6 +39,10 @@ public class JSONParcelable implements Parcelable {
 		dest.writeString(json.toString());
 	}
 
+	public JSONObject getJSONObject() { 
+		return json;
+	}
+	
 	public static final Parcelable.Creator<JSONParcelable> CREATOR =
 			new Parcelable.Creator<JSONParcelable>() {
 

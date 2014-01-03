@@ -220,7 +220,6 @@ public class ScoreflexGcmClient {
 	@SuppressLint("NewApi")
 	public static void registerForPushNotification(String senderID, Context context) {
 	   String regid = getRegistrationId(context);
-//	   mGcm = GoogleCloudMessaging.getInstance(context);
 
      if (regid.isEmpty()) {
          registerInBackground(senderID, context);

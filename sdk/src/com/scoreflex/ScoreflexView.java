@@ -823,12 +823,12 @@ public class ScoreflexView extends FrameLayout {
 				if (handleLinkService(uri, status, code))
 					return true;
 
-				if (handleSocialInvite(uri, status, code)) 
+				if (handleSocialInvite(uri, status, code))
 					return true;
-				
+
 				if (handleSocialShare(uri, status, code))
 					return true;
-				
+
 			} else {
 
 				// 404 errors: let the user see them
@@ -889,9 +889,11 @@ public class ScoreflexView extends FrameLayout {
 
 			try {
 				JSONObject data = new JSONObject(uri.getQueryParameter("data"));
+				Scoreflex.RequestParams params = new Scoreflex.RequestParams();
+				params.put("fields","core,turn,outcome,config");
 				Scoreflex.get(
 						"/challenges/instances/" + data.getString("challengeInstanceId"),
-						null, new Scoreflex.ResponseHandler() {
+						params, new Scoreflex.ResponseHandler() {
 							public void onFailure(Throwable e, Response errorResponse) {
 
 							}
@@ -1269,15 +1271,15 @@ public class ScoreflexView extends FrameLayout {
 		}
 
 		private List<String> JSONArrayToList(JSONArray array) throws JSONException {
-			ArrayList<String> targetsList = new ArrayList<String>();     
-			if (array != null) { 
-			   for (int i=0;i<array.length();i++){ 
+			ArrayList<String> targetsList = new ArrayList<String>();
+			if (array != null) {
+			   for (int i=0;i<array.length();i++){
 			  	 targetsList.add(array.get(i).toString());
-			   } 
+			   }
 			}
 			return targetsList;
 		}
-		
+
 		private boolean handleSocialInvite(Uri uri, int status, int code) {
 			if (code != Scoreflex.SUCCESS_INVITE_WITH_SERVICE)
 				return false;
@@ -1286,23 +1288,23 @@ public class ScoreflexView extends FrameLayout {
 			String dataString = uri.getQueryParameter("data");
 			try {
 				dataJson = new JSONObject(dataString);
-				String service = dataJson.optString("service"); 
+				String service = dataJson.optString("service");
 				if ("Facebook".equals(service)) {
 					List<String> suggestedList = JSONArrayToList(dataJson.optJSONArray("targetIds"));
 					String data = dataJson.optString("data");
 					Scoreflex.sendFacebookInvitation(mParentActivity, dataJson.getString("text"), null, suggestedList, data);
 //					ScoreflexFacebookWrapper.sendInvitation(
-				} 
+				}
 				if ("Google".equals(service)) {
 					List<String> friendIds = JSONArrayToList(dataJson.optJSONArray("targetIds"));
 					Scoreflex.sendGoogleInvitation(mParentActivity, dataJson.getString("text"),friendIds, dataJson.optString("url"), "/invite");
 				}
 			} catch (JSONException e) {
 				Log.e("Scoreflex", "Invalid json received in the data parameter", e);
-				
+
 				return true;
 			}
-			
+
 			return true;
 		}
 
@@ -1332,7 +1334,7 @@ public class ScoreflexView extends FrameLayout {
 
 			return true;
 		}
-		
+
 		private boolean handleNeedsAuth(Uri uri, int status, int code) {
 			if (code != Scoreflex.SUCCESS_NEEDS_AUTH)
 				return false;
