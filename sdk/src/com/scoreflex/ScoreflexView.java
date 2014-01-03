@@ -34,6 +34,7 @@ import com.scoreflex.Scoreflex.Response;
 import com.scoreflex.facebook.ScoreflexFacebookWrapper;
 import com.scoreflex.facebook.ScoreflexFacebookWrapper.FacebookException;
 import com.scoreflex.google.ScoreflexGoogleWrapper;
+import com.scoreflex.model.JSONParcelable;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -49,7 +50,6 @@ import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
 import android.provider.MediaStore;
@@ -872,7 +872,6 @@ public class ScoreflexView extends FrameLayout {
 			try {
 				JSONObject data = new JSONObject(uri.getQueryParameter("data"));
 				Intent intent = new Intent(Scoreflex.INTENT_PLAY_LEVEL);
-				// You can also include some extra data.
 				intent.putExtra(Scoreflex.INTENT_PLAY_LEVEL_EXTRA_LEADERBOARD_ID,
 						data.getString("leaderboardId"));
 				LocalBroadcastManager.getInstance(Scoreflex.getApplicationContext())
@@ -890,7 +889,6 @@ public class ScoreflexView extends FrameLayout {
 
 			try {
 				JSONObject data = new JSONObject(uri.getQueryParameter("data"));
-				final String configId = data.getString("challengeConfigId");
 				Scoreflex.get(
 						"/challenges/instances/" + data.getString("challengeInstanceId"),
 						null, new Scoreflex.ResponseHandler() {
@@ -899,14 +897,9 @@ public class ScoreflexView extends FrameLayout {
 							}
 
 							public void onSuccess(Response response) {
-								JSONObject challengeInstance = response.getJSONObject();
+								JSONParcelable challengeInstance = new JSONParcelable(response.getJSONObject());
 								Intent intent = new Intent(Scoreflex.INTENT_START_CHALLENGE);
-								// You can also include some extra data.
-								intent.putExtra(Scoreflex.INTENT_START_CHALLENGE_EXTRA_CONFIG,
-										challengeInstance.toString());
-								intent.<Bundle>getParcelableExtra("test");
-								intent.putExtra(
-										Scoreflex.INTENT_START_CHALLENGE_EXTRA_CONFIG_ID, configId);
+								intent.putExtra(Scoreflex.INTENT_START_CHALLENGE_EXTRA_INSTANCE, challengeInstance);
 								LocalBroadcastManager.getInstance(
 										Scoreflex.getApplicationContext()).sendBroadcast(intent);
 								Scoreflex.startPlayingSession();

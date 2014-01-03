@@ -181,16 +181,10 @@ public class Scoreflex {
 	public static final String INTENT_START_CHALLENGE = "scoreflexStartChallenge";
 
 	/**
-	 * The extra key for the full configuration (in a json string) of the
-	 * challenge in a {@link #INTENT_START_CHALLENGE} intent.
+	 * The extra key for the full challenge instance (a JSONParcelable object)
+	 * in a {@link #INTENT_START_CHALLENGE} intent
 	 */
-	public static final String INTENT_START_CHALLENGE_EXTRA_CONFIG = "config";
-
-	/**
-	 * The extra key for the configuration id of the challenge in a
-	 * {@link #INTENT_START_CHALLENGE}.
-	 */
-	public static final String INTENT_START_CHALLENGE_EXTRA_CONFIG_ID = "configId";
+	public static final String INTENT_START_CHALLENGE_EXTRA_INSTANCE = "challengeInstance";
 
 	/**
 	 * Local intent broadcasted when the reachability to Scoreflex has changed.
