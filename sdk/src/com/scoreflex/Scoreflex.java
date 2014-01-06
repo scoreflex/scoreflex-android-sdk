@@ -1655,7 +1655,7 @@ public class Scoreflex {
 						|| NOTIFICATION_TYPE_CHALLENGE_ENDED == code) {
 					showFullScreenView(
 							activity,
-							"/web/challenges/instances"
+							"/web/challenges/instances/"
 									+ data.getString("challengeInstanceId"), null);
 				} else if (NOTIFICATION_TYPE_FRIEND_JOINED_GAME == code) {
 					showFullScreenView(activity,
