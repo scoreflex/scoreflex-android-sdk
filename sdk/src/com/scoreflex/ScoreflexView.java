@@ -1122,7 +1122,8 @@ public class ScoreflexView extends FrameLayout {
 
 							String token = accessToken.optString("token");
 							String sid = json.optString("sid");
-							String playerId = json.optString("playerId");
+							JSONObject meObject = json.optJSONObject("me");
+							String playerId = meObject.optString("id");
 							ScoreflexRestClient.setAccessToken(token, false);
 							ScoreflexRestClient.setSID(sid);
 							ScoreflexRestClient.setPlayerId(playerId);

@@ -445,7 +445,8 @@ class ScoreflexRestClient {
 						if (json.has("accessToken") && json.has("sid")) {
 							JSONObject accessToken = json.optJSONObject("accessToken");
 							String sid = json.optString("sid");
-							String playerId = json.optString("playerId");
+							JSONObject meObject = json.optJSONObject("me");
+							String playerId = meObject.optString("id");
 							if (null != accessToken && accessToken.has("token")) {
 								String token = accessToken.optString("token");
 
