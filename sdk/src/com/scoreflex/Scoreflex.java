@@ -1617,10 +1617,9 @@ public class Scoreflex {
 	 * @param activity
 	 *          The current activity.
 	 */
-	public static void registerForPushNotification(String senderId,
-			Activity activity) {
+	public static void registerForPushNotification(Activity activity) {
 		if (checkPlayService(activity)) {
-			ScoreflexGcmClient.registerForPushNotification(senderId, activity);
+			ScoreflexGcmClient.registerForPushNotification(activity);
 		}
 	}
 

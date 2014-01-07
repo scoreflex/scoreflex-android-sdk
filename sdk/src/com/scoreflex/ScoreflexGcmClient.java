@@ -219,14 +219,28 @@ public class ScoreflexGcmClient {
 	 * @param context A valid context
 	 */
 	@SuppressLint("NewApi")
-	public static void registerForPushNotification(String senderID, Context context) {
-	   String regid = getRegistrationId(context);
-
-     if (TextUtils.isEmpty(regid)) {
-         registerInBackground(senderID, context);
-     } else {
-    	 storeRegistrationIdToScoreflex(regid);
-     }
-		return;
+	public static void registerForPushNotification(Context context) {
+		String regid = getRegistrationId(context);
+	  String pushSenderId = null;
+	  try {
+	  	ApplicationInfo ai = context.getPackageManager().getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
+	  	Bundle bundle = ai.metaData;
+	  	pushSenderId = bundle.getString("com.scoreflex.push.SenderId");
+	  } catch (NameNotFoundException e) {
+	  	Log.e("Scoreflex", "Could not get com.scoreflex.push.SenderId meta data from your manifest did you add : <meta-data android:name=\"com.scoreflex.push.SenderId\" android:value=\"@string/push_sender_id\"/>");
+	  } catch (NullPointerException e) {
+	  	Log.e("Scoreflex", "Could not get com.scoreflex.push.SenderId meta data from your manifest did you add : <meta-data android:name=\"com.scoreflex.push.SenderId\" android:value=\"@string/push_sender_id\"/>"); 
+	  }
+	  
+	  if (pushSenderId == null)  { 
+	  	return;
+	  }
+	  
+	  if (TextUtils.isEmpty(regid)) {
+	  	registerInBackground(pushSenderId, context);
+	  } else {
+	  	storeRegistrationIdToScoreflex(regid);
+	  }
+	  return;
 	}
 }
