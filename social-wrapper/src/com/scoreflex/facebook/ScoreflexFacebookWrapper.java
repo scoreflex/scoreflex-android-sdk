@@ -167,8 +167,10 @@ public class ScoreflexFacebookWrapper {
 		
 		try {
 			Bundle params = new Bundle();
-			params.putString("name", title);
-			params.putString("caption", title);
+			if (title != null) {
+				params.putString("name", title);
+				params.putString("caption", title);
+			}
 			params.putString("description", text);
 			params.putString("link", url);
 			showDialogWithoutNotificationBar(activity, "feed", params, null);
