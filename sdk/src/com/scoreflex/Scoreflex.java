@@ -251,7 +251,12 @@ public class Scoreflex {
 	static final int FILECHOOSER_RESULTCODE = 0;
 	private static long playingSessionStart;
 
-	protected static boolean isInitialized() {
+    /**
+     * Checks if Scoreflex is initialized.
+     *
+	 * @return True if the SDK is initialized.
+     */
+	public static boolean isInitialized() {
 		return sIsInitialized;
 	}
 
@@ -1292,7 +1297,7 @@ public class Scoreflex {
 	 *
 	 * @return
 	 */
-	protected static String getClientId() {
+	public static String getClientId() {
 		return sClientId;
 	}
 
