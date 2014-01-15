@@ -57,7 +57,6 @@ public class ScoreflexGoogleWrapper {
 	public static boolean isGoogleAvailable(Context context) {
 		try {
 			Class.forName("com.google.android.gms.plus.PlusClient");
-			Log.d("Scoreflex", "Google available");
 			return true;
 		} catch (ClassNotFoundException e) {
 			Log.d("Scoreflex", "Google not available");
@@ -101,7 +100,7 @@ public class ScoreflexGoogleWrapper {
 
 		@Override
 		public void onDisconnected() {
-			Log.e("Scoreflex", "Google plus disconnected");
+//			Log.e("Scoreflex", "Google plus disconnected");
 		}
 
 		@Override
@@ -110,7 +109,7 @@ public class ScoreflexGoogleWrapper {
 			if (!sCallbackStack.empty()) {
 				final SocialCallback callback = sCallbackStack.pop();
 
-				Log.d("Scoreflex", "GooglePlus connected");
+//				Log.d("Scoreflex", "GooglePlus connected");
 
 				// Extract access token on a separate thread
 				new Thread(new Runnable() {
@@ -143,7 +142,7 @@ public class ScoreflexGoogleWrapper {
 		@Override
 		public void onConnectionFailed(ConnectionResult result) {
 			if (result.hasResolution()) {
-				Log.d("Scoreflex", "ConnectionFailed, has resolution");
+//				Log.d("Scoreflex", "ConnectionFailed, has resolution");
 				try {
 					result.startResolutionForResult(mActivity,
 							REQUEST_CODE_START_RESOLUTION_FOR_RESULT);
@@ -152,7 +151,7 @@ public class ScoreflexGoogleWrapper {
 				}
 
 			} else {
-				Log.d("Scoreflex", "ConnectionFailed, no resolution");
+//				Log.d("Scoreflex", "ConnectionFailed, no resolution");
 				GoogleException e = new GoogleException(result.getErrorCode());
 				if (!sCallbackStack.empty()) {
 					SocialCallback callback = sCallbackStack.pop();
@@ -166,7 +165,7 @@ public class ScoreflexGoogleWrapper {
 	}
 
 	protected static PlusClient newPlusClient(final Activity activity) {
-		Log.d("Scoreflex", "Created new plus client");
+//		Log.d("Scoreflex", "Created new plus client");
 		PlusClientCallbackHandler handler = new PlusClientCallbackHandler(activity);
 		PlusClient plusClient = new PlusClient.Builder(activity, handler, handler)
 				.setScopes(Scopes.PLUS_LOGIN, GOOOGLE_SCOPE_EMAIL).setActions("http://schemas.google.com/AddActivity").build();
@@ -259,7 +258,7 @@ public class ScoreflexGoogleWrapper {
 					List<Person> invited = new ArrayList<Person>();
 //					invited.add(PlusShare.createPerson("110375645949560550333", "test"));
 					for (String friendId : friendIds) { 
-						Log.d("Scoreflex", "Added friend: " + friendId);
+//						Log.d("Scoreflex", "Added friend: " + friendId);
 						invited.add(PlusShare.createPerson(friendId, "Redwan Meslem"));
 					}	
 					builder.setRecipients(invited);

@@ -69,7 +69,6 @@ public class ScoreflexFacebookWrapper {
 								if(!TextUtils.isEmpty(to)) 
 								{
 									invitedFriends.add(to);
-								//            		Log.d("Scoreflex", "Successfull id: " + to);
 								}
 								i++;
 							}

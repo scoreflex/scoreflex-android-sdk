@@ -765,7 +765,7 @@ class ScoreflexRestClient {
 
 				// Query string is stripped from resource
 				sb.append(encode(String.format("%s%s", Scoreflex.getBaseURL(),
-						uri.getPath())));
+						uri.getEncodedPath())));
 
 				// Step 3: add URL encoded parameters
 				sb.append('&');

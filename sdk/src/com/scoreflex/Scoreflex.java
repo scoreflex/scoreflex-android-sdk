@@ -1857,7 +1857,7 @@ public class Scoreflex {
 
 				@Override
 				public void OnSuccessShare(List<String> invitedFriends) {
-					String concatenatedFriends = "Facebook:"+TextUtils.join(",Facebook:", invitedFriends);
+					String concatenatedFriends = "Facebook%3A"+TextUtils.join(",Facebook%3A", invitedFriends);
 					Scoreflex.postEventually("/social/invitations/" + concatenatedFriends, null, null);
 				}
 			});
