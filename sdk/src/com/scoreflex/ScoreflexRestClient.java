@@ -360,7 +360,6 @@ class ScoreflexRestClient {
 		}
 
 		String url = ScoreflexUriHelper.getAbsoluteUrl(request.getResource());
-
 		// TODO: support other contentTypes such as "application/json"
 		String contentType = "application/x-www-form-urlencoded";
 		switch (request.getMethod()) {
