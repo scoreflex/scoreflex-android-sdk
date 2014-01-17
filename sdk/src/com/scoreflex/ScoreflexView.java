@@ -1188,48 +1188,6 @@ public class ScoreflexView extends FrameLayout {
 					new Scoreflex.RequestParams());
 		}
 
-		private void handleNativeLink(JSONObject json, String service) {
-			if (null == json) {
-			        Log.e("Scoreflex",
-			                        "Error authenticating, server didn't return a JSON response");
-			        return;
-			}
-
-			JSONObject accessToken = json.optJSONObject("accessToken");
-			if (null == accessToken || !accessToken.has("token")) {
-			        Log.e("Scoreflex",
-			                        "Error authenticating, server didn't return an access token");
-			        return;
-			}
-
-			if (!json.has("sid")) {
-			        Log.e("Scoreflex",
-			                        "Error authenticating, server didn't return an sid");
-			        return;
-			}
-
-			String token = accessToken.optString("token");
-			String sid = json.optString("sid");
-			JSONObject meObject = json.optJSONObject("me");
-			String playerId = meObject.optString("id");
-			ScoreflexRestClient.setAccessToken(token, false);
-			ScoreflexRestClient.setSID(sid);
-			ScoreflexRestClient.setPlayerId(playerId);
-
-			Intent intent = new Intent(Scoreflex.INTENT_USER_LOGED_IN);
-			intent.putExtra(Scoreflex.INTENT_USER_LOGED_IN_EXTRA_SID, sid);
-			intent.putExtra(
-			                Scoreflex.INTENT_USER_LOGED_IN_EXTRA_ACCESS_TOKEN, token);
-			isLoginSource = true;
-			LocalBroadcastManager.getInstance(
-			                Scoreflex.getApplicationContext()).sendBroadcast(intent);
-
-			if (null != mAuthGrantedNextUrlString) {
-			        openFullUrl( "/web/linkExternallyAuthenticated/" + service, false, false);
-			        mWebView.clearHistory();
-			}
-		}
-
 		private boolean nativeLogin(Uri uri, final boolean isLink,
 				final Scoreflex.RequestParams params) {
 
@@ -1287,9 +1245,6 @@ public class ScoreflexView extends FrameLayout {
 
 						if (null != accessToken && 0 < accessToken.length()) {
 
-							// Generate a new auth state
-							mAuthState = UUID.randomUUID().toString();
-
 							params.put("clientId", Scoreflex.getClientId());
 							params.put("service", service);
 							params.put("serviceAccessToken", accessToken);
@@ -1297,7 +1252,17 @@ public class ScoreflexView extends FrameLayout {
 							params.put("devicePlatform", "Android");
 							params.put("deviceModel", Scoreflex.getDeviceModel());
 							params.put("deviceId", Scoreflex.getUDID());
+							if (nextUrlString != null) {
+								 params.put("next", nextUrlString);
+							}
 
+							if (isLink) {
+									setResource("/web/linkExternallyAuthenticated/" + service, params);
+									return;
+							}
+
+							// Generate a new auth state
+							mAuthState = UUID.randomUUID().toString();
 							ScoreflexRestClient.post("/oauth/accessTokenExternallyAuthenticated", params,
 									new Scoreflex.ResponseHandler() {
 										public void onFailure(Throwable e, Response errorResponse) {
@@ -1310,11 +1275,7 @@ public class ScoreflexView extends FrameLayout {
 										}
 
 										public void onSuccess(Response response) {
-											if (isLink) {
-												handleNativeLink(response.getJSONObject(), service);
-											} else {
 												handleLoggedInResponse(response.getJSONObject());
-											}
 										}
 									});
 						}
