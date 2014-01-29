@@ -48,18 +48,18 @@ message InMessage {
     CREATE_ROOM         = 5;
     JOIN_ROOM           = 6;
     LEAVE_ROOM          = 7;
-    WATCH_ROOM          = 8;
-    UNWATCH_ROOM        = 9;
-    START_GAME          = 10;
-    STOP_GAME           = 11;
-    RESET_GAME          = 12;
-    ROOM_MESSAGE        = 13;
-    SET_ROOM_PROPERTY   = 14;
-    SET_PLAYER_PROPERTY = 15;
+    START_GAME          = 8;
+    STOP_GAME           = 9;
+    RESET_GAME          = 10;
+    ROOM_MESSAGE        = 11;
+    SET_ROOM_PROPERTY   = 12;
+    SET_PLAYER_PROPERTY = 13;
   }
 
-  required Type   type  = 1;
-  optional uint32 msgid = 2 [ default = 0 ];
+  required Type   type        = 1;
+  required uint32 msgid       = 2;
+  optional uint32 ackid       = 3 [ default = 0 ];
+  optional bool   is_reliable = 4 [ default = false ];
 
   optional Connect    connect    = 10;
   optional Disconnect disconnect = 11;
@@ -69,14 +69,12 @@ message InMessage {
   optional CreateRoom        create_room         = 14;
   optional JoinRoom          join_room           = 15;
   optional LeaveRoom         leave_room          = 16;
-  optional WatchRoom         watch_room          = 17;
-  optional UnwatchRoom       unwatch_room        = 18;
-  optional StartGame         start_game          = 19;
-  optional StopGame          stop_game           = 20;
-  optional ResetGame         reset_game          = 21;
-  optional RoomMessage       room_message        = 22;
-  optional SetRoomProperty   set_room_property   = 23;
-  optional SetPlayerProperty set_player_property = 24;
+  optional StartGame         start_game          = 17;
+  optional StopGame          stop_game           = 18;
+  optional ResetGame         reset_game          = 19;
+  optional RoomMessage       room_message        = 20;
+  optional SetRoomProperty   set_room_property   = 21;
+  optional SetPlayerProperty set_player_property = 22;
 }
 
 
@@ -96,18 +94,18 @@ message OutMessage {
     ROOM_CLOSED             = 10;
     ROOM_JOINED             = 11;
     ROOM_LEFT               = 12;
-    ROOM_WATCHED            = 13;
-    ROOM_UNWATCHED          = 14;
-    PEER_JOINED_ROOM        = 15;
-    PEER_LEFT_ROOM          = 16;
-    GAME_STATE_CHANGED      = 17;
-    ROOM_MESSAGE            = 18;
-    ROOM_PROPERTY_UPDATED   = 19;
-    PLAYER_PROPERTY_UPDATED = 20;
+    PEER_JOINED_ROOM        = 13;
+    PEER_LEFT_ROOM          = 14;
+    GAME_STATE_CHANGED      = 15;
+    ROOM_MESSAGE            = 16;
+    ROOM_PROPERTY_UPDATED   = 17;
+    PLAYER_PROPERTY_UPDATED = 18;
   }
 
-  required Type   type  = 1;
-  optional uint32 msgid = 2 [ default = 0 ];
+  required Type   type        = 1;
+  required uint32 msgid       = 2;
+  optional uint32 ackid       = 3 [ default = 0 ];
+  optional bool   is_reliable = 4 [ default = false ];
 
   optional Connected        connected         = 10;
   optional ConnectionClosed connection_closed = 11;
@@ -122,14 +120,12 @@ message OutMessage {
   optional RoomClosed            room_closed             = 18;
   optional RoomJoined            room_joined             = 19;
   optional RoomLeft              room_left               = 20;
-  optional RoomWatched           room_watched            = 21;
-  optional RoomUnwatched         room_unwatched          = 22;
-  optional PeerJoinedRoom        peer_joined_room        = 23;
-  optional PeerLeftRoom          peer_left_room          = 24;
-  optional GameStateChanged      game_state_changed      = 25;
-  optional RoomMessage           room_message            = 26;
-  optional RoomPropertyUpdated   room_property_updated   = 27;
-  optional PlayerPropertyUpdated player_property_updated = 28;
+  optional PeerJoinedRoom        peer_joined_room        = 21;
+  optional PeerLeftRoom          peer_left_room          = 22;
+  optional GameStateChanged      game_state_changed      = 23;
+  optional RoomMessage           room_message            = 24;
+  optional RoomPropertyUpdated   room_property_updated   = 25;
+  optional PlayerPropertyUpdated player_property_updated = 26;
 }
 
 
@@ -138,6 +134,7 @@ message Connect {
   required string client_id    = 1;
   required string game_id      = 2;
   required string access_token = 3;
+  optional string session_id   = 4;
 }
 
 message Disconnect {
@@ -145,8 +142,9 @@ message Disconnect {
 
 
 message Connected {
-  required uint32   mm_time = 1;
-  repeated MapEntry info    = 2;
+  required uint32   mm_time    = 1;
+  required string   session_id = 2;
+  repeated MapEntry info       = 3;
 }
 
 message ConnectionClosed {
@@ -247,14 +245,6 @@ message LeaveRoom {
   required string room_id = 1;
 }
 
-message WatchRoom {
-  required string room_id = 1;
-}
-
-message UnwatchRoom {
-  required string room_id = 1;
-}
-
 message RoomCreated {
   enum StatusCode {
     SUCCESS           = 0;
@@ -304,31 +294,6 @@ message RoomLeft {
 }
 
 
-message RoomWatched {
-  enum StatusCode {
-    SUCCESS           = 0;
-    INTERNAL_ERROR    = 1;
-    ROOM_NOT_FOUND    = 2;
-    PERMISSION_DENIED = 3;
-    ALREADY_JOINED    = 4;
-    TOO_MANY_WATCHERS = 5;
-  }
-
-  required Room       room   = 1;
-  optional StatusCode status = 2 [ default = SUCCESS ];
-}
-
-message RoomUnwatched {
-  enum StatusCode {
-    SUCCESS          = 0;
-    INTERNAL_ERROR   = 1;
-    ROOM_NOT_WATCHED = 3;
-  }
-
-  required string     room_id = 1;
-  optional StatusCode status  = 2 [ default = SUCCESS ];
-}
-
 message PeerJoinedRoom {
   required string room_id = 1;
   required Player player  = 2;
@@ -353,8 +318,9 @@ message ResetGame {
 
 message GameStateChanged {
   enum StatusCode {
-    SUCCESS = 0;
-    FAILED  = 1;
+    SUCCESS         = 0;
+    ROOM_NOT_JOINED = 1;
+    BAD_STATE       = 2;
   }
 
   required string     room_id    = 1;
@@ -365,12 +331,12 @@ message GameStateChanged {
 
 // ====================================================================
 message RoomMessage {
-  required string room_id   = 1;
-  required uint32 timestamp = 2;
-  optional string from_id   = 3;
-  optional string to_id     = 4;
-  optional uint32 flags     = 5 [ default = 0];
-  optional uint32 tag       = 6;
+  required string room_id     = 1;
+  required uint32 timestamp   = 2;
+  optional string from_id     = 3;
+  optional string to_id       = 4;
+  optional bool   is_reliable = 5 [ default = false ];
+  optional uint32 tag         = 6 [ default = 0 ];
 
   repeated MapEntry payload = 10;
 }
@@ -387,8 +353,8 @@ message SetPlayerProperty {
 
 message RoomPropertyUpdated {
   enum StatusCode {
-    SUCCESS = 0;
-    FAILED  = 1;
+    SUCCESS         = 0;
+    ROOM_NOT_JOINED = 1;
   }
 
   required string     room_id   = 1;
@@ -399,8 +365,8 @@ message RoomPropertyUpdated {
 
 message PlayerPropertyUpdated {
   enum StatusCode {
-    SUCCESS = 0;
-    FAILED  = 1;
+    SUCCESS         = 0;
+    ROOM_NOT_JOINED = 1;
   }
 
   required string     room_id   = 1;
