@@ -1,0 +1,1643 @@
+<api>
+<package name="com.scoreflex"
+>
+<class name="ConnectivityReceiver"
+ extends="android.content.BroadcastReceiver"
+ abstract="false"
+ static="false"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+<constructor name="ConnectivityReceiver"
+ type="com.scoreflex.ConnectivityReceiver"
+ static="false"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+</constructor>
+<method name="onReceive"
+ return="void"
+ abstract="false"
+ native="false"
+ synchronized="false"
+ static="false"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+<parameter name="context" type="android.content.Context">
+</parameter>
+<parameter name="intent" type="android.content.Intent">
+</parameter>
+</method>
+</class>
+<class name="Scoreflex"
+ extends="java.lang.Object"
+ abstract="false"
+ static="false"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+<constructor name="Scoreflex"
+ type="com.scoreflex.Scoreflex"
+ static="false"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+</constructor>
+<method name="backButtonPressed"
+ return="boolean"
+ abstract="false"
+ native="false"
+ synchronized="false"
+ static="true"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+</method>
+<method name="delete"
+ return="void"
+ abstract="false"
+ native="false"
+ synchronized="false"
+ static="true"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+<parameter name="resource" type="java.lang.String">
+</parameter>
+<parameter name="responseHandler" type="com.scoreflex.Scoreflex.ResponseHandler">
+</parameter>
+</method>
+<method name="freePreloadedResources"
+ return="void"
+ abstract="false"
+ native="false"
+ synchronized="false"
+ static="true"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+<parameter name="resource" type="java.lang.String">
+</parameter>
+</method>
+<method name="get"
+ return="void"
+ abstract="false"
+ native="false"
+ synchronized="false"
+ static="true"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+<parameter name="resource" type="java.lang.String">
+</parameter>
+<parameter name="params" type="com.scoreflex.Scoreflex.RequestParams">
+</parameter>
+<parameter name="responseHandler" type="com.scoreflex.Scoreflex.ResponseHandler">
+</parameter>
+</method>
+<method name="getBaseURL"
+ return="java.lang.String"
+ abstract="false"
+ native="false"
+ synchronized="false"
+ static="true"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+</method>
+<method name="getDefaultGravity"
+ return="int"
+ abstract="false"
+ native="false"
+ synchronized="false"
+ static="true"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+</method>
+<method name="getFullscreenView"
+ return="com.scoreflex.ScoreflexView"
+ abstract="false"
+ native="false"
+ synchronized="false"
+ static="true"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+<parameter name="activity" type="android.app.Activity">
+</parameter>
+<parameter name="resource" type="java.lang.String">
+</parameter>
+<parameter name="params" type="com.scoreflex.Scoreflex.RequestParams">
+</parameter>
+</method>
+<method name="getLang"
+ return="java.lang.String"
+ abstract="false"
+ native="false"
+ synchronized="false"
+ static="true"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+</method>
+<method name="getLocation"
+ return="android.location.Location"
+ abstract="false"
+ native="false"
+ synchronized="false"
+ static="true"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+</method>
+<method name="getNonSecureBaseURL"
+ return="java.lang.String"
+ abstract="false"
+ native="false"
+ synchronized="false"
+ static="true"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+</method>
+<method name="getPanelView"
+ return="com.scoreflex.ScoreflexView"
+ abstract="false"
+ native="false"
+ synchronized="false"
+ static="true"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+<parameter name="activity" type="android.app.Activity">
+</parameter>
+<parameter name="resource" type="java.lang.String">
+</parameter>
+<parameter name="params" type="com.scoreflex.Scoreflex.RequestParams">
+</parameter>
+</method>
+<method name="getPlayerId"
+ return="java.lang.String"
+ abstract="false"
+ native="false"
+ synchronized="false"
+ static="true"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+</method>
+<method name="getPlayingSessionTime"
+ return="long"
+ abstract="false"
+ native="false"
+ synchronized="false"
+ static="true"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+</method>
+<method name="initialize"
+ return="void"
+ abstract="false"
+ native="false"
+ synchronized="false"
+ static="true"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+<parameter name="context" type="android.content.Context">
+</parameter>
+<parameter name="clientId" type="java.lang.String">
+</parameter>
+<parameter name="clientSecret" type="java.lang.String">
+</parameter>
+</method>
+<method name="initialize"
+ return="void"
+ abstract="false"
+ native="false"
+ synchronized="false"
+ static="true"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+<parameter name="context" type="android.content.Context">
+</parameter>
+<parameter name="clientId" type="java.lang.String">
+</parameter>
+<parameter name="clientSecret" type="java.lang.String">
+</parameter>
+<parameter name="useSandbox" type="boolean">
+</parameter>
+</method>
+<method name="isReachable"
+ return="boolean"
+ abstract="false"
+ native="false"
+ synchronized="false"
+ static="true"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+</method>
+<method name="onActivityResult"
+ return="void"
+ abstract="false"
+ native="false"
+ synchronized="false"
+ static="true"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+<parameter name="activity" type="android.app.Activity">
+</parameter>
+<parameter name="requestCode" type="int">
+</parameter>
+<parameter name="responseCode" type="int">
+</parameter>
+<parameter name="intent" type="android.content.Intent">
+</parameter>
+</method>
+<method name="onBroadcastReceived"
+ return="boolean"
+ abstract="false"
+ native="false"
+ synchronized="false"
+ static="true"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+<parameter name="context" type="android.content.Context">
+</parameter>
+<parameter name="intent" type="android.content.Intent">
+</parameter>
+<parameter name="iconResource" type="int">
+</parameter>
+<parameter name="activityClass" type="java.lang.Class&lt;? extends android.app.Activity&gt;">
+</parameter>
+</method>
+<method name="onCreateMainActivity"
+ return="boolean"
+ abstract="false"
+ native="false"
+ synchronized="false"
+ static="true"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+<parameter name="activity" type="android.app.Activity">
+</parameter>
+<parameter name="intent" type="android.content.Intent">
+</parameter>
+</method>
+<method name="post"
+ return="void"
+ abstract="false"
+ native="false"
+ synchronized="false"
+ static="true"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+<parameter name="resource" type="java.lang.String">
+</parameter>
+<parameter name="params" type="com.scoreflex.Scoreflex.RequestParams">
+</parameter>
+<parameter name="responseHandler" type="com.scoreflex.Scoreflex.ResponseHandler">
+</parameter>
+</method>
+<method name="postEventually"
+ return="void"
+ abstract="false"
+ native="false"
+ synchronized="false"
+ static="true"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+<parameter name="resource" type="java.lang.String">
+</parameter>
+<parameter name="params" type="com.scoreflex.Scoreflex.RequestParams">
+</parameter>
+<parameter name="responseHandler" type="com.scoreflex.Scoreflex.ResponseHandler">
+</parameter>
+</method>
+<method name="preloadResource"
+ return="void"
+ abstract="false"
+ native="false"
+ synchronized="false"
+ static="true"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+<parameter name="activity" type="android.app.Activity">
+</parameter>
+<parameter name="resource" type="java.lang.String">
+</parameter>
+</method>
+<method name="put"
+ return="void"
+ abstract="false"
+ native="false"
+ synchronized="false"
+ static="true"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+<parameter name="resource" type="java.lang.String">
+</parameter>
+<parameter name="params" type="com.scoreflex.Scoreflex.RequestParams">
+</parameter>
+<parameter name="responseHandler" type="com.scoreflex.Scoreflex.ResponseHandler">
+</parameter>
+</method>
+<method name="registerForPushNotification"
+ return="void"
+ abstract="false"
+ native="false"
+ synchronized="false"
+ static="true"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+<parameter name="senderId" type="java.lang.String">
+</parameter>
+<parameter name="activity" type="android.app.Activity">
+</parameter>
+</method>
+<method name="registerNetworkReceiver"
+ return="void"
+ abstract="false"
+ native="false"
+ synchronized="false"
+ static="true"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+<parameter name="context" type="android.content.Context">
+</parameter>
+</method>
+<method name="setDefaultGravity"
+ return="void"
+ abstract="false"
+ native="false"
+ synchronized="false"
+ static="true"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+<parameter name="defaultGravity" type="int">
+</parameter>
+</method>
+<method name="setLang"
+ return="void"
+ abstract="false"
+ native="false"
+ synchronized="false"
+ static="true"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+<parameter name="lang" type="java.lang.String">
+</parameter>
+<exception name="IllegalArgumentException" type="java.lang.IllegalArgumentException">
+</exception>
+</method>
+<method name="setLocation"
+ return="void"
+ abstract="false"
+ native="false"
+ synchronized="false"
+ static="true"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+<parameter name="location" type="android.location.Location">
+</parameter>
+</method>
+<method name="showChallenges"
+ return="com.scoreflex.ScoreflexView"
+ abstract="false"
+ native="false"
+ synchronized="false"
+ static="true"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+<parameter name="activity" type="android.app.Activity">
+</parameter>
+<parameter name="params" type="com.scoreflex.Scoreflex.RequestParams">
+</parameter>
+</method>
+<method name="showDeveloperGames"
+ return="com.scoreflex.ScoreflexView"
+ abstract="false"
+ native="false"
+ synchronized="false"
+ static="true"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+<parameter name="activity" type="android.app.Activity">
+</parameter>
+<parameter name="developerId" type="java.lang.String">
+</parameter>
+<parameter name="params" type="com.scoreflex.Scoreflex.RequestParams">
+</parameter>
+</method>
+<method name="showDeveloperProfile"
+ return="com.scoreflex.ScoreflexView"
+ abstract="false"
+ native="false"
+ synchronized="false"
+ static="true"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+<parameter name="activity" type="android.app.Activity">
+</parameter>
+<parameter name="developerId" type="java.lang.String">
+</parameter>
+<parameter name="params" type="com.scoreflex.Scoreflex.RequestParams">
+</parameter>
+</method>
+<method name="showFullScreenView"
+ return="com.scoreflex.ScoreflexView"
+ abstract="false"
+ native="false"
+ synchronized="false"
+ static="true"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+<parameter name="activity" type="android.app.Activity">
+</parameter>
+<parameter name="resource" type="java.lang.String">
+</parameter>
+<parameter name="params" type="com.scoreflex.Scoreflex.RequestParams">
+</parameter>
+</method>
+<method name="showGameDetails"
+ return="com.scoreflex.ScoreflexView"
+ abstract="false"
+ native="false"
+ synchronized="false"
+ static="true"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+<parameter name="activity" type="android.app.Activity">
+</parameter>
+<parameter name="gameId" type="java.lang.String">
+</parameter>
+<parameter name="params" type="com.scoreflex.Scoreflex.RequestParams">
+</parameter>
+</method>
+<method name="showGamePlayers"
+ return="com.scoreflex.ScoreflexView"
+ abstract="false"
+ native="false"
+ synchronized="false"
+ static="true"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+<parameter name="activity" type="android.app.Activity">
+</parameter>
+<parameter name="gameId" type="java.lang.String">
+</parameter>
+<parameter name="params" type="com.scoreflex.Scoreflex.RequestParams">
+</parameter>
+</method>
+<method name="showLeaderboard"
+ return="com.scoreflex.ScoreflexView"
+ abstract="false"
+ native="false"
+ synchronized="false"
+ static="true"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+<parameter name="activity" type="android.app.Activity">
+</parameter>
+<parameter name="leaderboardId" type="java.lang.String">
+</parameter>
+<parameter name="params" type="com.scoreflex.Scoreflex.RequestParams">
+</parameter>
+</method>
+<method name="showLeaderboardOverview"
+ return="com.scoreflex.ScoreflexView"
+ abstract="false"
+ native="false"
+ synchronized="false"
+ static="true"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+<parameter name="activity" type="android.app.Activity">
+</parameter>
+<parameter name="leaderboardId" type="java.lang.String">
+</parameter>
+<parameter name="params" type="com.scoreflex.Scoreflex.RequestParams">
+</parameter>
+</method>
+<method name="showPanelView"
+ return="com.scoreflex.ScoreflexView"
+ abstract="false"
+ native="false"
+ synchronized="false"
+ static="true"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+<parameter name="activity" type="android.app.Activity">
+</parameter>
+<parameter name="resource" type="java.lang.String">
+</parameter>
+<parameter name="params" type="com.scoreflex.Scoreflex.RequestParams">
+</parameter>
+<parameter name="gravity" type="int">
+</parameter>
+</method>
+<method name="showPlayerFriends"
+ return="com.scoreflex.ScoreflexView"
+ abstract="false"
+ native="false"
+ synchronized="false"
+ static="true"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+<parameter name="activity" type="android.app.Activity">
+</parameter>
+<parameter name="playerId" type="java.lang.String">
+</parameter>
+<parameter name="params" type="com.scoreflex.Scoreflex.RequestParams">
+</parameter>
+</method>
+<method name="showPlayerNewsFeed"
+ return="com.scoreflex.ScoreflexView"
+ abstract="false"
+ native="false"
+ synchronized="false"
+ static="true"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+<parameter name="activity" type="android.app.Activity">
+</parameter>
+<parameter name="params" type="com.scoreflex.Scoreflex.RequestParams">
+</parameter>
+</method>
+<method name="showPlayerProfile"
+ return="com.scoreflex.ScoreflexView"
+ abstract="false"
+ native="false"
+ synchronized="false"
+ static="true"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+<parameter name="activity" type="android.app.Activity">
+</parameter>
+<parameter name="playerId" type="java.lang.String">
+</parameter>
+<parameter name="params" type="com.scoreflex.Scoreflex.RequestParams">
+</parameter>
+</method>
+<method name="showPlayerProfileEdit"
+ return="com.scoreflex.ScoreflexView"
+ abstract="false"
+ native="false"
+ synchronized="false"
+ static="true"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+<parameter name="activity" type="android.app.Activity">
+</parameter>
+<parameter name="params" type="com.scoreflex.Scoreflex.RequestParams">
+</parameter>
+</method>
+<method name="showPlayerRating"
+ return="com.scoreflex.ScoreflexView"
+ abstract="false"
+ native="false"
+ synchronized="false"
+ static="true"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+<parameter name="activity" type="android.app.Activity">
+</parameter>
+<parameter name="params" type="com.scoreflex.Scoreflex.RequestParams">
+</parameter>
+</method>
+<method name="showPlayerSettings"
+ return="com.scoreflex.ScoreflexView"
+ abstract="false"
+ native="false"
+ synchronized="false"
+ static="true"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+<parameter name="activity" type="android.app.Activity">
+</parameter>
+<parameter name="params" type="com.scoreflex.Scoreflex.RequestParams">
+</parameter>
+</method>
+<method name="showRanksPanel"
+ return="com.scoreflex.ScoreflexView"
+ abstract="false"
+ native="false"
+ synchronized="false"
+ static="true"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+<parameter name="activity" type="android.app.Activity">
+</parameter>
+<parameter name="leaderboardId" type="java.lang.String">
+</parameter>
+<parameter name="score" type="long">
+</parameter>
+</method>
+<method name="showRanksPanel"
+ return="com.scoreflex.ScoreflexView"
+ abstract="false"
+ native="false"
+ synchronized="false"
+ static="true"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+<parameter name="activity" type="android.app.Activity">
+</parameter>
+<parameter name="leaderboardId" type="java.lang.String">
+</parameter>
+<parameter name="score" type="long">
+</parameter>
+<parameter name="gravity" type="int">
+</parameter>
+</method>
+<method name="showRanksPanel"
+ return="com.scoreflex.ScoreflexView"
+ abstract="false"
+ native="false"
+ synchronized="false"
+ static="true"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+<parameter name="activity" type="android.app.Activity">
+</parameter>
+<parameter name="leaderboardId" type="java.lang.String">
+</parameter>
+<parameter name="gravity" type="int">
+</parameter>
+<parameter name="params" type="com.scoreflex.Scoreflex.RequestParams">
+</parameter>
+</method>
+<method name="showSearch"
+ return="com.scoreflex.ScoreflexView"
+ abstract="false"
+ native="false"
+ synchronized="false"
+ static="true"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+<parameter name="activity" type="android.app.Activity">
+</parameter>
+<parameter name="params" type="com.scoreflex.Scoreflex.RequestParams">
+</parameter>
+</method>
+<method name="startPlayingSession"
+ return="void"
+ abstract="false"
+ native="false"
+ synchronized="false"
+ static="true"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+</method>
+<method name="stopPlayingSession"
+ return="void"
+ abstract="false"
+ native="false"
+ synchronized="false"
+ static="true"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+</method>
+<method name="submitScore"
+ return="void"
+ abstract="false"
+ native="false"
+ synchronized="false"
+ static="true"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+<parameter name="leaderboardId" type="java.lang.String">
+</parameter>
+<parameter name="score" type="long">
+</parameter>
+<parameter name="params" type="com.scoreflex.Scoreflex.RequestParams">
+</parameter>
+<parameter name="responseHandler" type="com.scoreflex.Scoreflex.ResponseHandler">
+</parameter>
+</method>
+<method name="submitScoreAndShowRanksPanel"
+ return="com.scoreflex.ScoreflexView"
+ abstract="false"
+ native="false"
+ synchronized="false"
+ static="true"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+<parameter name="activity" type="android.app.Activity">
+</parameter>
+<parameter name="leaderboardId" type="java.lang.String">
+</parameter>
+<parameter name="score" type="long">
+</parameter>
+<parameter name="params" type="com.scoreflex.Scoreflex.RequestParams">
+</parameter>
+<parameter name="gravity" type="int">
+</parameter>
+</method>
+<method name="submitTurn"
+ return="void"
+ abstract="false"
+ native="false"
+ synchronized="false"
+ static="true"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+<parameter name="challengeInstanceId" type="java.lang.String">
+</parameter>
+<parameter name="turn" type="com.scoreflex.Scoreflex.RequestParams">
+</parameter>
+<parameter name="responseHandler" type="com.scoreflex.Scoreflex.ResponseHandler">
+</parameter>
+</method>
+<method name="submitTurnAndShowChallengeDetail"
+ return="void"
+ abstract="false"
+ native="false"
+ synchronized="false"
+ static="true"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+<parameter name="activity" type="android.app.Activity">
+</parameter>
+<parameter name="challengeInstanceId" type="java.lang.String">
+</parameter>
+<parameter name="turn" type="com.scoreflex.Scoreflex.RequestParams">
+</parameter>
+</method>
+<method name="unregisterNetworkReceiver"
+ return="void"
+ abstract="false"
+ native="false"
+ synchronized="false"
+ static="true"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+<parameter name="context" type="android.content.Context">
+</parameter>
+</method>
+<method name="usesSandbox"
+ return="boolean"
+ abstract="false"
+ native="false"
+ synchronized="false"
+ static="true"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+</method>
+<field name="INTENT_CONNECTIVITY_CHANGED"
+ type="java.lang.String"
+ transient="false"
+ volatile="false"
+ value="&quot;scoreflexConnectivityChanged&quot;"
+ static="true"
+ final="true"
+ deprecated="not deprecated"
+ visibility="public"
+>
+</field>
+<field name="INTENT_CONNECTIVITY_EXTRA_CONNECTIVITY"
+ type="java.lang.String"
+ transient="false"
+ volatile="false"
+ value="&quot;scoreflexConnectivityState&quot;"
+ static="true"
+ final="true"
+ deprecated="not deprecated"
+ visibility="public"
+>
+</field>
+<field name="INTENT_PLAY_LEVEL"
+ type="java.lang.String"
+ transient="false"
+ volatile="false"
+ value="&quot;scoreflexPlayLevel&quot;"
+ static="true"
+ final="true"
+ deprecated="not deprecated"
+ visibility="public"
+>
+</field>
+<field name="INTENT_PLAY_LEVEL_EXTRA_LEADERBOARD_ID"
+ type="java.lang.String"
+ transient="false"
+ volatile="false"
+ value="&quot;leaderboardId&quot;"
+ static="true"
+ final="true"
+ deprecated="not deprecated"
+ visibility="public"
+>
+</field>
+<field name="INTENT_RESOURCE_PRELOADED"
+ type="java.lang.String"
+ transient="false"
+ volatile="false"
+ value="&quot;scoreflexResourcePreloaded&quot;"
+ static="true"
+ final="true"
+ deprecated="not deprecated"
+ visibility="public"
+>
+</field>
+<field name="INTENT_RESOURCE_PRELOADED_EXTRA_PATH"
+ type="java.lang.String"
+ transient="false"
+ volatile="false"
+ value="&quot;scoreflexResourcePreloadedPath&quot;"
+ static="true"
+ final="true"
+ deprecated="not deprecated"
+ visibility="public"
+>
+</field>
+<field name="INTENT_SCOREFLEX_INTIALIZED"
+ type="java.lang.String"
+ transient="false"
+ volatile="false"
+ value="&quot;scoreflexInitialized&quot;"
+ static="true"
+ final="true"
+ deprecated="not deprecated"
+ visibility="public"
+>
+</field>
+<field name="INTENT_START_CHALLENGE"
+ type="java.lang.String"
+ transient="false"
+ volatile="false"
+ value="&quot;scoreflexStartChallenge&quot;"
+ static="true"
+ final="true"
+ deprecated="not deprecated"
+ visibility="public"
+>
+</field>
+<field name="INTENT_START_CHALLENGE_EXTRA_CONFIG"
+ type="java.lang.String"
+ transient="false"
+ volatile="false"
+ value="&quot;config&quot;"
+ static="true"
+ final="true"
+ deprecated="not deprecated"
+ visibility="public"
+>
+</field>
+<field name="INTENT_START_CHALLENGE_EXTRA_CONFIG_ID"
+ type="java.lang.String"
+ transient="false"
+ volatile="false"
+ value="&quot;configId&quot;"
+ static="true"
+ final="true"
+ deprecated="not deprecated"
+ visibility="public"
+>
+</field>
+<field name="INTENT_USER_LOGED_IN"
+ type="java.lang.String"
+ transient="false"
+ volatile="false"
+ value="&quot;scoreflexUserLoggedIn&quot;"
+ static="true"
+ final="true"
+ deprecated="not deprecated"
+ visibility="public"
+>
+</field>
+<field name="INTENT_USER_LOGED_IN_EXTRA_ACCESS_TOKEN"
+ type="java.lang.String"
+ transient="false"
+ volatile="false"
+ value="&quot;accessToken&quot;"
+ static="true"
+ final="true"
+ deprecated="not deprecated"
+ visibility="public"
+>
+</field>
+<field name="INTENT_USER_LOGED_IN_EXTRA_SID"
+ type="java.lang.String"
+ transient="false"
+ volatile="false"
+ value="&quot;sid&quot;"
+ static="true"
+ final="true"
+ deprecated="not deprecated"
+ visibility="public"
+>
+</field>
+<field name="NOTIFICATION_EXTRA_KEY"
+ type="java.lang.String"
+ transient="false"
+ volatile="false"
+ value="&quot;_sfxNotification&quot;"
+ static="true"
+ final="true"
+ deprecated="not deprecated"
+ visibility="public"
+>
+</field>
+<field name="NOTIFICATION_TYPE_CHALLENGE_ENDED"
+ type="int"
+ transient="false"
+ volatile="false"
+ value="101"
+ static="true"
+ final="true"
+ deprecated="not deprecated"
+ visibility="public"
+>
+</field>
+<field name="NOTIFICATION_TYPE_CHALLENGE_INVITATION"
+ type="int"
+ transient="false"
+ volatile="false"
+ value="100"
+ static="true"
+ final="true"
+ deprecated="not deprecated"
+ visibility="public"
+>
+</field>
+<field name="NOTIFICATION_TYPE_DEVELOPER_TO_PLAYER"
+ type="int"
+ transient="false"
+ volatile="false"
+ value="1"
+ static="true"
+ final="true"
+ deprecated="not deprecated"
+ visibility="public"
+>
+</field>
+<field name="NOTIFICATION_TYPE_FRIEND_BEAT_YOUR_HIGHSCORE"
+ type="int"
+ transient="false"
+ volatile="false"
+ value="104"
+ static="true"
+ final="true"
+ deprecated="not deprecated"
+ visibility="public"
+>
+</field>
+<field name="NOTIFICATION_TYPE_FRIEND_JOINED_GAME"
+ type="int"
+ transient="false"
+ volatile="false"
+ value="103"
+ static="true"
+ final="true"
+ deprecated="not deprecated"
+ visibility="public"
+>
+</field>
+<field name="NOTIFICATION_TYPE_PLAYER_LEVEL_CHANGED"
+ type="int"
+ transient="false"
+ volatile="false"
+ value="105"
+ static="true"
+ final="true"
+ deprecated="not deprecated"
+ visibility="public"
+>
+</field>
+<field name="NOTIFICATION_TYPE_PLAYER_TO_PLAYER"
+ type="int"
+ transient="false"
+ volatile="false"
+ value="2"
+ static="true"
+ final="true"
+ deprecated="not deprecated"
+ visibility="public"
+>
+</field>
+<field name="NOTIFICATION_TYPE_YOUR_TURN_IN_CHALLENGE"
+ type="int"
+ transient="false"
+ volatile="false"
+ value="102"
+ static="true"
+ final="true"
+ deprecated="not deprecated"
+ visibility="public"
+>
+</field>
+<field name="WEBVIEW_REQUEST_TOTAL_TIMEOUT"
+ type="int"
+ transient="false"
+ volatile="false"
+ value="10000"
+ static="true"
+ final="true"
+ deprecated="not deprecated"
+ visibility="public"
+>
+</field>
+</class>
+<class name="Scoreflex.RequestParams"
+ extends="com.loopj.android.http.RequestParams"
+ abstract="false"
+ static="true"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+<constructor name="Scoreflex.RequestParams"
+ type="com.scoreflex.Scoreflex.RequestParams"
+ static="false"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+</constructor>
+<constructor name="Scoreflex.RequestParams"
+ type="com.scoreflex.Scoreflex.RequestParams"
+ static="false"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+<parameter name="source" type="java.util.Map&lt;java.lang.String, java.lang.String&gt;">
+</parameter>
+</constructor>
+<constructor name="Scoreflex.RequestParams"
+ type="com.scoreflex.Scoreflex.RequestParams"
+ static="false"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+<parameter name="keysAndValues" type="java.lang.Object...">
+</parameter>
+</constructor>
+<constructor name="Scoreflex.RequestParams"
+ type="com.scoreflex.Scoreflex.RequestParams"
+ static="false"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+<parameter name="key" type="java.lang.String">
+</parameter>
+<parameter name="value" type="java.lang.String">
+</parameter>
+</constructor>
+<method name="getParamNames"
+ return="java.util.Set&lt;java.lang.String&gt;"
+ abstract="false"
+ native="false"
+ synchronized="false"
+ static="false"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+</method>
+<method name="getParamValue"
+ return="java.lang.String"
+ abstract="false"
+ native="false"
+ synchronized="false"
+ static="false"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+<parameter name="paramName" type="java.lang.String">
+</parameter>
+</method>
+<method name="getURLEncodedString"
+ return="java.lang.String"
+ abstract="false"
+ native="false"
+ synchronized="false"
+ static="false"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+</method>
+<method name="has"
+ return="boolean"
+ abstract="false"
+ native="false"
+ synchronized="false"
+ static="false"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+<parameter name="key" type="java.lang.String">
+</parameter>
+</method>
+</class>
+<class name="Scoreflex.Response"
+ extends="java.lang.Object"
+ abstract="false"
+ static="true"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+<constructor name="Scoreflex.Response"
+ type="com.scoreflex.Scoreflex.Response"
+ static="false"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+<parameter name="responseContent" type="java.lang.String">
+</parameter>
+</constructor>
+<constructor name="Scoreflex.Response"
+ type="com.scoreflex.Scoreflex.Response"
+ static="false"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+<parameter name="responseJson" type="org.json.JSONObject">
+</parameter>
+</constructor>
+<method name="getErrorCode"
+ return="int"
+ abstract="false"
+ native="false"
+ synchronized="false"
+ static="false"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+</method>
+<method name="getErrorMessage"
+ return="java.lang.String"
+ abstract="false"
+ native="false"
+ synchronized="false"
+ static="false"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+</method>
+<method name="getErrorStatus"
+ return="int"
+ abstract="false"
+ native="false"
+ synchronized="false"
+ static="false"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+</method>
+<method name="getJSONObject"
+ return="org.json.JSONObject"
+ abstract="false"
+ native="false"
+ synchronized="false"
+ static="false"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+</method>
+<method name="isError"
+ return="boolean"
+ abstract="false"
+ native="false"
+ synchronized="false"
+ static="false"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+</method>
+</class>
+<class name="Scoreflex.ResponseHandler"
+ extends="java.lang.Object"
+ abstract="true"
+ static="true"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+<constructor name="Scoreflex.ResponseHandler"
+ type="com.scoreflex.Scoreflex.ResponseHandler"
+ static="false"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+</constructor>
+<method name="onFailure"
+ return="void"
+ abstract="true"
+ native="false"
+ synchronized="false"
+ static="false"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+<parameter name="e" type="java.lang.Throwable">
+</parameter>
+<parameter name="errorResponse" type="com.scoreflex.Scoreflex.Response">
+</parameter>
+</method>
+<method name="onSuccess"
+ return="void"
+ abstract="true"
+ native="false"
+ synchronized="false"
+ static="false"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+<parameter name="response" type="com.scoreflex.Scoreflex.Response">
+</parameter>
+</method>
+<method name="onSuccess"
+ return="void"
+ abstract="false"
+ native="false"
+ synchronized="false"
+ static="false"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+<parameter name="statusCode" type="int">
+</parameter>
+<parameter name="response" type="com.scoreflex.Scoreflex.Response">
+</parameter>
+</method>
+</class>
+<class name="ScoreflexGcmClient"
+ extends="java.lang.Object"
+ abstract="false"
+ static="false"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+<constructor name="ScoreflexGcmClient"
+ type="com.scoreflex.ScoreflexGcmClient"
+ static="false"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+</constructor>
+<method name="registerForPushNotification"
+ return="void"
+ abstract="false"
+ native="false"
+ synchronized="false"
+ static="true"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+<parameter name="senderID" type="java.lang.String">
+</parameter>
+<parameter name="context" type="android.content.Context">
+</parameter>
+</method>
+</class>
+<class name="ScoreflexView"
+ extends="android.widget.FrameLayout"
+ abstract="false"
+ static="false"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+<constructor name="ScoreflexView"
+ type="com.scoreflex.ScoreflexView"
+ static="false"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+<parameter name="activity" type="android.app.Activity">
+</parameter>
+<parameter name="attrs" type="android.util.AttributeSet">
+</parameter>
+<parameter name="defStyle" type="int">
+</parameter>
+</constructor>
+<constructor name="ScoreflexView"
+ type="com.scoreflex.ScoreflexView"
+ static="false"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+<parameter name="activity" type="android.app.Activity">
+</parameter>
+<parameter name="attrs" type="android.util.AttributeSet">
+</parameter>
+</constructor>
+<constructor name="ScoreflexView"
+ type="com.scoreflex.ScoreflexView"
+ static="false"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+<parameter name="activity" type="android.app.Activity">
+</parameter>
+</constructor>
+<method name="addDropShadow"
+ return="void"
+ abstract="false"
+ native="false"
+ synchronized="false"
+ static="false"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+<parameter name="gravity" type="int">
+</parameter>
+</method>
+<method name="canGoBack"
+ return="boolean"
+ abstract="false"
+ native="false"
+ synchronized="false"
+ static="false"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+</method>
+<method name="close"
+ return="void"
+ abstract="false"
+ native="false"
+ synchronized="false"
+ static="false"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+</method>
+<method name="goBack"
+ return="void"
+ abstract="false"
+ native="false"
+ synchronized="false"
+ static="false"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+</method>
+<method name="onActivityResult"
+ return="void"
+ abstract="false"
+ native="false"
+ synchronized="false"
+ static="false"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+<parameter name="activity" type="android.app.Activity">
+</parameter>
+<parameter name="requestCode" type="int">
+</parameter>
+<parameter name="resultCode" type="int">
+</parameter>
+<parameter name="intent" type="android.content.Intent">
+</parameter>
+</method>
+<method name="preloadResource"
+ return="void"
+ abstract="false"
+ native="false"
+ synchronized="false"
+ static="false"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+<parameter name="resource" type="java.lang.String">
+</parameter>
+</method>
+<method name="removeDropShadow"
+ return="void"
+ abstract="false"
+ native="false"
+ synchronized="false"
+ static="false"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+</method>
+<method name="setFullUrl"
+ return="void"
+ abstract="false"
+ native="false"
+ synchronized="false"
+ static="false"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+<parameter name="fullUrl" type="java.lang.String">
+</parameter>
+<exception name="IllegalArgumentException" type="java.lang.IllegalArgumentException">
+</exception>
+</method>
+<method name="setFullUrl"
+ return="void"
+ abstract="false"
+ native="false"
+ synchronized="false"
+ static="false"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+<parameter name="fullUrl" type="java.lang.String">
+</parameter>
+<parameter name="forceFullScreen" type="boolean">
+</parameter>
+<parameter name="newView" type="boolean">
+</parameter>
+<exception name="IllegalArgumentException" type="java.lang.IllegalArgumentException">
+</exception>
+</method>
+<method name="setResource"
+ return="void"
+ abstract="false"
+ native="false"
+ synchronized="false"
+ static="false"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+<parameter name="resource" type="java.lang.String">
+</parameter>
+</method>
+<method name="setResource"
+ return="void"
+ abstract="false"
+ native="false"
+ synchronized="false"
+ static="false"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+<parameter name="resource" type="java.lang.String">
+</parameter>
+<parameter name="params" type="com.scoreflex.Scoreflex.RequestParams">
+</parameter>
+<parameter name="forceFullScreen" type="boolean">
+</parameter>
+</method>
+<method name="setResource"
+ return="void"
+ abstract="false"
+ native="false"
+ synchronized="false"
+ static="false"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+<parameter name="resource" type="java.lang.String">
+</parameter>
+<parameter name="params" type="com.scoreflex.Scoreflex.RequestParams">
+</parameter>
+</method>
+<method name="startOpeningAnimation"
+ return="void"
+ abstract="false"
+ native="false"
+ synchronized="false"
+ static="false"
+ final="false"
+ deprecated="not deprecated"
+ visibility="public"
+>
+</method>
+</class>
+</package>
+</api>
