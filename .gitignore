@@ -12,6 +12,8 @@
 # generated files
 bin/
 gen/
+realtime-proto-wrapper/src
+sdk/doc
 
 # Local configuration file (sdk path, etc)
 local.properties
