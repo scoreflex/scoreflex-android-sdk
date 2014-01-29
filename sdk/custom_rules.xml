@@ -32,9 +32,11 @@
                 <param name="-federationxml" />
                 <param name="android" />
                 <param name="http://doclava.googlecode.com/svn/static/api/android-8.xml" />
+                <param name="-XDignore.symbol.file" />
             </doclet>
             <fileset dir="src" defaultexcludes="yes">
                 <include name="com/scoreflex/*"/>
+                <include name="com/scoreflex/realtime/*"/>
                 <exclude name="com/scoreflex/R.java"/>
             </fileset>
         </javadoc>
