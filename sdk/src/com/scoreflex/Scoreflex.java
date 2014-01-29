@@ -1005,6 +1005,16 @@ public class Scoreflex {
 	}
 
 	/**
+	 * Gets the access token from the local cache.
+	 *
+	 * @return The access token from the local cache.
+	 */
+	public static String getAccessToken() {
+		return ScoreflexRestClient.getAccessToken();
+	}
+
+
+	/**
 	 * A helper method that submits a turn to a challenge instance.
 	 *
 	 * @param challengeInstanceId
