@@ -13,7 +13,7 @@
             notree="false"
             version="true"
             docletpath="${basedir}/ant-libs/doclava-1.0.6.jar"
-            classpath="${sdk.dir}/extras/google/google_play_services/libproject/google-play-services_lib/bin/classes:libs/social-wrapper.jar:libs/android-async-http-1.4.3.jar:${sdk.dir}/extras/google/google_play_services/libproject/google-play-services_lib/libs/google-play-services.jar:libs/openudid.jar:${sdk.dir}/extras/google/google_play_services/libproject/google-play-services_lib/bin/google-play-services_lib.jar:libs/android-support-v4.jar:${sdk.dir}/platforms/android-15/android.jar:${sdk.dir}/tools/support/annotations.jar"
+            classpath="${basedir}/libs/realtime-proto-wrapper.jar:${sdk.dir}/extras/google/google_play_services/libproject/google-play-services_lib/bin/classes:libs/social-wrapper.jar:libs/android-async-http-1.4.3.jar:${sdk.dir}/extras/google/google_play_services/libproject/google-play-services_lib/libs/google-play-services.jar:libs/openudid.jar:${sdk.dir}/extras/google/google_play_services/libproject/google-play-services_lib/bin/google-play-services_lib.jar:libs/android-support-v4.jar:${sdk.dir}/platforms/android-15/android.jar:${sdk.dir}/tools/support/annotations.jar"
             >
             <doclet name="com.google.doclava.Doclava">
                 <param name="-hdf"/> <param name="project.name"/> <param name="Doclava"/>
