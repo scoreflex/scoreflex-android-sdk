@@ -1,164 +1,200 @@
 package com.scoreflex.realtime;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Collections;
 
+/**
+ * A realtime room with its configuration, properties and participants. Such
+ * rooms can be created by calling {@link Session#createRoom(String, RoomConfig,
+ * Map, Map)}.
+ */
 public class Room {
+  private final String                   id;
+  private final Session                  session;
+  private       MatchState               state;
+  private       Map<String, Object>      config;
+  private       Map<String, Object>      properties;
+  private       Map<String, Participant> participants;
+  private final Map<String, Object>      configView;
+  private final Map<String, Object>      propertiesView;
+  private final Map<String, Participant> participantsView;
 
-	public static enum State {
-		PENDING, READY, RUNNING, FINISHED;
-	}
+  protected static class Builder {
+    private String                   id;
+    private Session                  session;
+    private MatchState                state;
+    private Map<String, Object>      config;
+    private Map<String, Object>      properties;
+    private Map<String, Participant> participants;
 
-	public static interface Listener {
+    protected Builder() {
+    }
 
-		public void onLeft();
+    protected Builder setId(String id) {
+      this.id = id;
+      return this;
+    }
 
-		public void onUnwatched();
+    protected Builder setSession(Session session) {
+      this.session = session;
+      return this;
+    }
 
-		public void onAck();
+    protected Builder setMatchState(MatchState state) {
+      this.state = state;
+      return this;
+    }
 
-		public void onPeerJoined(Player player);
+    protected Builder setConfig(Map<String, Object> config) {
+      this.config = config;
+      return this;
+    }
 
-		public void onPeerLeft(Player player);
+    protected Builder setProperties(Map<String, Object> properties) {
+      this.properties = properties;
+      return this;
+    }
 
-		public void onStateChanged(State fromState, State toState);
+    protected Builder setParticipants(Map<String, Participant> participants) {
+      this.participants = participants;
+      return this;
+    }
 
-		public void onMessageReceived(Message message);
+    protected Room build() {
+      return new Room(this);
+    }
+  }
 
-		public void onPropertiesUpdated(Map<String, Object> properties);
+  protected static Builder builder() {
+    return new Builder();
+  }
 
-		public void onPlayerPropertiesUpdated(Player player,
-				Map<String, Object> properties);
+  private Room(Builder builder) {
+    this.id               = builder.id;
+    this.session          = builder.session;
+    this.state            = builder.state;
+    this.config           = builder.config;
+    this.properties       = builder.properties;
+    this.participants     = builder.participants;
+    this.configView       = Collections.unmodifiableMap(this.config);
+    this.propertiesView   = Collections.unmodifiableMap(this.properties);
+    this.participantsView = Collections.unmodifiableMap(this.participants);
+  }
 
-	}
+  /**
+   * Retrieves the room's ID.
+   *
+   * @return The room's ID.
+   */
+  public String getId() {
+    return id;
+  }
 
-	public static final class AbstractListener implements Listener {
+  /**
+   * Retrieves the room's configuration.
+   *
+   * @return The room's configuration.
+   */
+  public Map<String, Object> getConfig() {
+    return configView;
+  }
 
-		@Override
-		public void onLeft() {
-		}
+  /**
+   * Retrieves a specific parameter's value in the room's configuration, given
+   * its key.
+   *
+   * @return The parameter's value or <code>null</code> if the parameter does
+   * not exists.
+   */
+  public Object getConfigValue(String key) {
+    return config.get(key);
+  }
 
-		@Override
-		public void onUnwatched() {
-		}
+  /**
+   * Retrieves the room's properties.
+   *
+   * @return The room's properties.
+   */
+  public Map<String, Object> getProperties() {
+    return propertiesView;
+  }
 
-		@Override
-		public void onAck() {
-		}
+  /**
+   * Retrieves a specific room's property, given its key.
+   *
+   * @return The property value or <code>null</code> if the property does not
+   * exists.
+   */
+  public Object getProperty(String key) {
+    return properties.get(key);
+  }
 
-		@Override
-		public void onPeerJoined(Player player) {
-		}
+  /**
+   * Retrieves the room's participants.
+   *
+   * @return The room's participants.
+   */
+  public Map<String, Participant> getParticipants() {
+    return participantsView;
+  }
 
-		@Override
-		public void onPeerLeft(Player player) {
-		}
+  /**
+   * Retrieves a specific participant inside the room, given his ID.
+   *
+   * @see Participant
+   *
+   * @return the participant or <code>null</code> if the participant is not
+   * found in the room.
+   */
+  public Participant getParticipant(String id) {
+    return participants.get(id);
+  }
 
-		@Override
-		public void onStateChanged(State fromState, State toState) {
-		}
+  /**
+   * Retrieves the match's state of the room.
+   *
+   * @see MatchState
+   *
+   * @return the match's state
+   */
+  public MatchState getMatchState() {
+    return state;
+  }
 
-		@Override
-		public void onMessageReceived(Message message) {
-		}
+  protected boolean isSameRoom(String id) {
+    return id.equals(id);
+  }
 
-		@Override
-		public void onPropertiesUpdated(Map<String, Object> properties) {
-		}
+  protected void addParticipant(Participant p) {
+    participants.put(p.getId(), p);
+  }
 
-		@Override
-		public void onPlayerPropertiesUpdated(Player player,
-				Map<String, Object> properties) {
-		}
+  protected void removeParticipant(String id) {
+    participants.remove(id);
+  }
 
-	}
+  protected void setMatchState(MatchState state) {
+    this.state = state;
+  }
 
-	private final Session session;
-	private final String id;
+  protected void addProperty(String key, Object value) {
+    properties.put(key, value);
+  }
 
-	private State state;
-	private final Map<String, Object> config;
-	private final Map<String, Object> configView;
-	private final Map<String, Object> properties;
-	private final Map<String, Object> propertiesView;
-	private final List<Player> players;
-	private final List<Player> playersView;
+  protected void removeProperty(String key) {
+    properties.remove(key);
+  }
 
-	Room(Session session, String id) {
-		this.session = session;
-		this.id = id;
+  protected void addParticipantProperty(String id, String key, Object value) {
+    Participant participant = participants.get(id);
+    if (participant != null)
+      participant.addProperty(key, value);
+  }
 
-		this.state = null; // TODO
-		this.config = new HashMap<String, Object>();
-		this.properties = new HashMap<String, Object>();
-		this.players = new ArrayList<Player>();
-
-		this.configView = Collections.unmodifiableMap(this.config);
-		this.propertiesView = Collections.unmodifiableMap(this.properties);
-		this.playersView = Collections.unmodifiableList(this.players);
-	}
-
-	public Session getSession() {
-		return session;
-	}
-
-	public String getId() {
-		return id;
-	}
-
-	public State getState() {
-		return state;
-	}
-
-	public Map<String, Object> getConfig() {
-		return configView;
-	}
-
-	public Map<String, Object> getProperties() {
-		return propertiesView;
-	}
-
-	public List<Player> getPlayers() {
-		return playersView;
-	}
-
-	public void leave() {
-		// TODO
-	}
-
-	public void unwatch() {
-		// TODO
-	}
-
-	public void start() {
-		// TODO
-	}
-
-	public void stop() {
-		// TODO
-	}
-
-	public void reset() {
-		// TODO
-	}
-
-	public void setProperty(String key, Object value) {
-		// TODO
-	}
-
-	public void setPlayerProperty(String key, Object value) {
-		// TODO
-	}
-
-	public void sendMessage(Map<String, Object> payload, String from, String to, int tag) {
-		// TODO
-	}
-
-	public void sendReliableMessage(Map<String, Object> payload, Listener ackListener, String from, String to, int tag) {
-		// TODO
-	}
+  protected void removeParticipantProperty(String id, String key) {
+    Participant participant = participants.get(id);
+    if (participant != null)
+      participant.removeProperty(key);
+  }
 
 }

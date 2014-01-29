@@ -1,98 +1,129 @@
 package com.scoreflex.realtime;
 
-public class Connection {
+import java.net.InetAddress;
+import java.net.Socket;
+import java.io.InputStream;
+import java.net.UnknownHostException;
+import java.io.IOException;
 
-	public static class Builder {
+import android.os.AsyncTask;
+import android.os.Handler;
+import android.util.Log;
 
-		public String host;
-		public int port;
+import com.google.protobuf.InvalidProtocolBufferException;
 
-		public String getHost() {
-			return host;
-		}
+/**
+ * @hide
+ */
+public class Connection
+  extends AsyncTask<Proto.InMessage, Void, Void> {
 
-		public Builder setHost(String host) {
-			this.host = host;
-			return this;
-		}
+  private Session session;
+  private Socket          socket;
+  private String          host;
+  private int             port;
 
-		public int getPort() {
-			return port;
-		}
+  public Connection(Session session, String host, int port) {
+    this.session = session;
+    this.host    = host;
+    this.port    = port;
+  }
 
-		public Builder setPort(int port) {
-			this.port = port;
-			return this;
-		}
+  public void connect(Proto.InMessage message) {
+    execute(message);
+  }
 
-		public Connection build() {
-			return new Connection(host, port);
-		}
+  public void disconnect(Proto.InMessage message) {
+    try {
+      cancel(true);
+      sendInMessage(message);
+      socket.close();
+    }
+    catch (IOException e) {
+    }
+  }
 
-	}
+  public boolean sendMessage(Proto.InMessage message) {
+    try {
+      sendInMessage(message);
+      return true;
+    }
+    catch (IOException e) {
+      Log.e("Scoreflex", "Failed to send message: "+e);
+      return false;
+    }
+  }
 
-	public static interface Listener {
+  private void sendInMessage(Proto.InMessage message) throws IOException {
+    message.writeDelimitedTo(socket.getOutputStream());
+    socket.getOutputStream().flush();
+  }
 
-		public void onConnected(Session session);
+  @Override
+  protected Void doInBackground(Proto.InMessage... inmessages) {
+    Proto.ConnectionFailed.StatusCode status;
 
-		public void onClosed();
+    try {
+      InetAddress server_addr = InetAddress.getByName(host);
+      socket = new Socket(server_addr, port);
+      socket.setTcpNoDelay(true);
 
-		public void onFailed();
+      try {
+        for (int i = 0; i < inmessages.length; ++i)
+          sendInMessage(inmessages[i]);
 
-		public void onPong();
+        InputStream      stream     = socket.getInputStream();
+        Proto.OutMessage outmessage = null;
+        while ((outmessage = Proto.OutMessage.parseDelimitedFrom(stream)) != null) {
+          onMessageReceived(outmessage);
 
-	}
+          if (outmessage.getType() == Proto.OutMessage.Type.CONNECTION_FAILED ||
+              outmessage.getType() == Proto.OutMessage.Type.CONNECTION_CLOSED) {
+            return null;
+          }
+        }
+        status = Proto.ConnectionFailed.StatusCode.NETWORK_ERROR;
+      }
+      catch (InvalidProtocolBufferException e) {
+        status = Proto.ConnectionFailed.StatusCode.PROTOCOL_ERROR;
+      }
+      catch (IOException e) {
+        status = Proto.ConnectionFailed.StatusCode.NETWORK_ERROR;
+      }
 
-	public static class AbstractListener implements Listener {
+      socket.close();
+    }
+    catch (UnknownHostException e) {
+      status = Proto.ConnectionFailed.StatusCode.NETWORK_ERROR;
+    }
+    catch (IOException e) {
+      status = Proto.ConnectionFailed.StatusCode.NETWORK_ERROR;
+    }
+    catch (Exception e) {
+      status = Proto.ConnectionFailed.StatusCode.INTERNAL_ERROR;
+    }
 
-		@Override
-		public void onConnected(Session session) {
-		};
+    if (!isCancelled()) {
+      Proto.ConnectionFailed msg = Proto.ConnectionFailed.newBuilder()
+        .setStatus(status)
+        .build();
+      Proto.OutMessage outmessage = Proto.OutMessage.newBuilder()
+        .setMsgid(0)
+        .setAckid(0)
+        .setType(Proto.OutMessage.Type.CONNECTION_FAILED)
+        .setConnectionFailed(msg)
+        .build();
+      onMessageReceived(outmessage);
+    }
+    return null;
+  }
 
-		@Override
-		public void onClosed() {
-		}
-
-		@Override
-		public void onFailed() {
-		}
-
-		@Override
-		public void onPong() {
-		}
-
-	}
-
-	public final String host;
-	public final int port;
-
-	public Session session;
-
-	public Connection(String host, int port) {
-		this.host = host;
-		this.port = port;
-		this.session = null;
-		// TODO Establish connection
-	}
-
-	public Session getSession() {
-		return session;
-	}
-
-	public void connect() {
-		// TODO
-	}
-
-	public void disconnect() {
-		// TODO
-	}
-
-	public void sync() {
-		// TODO
-	}
-
-	public void ping() {
-		// TODO
-	}
-
+  private void onMessageReceived(final Proto.OutMessage outmessage) {
+    session.getHandler().post(new Runnable() {
+      @Override
+      public void run() {
+        session.onMessageReceived(Connection.this, outmessage);
+      }
+    });
+  }
 }
