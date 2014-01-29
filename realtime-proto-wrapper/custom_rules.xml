@@ -11,7 +11,7 @@
         <!-- Compile realtime protocol buffers -->
         <exec executable="protoc">
             <arg value="--proto_path=${protobuf.dir}/"/>
-            <arg value="--java_out=${gen.dir}"/>
+            <arg value="--java_out=${src.dir}"/>
             <arg value="${protobuf.dir}/realtime.proto"/>
         </exec>
     </target>
