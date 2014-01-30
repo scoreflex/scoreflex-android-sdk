@@ -821,7 +821,7 @@ class ScoreflexRestClient {
 		}
 
 		private static String encode(String s) throws UnsupportedEncodingException {
-			return URLEncoder.encode(s, "UTF-8").replace("+", "%20");
+			return URLEncoder.encode(s, "UTF-8").replace("+", "%20").replace("*", "%2A").replace("%7E", "~");
 		}
 
 		@Override
