@@ -46,8 +46,9 @@ public final class Session extends Thread {
   private        Boolean            is_started     = false;
 
   private       ConnectionListener  connection_listener;
-  private       Connection          connection;
   private       ConnectionState     connection_status;
+  private       TCPConnection       connection;
+  private       UDPConnection       udp_connection;
   private       String              host;
   private       int                 port;
   private       boolean             reconnect_flag;
@@ -65,6 +66,9 @@ public final class Session extends Thread {
   private       int                 last_ackid;
   private       int                 last_reliable_id;
   private       int                 last_unreliable_id;
+
+  private       int                 tcp_heartbeat_timeout = 200;
+  private       int                 udp_heartbeat_timeout = 200;
 
   private Map<Integer, Proto.InMessage>   inmsg_queue;
   private Map<Integer, Proto.OutMessage>  outmsg_queue;
@@ -227,9 +231,10 @@ public final class Session extends Thread {
       catch (InterruptedException e) {
       }
 
-      session.connection          = null;
       session.connection_listener = null;
       session.connection_status   = ConnectionState.DISCONNECTED;
+      session.connection          = null;
+      session.udp_connection      = null;
       session.host                = host;
       session.port                = port;
       session.reconnect_flag      = true;
@@ -272,6 +277,8 @@ public final class Session extends Thread {
    * the session will be automatically reconnected when an error occurs. The
    * reconnect attempts will be made with a configurable delay. After a number
    * of consecutive reconnection failures, an error is notified.
+   * <br><br>
+   * Default value: <code>true</code>.
    *
    * @see ConnectionListener#onReconnecting(int)
    * @see ConnectionListener#onConnectionFailed(int)
@@ -307,6 +314,8 @@ public final class Session extends Thread {
 
   /**
    * Sets the delay, in milliseconds, before an automatic reconnect attempt.
+   * <br><br>
+   * Default value: 1000ms.
    *
    * @see #setReconnectFlag(boolean)
    *
@@ -325,7 +334,7 @@ public final class Session extends Thread {
   /**
    * Retrieves the delay used before an automatic reconnect attempt.
    *
-   * @return the delay, in milliseconds, before an automatic reconnect attempt.
+   * @return The delay, in milliseconds, before an automatic reconnect attempt.
    *
    * @throws IllegalStateException if the realtime session is not initialized
    * yet.
@@ -338,10 +347,12 @@ public final class Session extends Thread {
   /**
    * Sets the maximum number of consecutive reconnection failures allowed before
    * notifying an error.
+   * <br><br>
+   * Default value: 3.
    *
    * @see #setReconnectFlag(boolean)
    *
-   * @param n the maximum number of consecutive reconnection failures.
+   * @param n The maximum number of consecutive reconnection failures.
    *
    * @throws IllegalStateException if the realtime session is not initialized
    * yet.
@@ -356,7 +367,7 @@ public final class Session extends Thread {
   /**
    * Retrieves the maximum of consecutive reconnection failures.
    *
-   * @return the maximum number of consecutive reconnection failures.
+   * @return The maximum number of consecutive reconnection failures.
    *
    * @throws IllegalStateException if the realtime session is not initialized
    * yet.
@@ -364,6 +375,58 @@ public final class Session extends Thread {
   public static int getMaxRetries() {
     checkInstance();
     return session.max_retries;
+  }
+
+  /**
+   * Sets the TCP heartbeat timeout, in milliseconds.
+   * <br><br>
+   * Default value: 200ms.
+   *
+   * @throws IllegalStateException if the realtime session is not initialized
+   * yet.
+   */
+  public static void setTcpHeartbeatTimeout(int t) {
+    checkInstance();
+    session.tcp_heartbeat_timeout = t;
+  }
+
+  /**
+   * Retrieves the TCP heartbeat timeout.
+   *
+   * @return The TCP heartbeat timeout, in milliseconds.
+   *
+   * @throws IllegalStateException if the realtime session is not initialized
+   * yet.
+   */
+  public static int getTcpHeartbeatTimeout() {
+    checkInstance();
+    return session.tcp_heartbeat_timeout;
+  }
+
+  /**
+   * Sets the UDP heartbeat timeout, in milliseconds.
+   * <br><br>
+   * Default value: 200ms.
+   *
+   * @throws IllegalStateException if the realtime session is not initialized
+   * yet.
+   */
+  public static void setUdpHeartbeatTimeout(int t) {
+    checkInstance();
+    session.udp_heartbeat_timeout = t;
+  }
+
+  /**
+   * Retrieves the UDP heartbeat timeout.
+   *
+   * @return The UDP heartbeat timeout, in milliseconds.
+   *
+   * @throws IllegalStateException if the realtime session is not initialized
+   * yet.
+   */
+  public static int getUdpHeartbeatTimeout() {
+    checkInstance();
+    return session.udp_heartbeat_timeout;
   }
 
   /**
@@ -505,7 +568,12 @@ public final class Session extends Thread {
       return;
     }
 
-    connection        = new Connection(session, host, port);
+    if (udp_connection != null) {
+      udp_connection.disconnect();
+      udp_connection = null;
+    }
+
+    connection        = new TCPConnection(session, host, port);
     connection_status = ConnectionState.CONNECTING;
 
     Proto.Connect.Builder builder = Proto.Connect.newBuilder()
@@ -548,13 +616,19 @@ public final class Session extends Thread {
     Log.i("Scoreflex", "[thread-id="+Thread.currentThread().getId()+"] " +
           "Disconnect session");
 
+    if (udp_connection != null) {
+      udp_connection.disconnect();
+      udp_connection = null;
+    }
+
     if (isSessionConnected()) {
       Proto.Disconnect message = Proto.Disconnect.newBuilder().build();
       connection.disconnect(InMessageBuilder.build(0, 0, true, message));
     }
 
-    connection         = null;
     connection_status  = ConnectionState.DISCONNECTED;
+    connection         = null;
+    udp_connection     = null;
     session_id         = null;
     session_info       = null;
     last_msgid         = 0;
@@ -609,7 +683,15 @@ public final class Session extends Thread {
     Proto.InMessage inmsg =
       InMessageBuilder.build(id, last_reliable_id, false, msg);
 
-    if (!connection.sendMessage(inmsg)) {
+    boolean res;
+    if (udp_connection != null && udp_connection.isConnected()) {
+      res = udp_connection.sendMessage(inmsg);
+    }
+    else {
+      res = connection.sendMessage(inmsg);
+    }
+
+    if (!res) {
       Log.i("Scoreflex", "Failed to send Ping message - id="+id);
       onPang(listener);
       return;
@@ -1237,7 +1319,15 @@ public final class Session extends Thread {
     Proto.InMessage inmsg =
       InMessageBuilder.build(msgid, last_reliable_id, false, msg);
 
-    if (!connection.sendMessage(inmsg)) {
+    boolean res;
+    if (udp_connection != null && udp_connection.isConnected()) {
+      res = udp_connection.sendMessage(inmsg);
+    }
+    else {
+      res = connection.sendMessage(inmsg);
+    }
+
+    if (!res) {
       Log.i("Scoreflex",
             "Failed to send unreliable RoomMessage message - id="+msgid+
             " [last_reliable_id="+last_reliable_id+"]");
@@ -1634,66 +1724,85 @@ public final class Session extends Thread {
   }
 
   /***************************************************************************/
-  protected void onMessageReceived(Connection from, Proto.OutMessage msg) {
+
+  protected void onMessageReceived(UDPConnection from, Proto.OutMessage msg) {
+    if (from != this.udp_connection)
+      return;
+    onMessageReceived(msg);
+  }
+  protected void onMessageReceived(TCPConnection from, Proto.OutMessage msg) {
     if (from != this.connection)
       return;
+    onMessageReceived(msg);
+  }
 
-    int msgid = msg.getMsgid();
-    int ackid = msg.getAckid();
+  private void onMessageReceived(Proto.OutMessage msg) {
+    ackReliableMessages(msg.getAckid());
 
+    if (msg.getMsgid() == 0) {
+      handleOutMessage(msg);
+    }
+    else if (!msg.getIsReliable()) {
+      onUnreliableMessageReceived(msg);
+    }
+    else {
+      onReliableMessageReceived(msg);
+    }
+  }
+
+  private void ackReliableMessages(int ackid) {
     for (; last_ackid <= ackid; last_ackid++) {
       Log.i("Scoreflex", "Ack reliable msg "+last_ackid);
       inmsg_queue.remove(last_ackid);
     }
+  }
 
-    if (msgid == 0) {
-      // Connected & ConnectionFailed & ConnectionClosed messages
-      onMessageReceived(msg);
+  private void onReliableMessageReceived(Proto.OutMessage msg) {
+    int msgid = msg.getMsgid();
+
+    if (msgid <= last_reliable_id) {
+      Log.i("Scoreflex", "Drop reliable msg "+msgid+
+            " [last_reliable_id="+last_reliable_id+"]");
     }
-    else if (!msg.getIsReliable()) {
-      // Unreliable message
-      if (msgid <= last_unreliable_id) {
-        Log.i("Scoreflex", "Drop unreliable msg "+msgid+
-              " [last_unreliable_id="+last_unreliable_id+"]");
-      }
-      else {
-        Log.i("Scoreflex", "Handle unreliable msg "+msgid+
-              " [last_unreliable_id="+last_unreliable_id+"]");
-        last_unreliable_id = msgid;
-        onMessageReceived(msg);
-      }
+    else if (msgid > last_reliable_id + 1) {
+      Log.i("Scoreflex", "Queue reliable msg "+msgid+
+            " [last_reliable_id="+last_reliable_id+"]");
+      outmsg_queue.put(msgid, msg);
     }
     else {
-      // Reliable message
-      if (msgid <= last_reliable_id) {
-        Log.i("Scoreflex", "Drop reliable msg "+msgid+
-              " [last_reliable_id="+last_reliable_id+"]");
-      }
-      else if (msgid > last_reliable_id + 1) {
-        Log.i("Scoreflex", "Queue reliable msg "+msgid+
-              " [last_reliable_id="+last_reliable_id+"]");
-        outmsg_queue.put(msgid, msg);
-      }
-      else {
-        Log.i("Scoreflex", "Handle reliable msg "+msgid+
-              " [last_reliable_id="+last_reliable_id+"]");
-        last_reliable_id = msgid;
-        onMessageReceived(msg);
+      Log.i("Scoreflex", "Handle reliable msg "+msgid+
+            " [last_reliable_id="+last_reliable_id+"]");
+      last_reliable_id = msgid;
+      handleOutMessage(msg);
 
-        while (!outmsg_queue.isEmpty()) {
-          Proto.OutMessage nextmsg = outmsg_queue.remove(last_reliable_id + 1);
-          if (nextmsg == null)
-            break;
-          Log.i("Scoreflex", "Handle queued reliable msg "+nextmsg.getMsgid()+
-                " [last_reliable_id="+last_reliable_id+"]");
-          last_reliable_id = nextmsg.getMsgid();
-          onMessageReceived(nextmsg);
-        }
+      while (!outmsg_queue.isEmpty()) {
+        Proto.OutMessage nextmsg = outmsg_queue.remove(last_reliable_id + 1);
+        if (nextmsg == null)
+          break;
+        Log.i("Scoreflex", "Handle queued reliable msg "+nextmsg.getMsgid()+
+              " [last_reliable_id="+last_reliable_id+"]");
+        last_reliable_id = nextmsg.getMsgid();
+        handleOutMessage(nextmsg);
       }
     }
   }
 
-  private void onMessageReceived(Proto.OutMessage msg) {
+  private void onUnreliableMessageReceived(Proto.OutMessage msg) {
+    int msgid = msg.getMsgid();
+
+    if (msgid <= last_unreliable_id) {
+      Log.i("Scoreflex", "Drop unreliable msg "+msgid+
+            " [last_unreliable_id="+last_unreliable_id+"]");
+    }
+    else {
+      Log.i("Scoreflex", "Handle unreliable msg "+msgid+
+            " [last_unreliable_id="+last_unreliable_id+"]");
+      last_unreliable_id = msgid;
+      handleOutMessage(msg);
+    }
+  }
+
+  private void handleOutMessage(Proto.OutMessage msg) {
     switch (msg.getType()) {
       case CONNECTED:
         handleOutMessage(msg.getConnected());
@@ -1750,8 +1859,6 @@ public final class Session extends Thread {
         Log.e("Scoreflex", "Unhandled outgoing message: "+msg.getType());
     }
   }
-
-
   private void handleOutMessage(Proto.Connected msg) {
     Map<String, Object> info = protoMapToJavaMap(msg.getInfoList());
 
@@ -1765,6 +1872,18 @@ public final class Session extends Thread {
     Log.i("Scoreflex", "Client connected - mm_time="+(int)getMmTime());
     onConnected();
 
+    int udp_port = msg.getUdpPort();
+    if (udp_port != 0) {
+      try {
+        udp_connection = new UDPConnection(this, host, udp_port);
+        udp_connection.connect();
+        Log.i("Scoreflex", "UDP connection created");
+      }
+      catch (Exception e) {
+        udp_connection = null;
+      }
+    }
+
     for (Map.Entry<Integer, Proto.InMessage> entry: inmsg_queue.entrySet()) {
       Proto.InMessage inmsg = Proto.InMessage.newBuilder()
         .mergeFrom(entry.getValue())
@@ -1774,10 +1893,16 @@ public final class Session extends Thread {
     }
   }
   private void handleOutMessage(Proto.ConnectionFailed msg) {
-    connection        = null;
+    if (udp_connection != null) {
+      udp_connection.disconnect();
+      udp_connection = null;
+    }
+
     connection_status = ConnectionState.DISCONNECTED;
+    connection        = null;
     session_info      = null;
     ping_listeners.clear();
+
 
     switch(msg.getStatus()) {
       case INTERNAL_ERROR:
@@ -1814,6 +1939,11 @@ public final class Session extends Thread {
     }
   }
   private void handleOutMessage(Proto.ConnectionClosed msg) {
+    if (udp_connection != null) {
+      udp_connection.disconnect();
+      udp_connection = null;
+    }
+
     switch(msg.getStatus()) {
       case SESSION_CLOSED:
         connection         = null;
@@ -1890,7 +2020,12 @@ public final class Session extends Thread {
     Proto.InMessage inmsg = InMessageBuilder.build((int)getMmTime(),
                                                    last_reliable_id,
                                                    false, reply);
-    connection.sendMessage(inmsg);
+    if (udp_connection != null && udp_connection.isConnected()) {
+      udp_connection.sendMessage(inmsg);
+    }
+    else {
+      connection.sendMessage(inmsg);
+    }
   }
   private void handleOutMessage(Proto.Pong msg) {
     onPong(ping_listeners.remove(msg.getId()), getMmTime() - (long)msg.getTimestamp());

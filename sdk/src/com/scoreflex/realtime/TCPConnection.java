@@ -23,6 +23,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.io.InputStream;
 import java.net.UnknownHostException;
+import java.net.SocketTimeoutException;
 import java.io.IOException;
 
 import android.os.AsyncTask;
@@ -34,25 +35,23 @@ import com.google.protobuf.InvalidProtocolBufferException;
 /**
  * @hide
  */
-public class Connection
-  extends AsyncTask<Proto.InMessage, Void, Void> {
-
+public class TCPConnection extends AsyncTask<Proto.InMessage, Void, Void> {
   private Session session;
-  private Socket          socket;
-  private String          host;
-  private int             port;
+  private Socket  socket;
+  private String  host;
+  private int     port;
 
-  public Connection(Session session, String host, int port) {
+  protected TCPConnection(Session session, String host, int port) {
     this.session = session;
     this.host    = host;
     this.port    = port;
   }
 
-  public void connect(Proto.InMessage message) {
+  protected void connect(Proto.InMessage message) {
     execute(message);
   }
 
-  public void disconnect(Proto.InMessage message) {
+  protected void disconnect(Proto.InMessage message) {
     try {
       cancel(true);
       sendInMessage(message);
@@ -62,7 +61,7 @@ public class Connection
     }
   }
 
-  public boolean sendMessage(Proto.InMessage message) {
+  protected boolean sendMessage(Proto.InMessage message) {
     try {
       sendInMessage(message);
       return true;
@@ -86,34 +85,47 @@ public class Connection
       InetAddress server_addr = InetAddress.getByName(host);
       socket = new Socket(server_addr, port);
       socket.setTcpNoDelay(true);
+      socket.setSoTimeout(Session.getTcpHeartbeatTimeout());
 
-      try {
-        for (int i = 0; i < inmessages.length; ++i)
-          sendInMessage(inmessages[i]);
+      for (int i = 0; i < inmessages.length; ++i)
+        sendInMessage(inmessages[i]);
 
-        InputStream      stream     = socket.getInputStream();
-        Proto.OutMessage outmessage = null;
-        while ((outmessage = Proto.OutMessage.parseDelimitedFrom(stream)) != null) {
+      InputStream      stream     = socket.getInputStream();
+      Proto.OutMessage outmessage = null;
+      while (true) {
+        if (isCancelled())
+          return null;
+
+        try {
+          outmessage = Proto.OutMessage.parseDelimitedFrom(stream);
+          if (outmessage == null) {
+            break;
+          }
+
           onMessageReceived(outmessage);
 
           if (outmessage.getType() == Proto.OutMessage.Type.CONNECTION_FAILED ||
               outmessage.getType() == Proto.OutMessage.Type.CONNECTION_CLOSED) {
+            socket.close();
             return null;
           }
         }
-        status = Proto.ConnectionFailed.StatusCode.NETWORK_ERROR;
-      }
-      catch (InvalidProtocolBufferException e) {
-        status = Proto.ConnectionFailed.StatusCode.PROTOCOL_ERROR;
-      }
-      catch (IOException e) {
-        status = Proto.ConnectionFailed.StatusCode.NETWORK_ERROR;
+        catch (SocketTimeoutException e) {
+          socket.getOutputStream().write(0);
+        }
+        catch (IOException e) {
+          break;
+        }
       }
 
+      status = Proto.ConnectionFailed.StatusCode.NETWORK_ERROR;
       socket.close();
     }
     catch (UnknownHostException e) {
       status = Proto.ConnectionFailed.StatusCode.NETWORK_ERROR;
+    }
+    catch (InvalidProtocolBufferException e) {
+      status = Proto.ConnectionFailed.StatusCode.PROTOCOL_ERROR;
     }
     catch (IOException e) {
       status = Proto.ConnectionFailed.StatusCode.NETWORK_ERROR;
@@ -141,7 +153,7 @@ public class Connection
     session.getHandler().post(new Runnable() {
       @Override
       public void run() {
-        session.onMessageReceived(Connection.this, outmessage);
+        session.onMessageReceived(TCPConnection.this, outmessage);
       }
     });
   }
