@@ -16,6 +16,7 @@ public class ScoreflexActivity extends Activity {
 	public final static String INTENT_EXTRA_SHOW_PLAYER_SETTINGS = "playerSettings";
 	public final static String INTENT_EXTRA_SHOW_PLAYER_RATING = "playerRating";
 	public final static String INTENT_EXTRA_SHOW_DEVELOPER_PROFILE = "developerProfile";
+	public final static String INTENT_EXTRA_SHOW_DEVELOPER_GAMES = "developerGames";
 	public final static String INTENT_EXTRA_DEVELOPER_PROFILE_ID = "developerProfileId";
 	public final static String INTENT_EXTRA_SHOW_GAME_DETAIL = "gameDetail";
 	public final static String INTENT_EXTRA_GAME_ID = "gameId";
@@ -78,6 +79,12 @@ public class ScoreflexActivity extends Activity {
 	  		String developerId = getDeveloperId(startIntent);
 	  		if (developerId != null) {
 	  			Scoreflex.showDeveloperProfile(this, developerId, null);
+	  		}
+	  	}
+	  	if (action.equals(INTENT_EXTRA_SHOW_DEVELOPER_GAMES)) {
+	  		String developerId = getDeveloperId(startIntent);
+	  		if (developerId != null) {
+	  			Scoreflex.showDeveloperGames(this, developerId, null);
 	  		}
 	  	}
 	  	if (action.equals(INTENT_EXTRA_SHOW_GAME_DETAIL)) {
