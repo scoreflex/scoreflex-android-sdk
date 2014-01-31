@@ -1702,7 +1702,11 @@ public class Scoreflex {
 		// registering network listener
 		IntentFilter filter = new IntentFilter();
 		filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
-		context.registerReceiver(sConectivityReceiver, filter);
+		try {
+			context.registerReceiver(sConectivityReceiver, filter);
+		} catch (Exception e) {
+
+		}
 	}
 
 	/**
@@ -1711,7 +1715,11 @@ public class Scoreflex {
 	 * @param context
 	 */
 	public static void unregisterNetworkReceiver(Context context) {
-		context.unregisterReceiver(sConectivityReceiver);
+		try {
+			context.unregisterReceiver(sConectivityReceiver);
+		} catch (Exception e) {
+
+		}
 	}
 
 	/**
