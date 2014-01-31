@@ -102,8 +102,8 @@ public class Message {
    *
    * @return The message's tag.
    */
-  public int getTag() {
-    return tag;
+  public byte getTag() {
+    return (byte)tag;
   }
 
   /**

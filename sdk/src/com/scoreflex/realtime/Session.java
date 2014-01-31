@@ -1229,25 +1229,25 @@ public final class Session extends Thread {
 
 
   /**
-   * Same as {@link #sendUnreliableMessage(String, int, Map)
+   * Same as {@link #sendUnreliableMessage(String, byte, Map)
    * sendUnreliableMessage(null, 0, payload)}.
    */
   public static int sendUnreliableMessage(Map<String, Object> payload) {
-    return sendUnreliableMessage(null, 0, payload);
+    return sendUnreliableMessage(null, (byte)0, payload);
   }
   /**
-   * Same as {@link #sendUnreliableMessage(String, int, Map)
+   * Same as {@link #sendUnreliableMessage(String, byte, Map)
    * sendUnreliableMessage(peer_id, 0, payload)}.
    */
   public static int sendUnreliableMessage(String peer_id,
                                           Map<String, Object> payload) {
-    return sendUnreliableMessage(peer_id, 0, payload);
+    return sendUnreliableMessage(peer_id, (byte)0, payload);
   }
   /**
-   * Same as {@link #sendUnreliableMessage(String, int, Map)
+   * Same as {@link #sendUnreliableMessage(String, byte, Map)
    * sendUnreliableMessage(null, tag, payload)}.
    */
-  public static int sendUnreliableMessage(int tag,
+  public static int sendUnreliableMessage(byte tag,
                                           Map<String, Object> payload) {
     return sendUnreliableMessage(null, tag, payload);
   }
@@ -1268,7 +1268,7 @@ public final class Session extends Thread {
    * @throws IllegalStateException if the realtime session is not initialized
    * yet or if no room is joined.
    */
-  public static int sendUnreliableMessage(final String peer_id, final int tag,
+  public static int sendUnreliableMessage(final String peer_id, final byte tag,
                                           final Map<String, Object> payload) {
     checkInstance();
     FutureTask<Integer> t;
@@ -1299,7 +1299,7 @@ public final class Session extends Thread {
     }
   }
   private int sendUnreliableMessage(String room_id, String peer_id,
-                                    int tag, Map<String, Object> payload) {
+                                    byte tag, Map<String, Object> payload) {
     if (!isSessionConnected()) {
       return STATUS_SESSION_NOT_CONNECTED;
     }
@@ -1342,13 +1342,13 @@ public final class Session extends Thread {
 
 
   /**
-   * Same as {@link #sendReliableMessage(MessageSentListener, String, int, Map)
+   * Same as {@link #sendReliableMessage(MessageSentListener, String, byte, Map)
    * sendReliableMessage(listener, peer_id, 0, payload)}.
    */
   public static int sendReliableMessage(MessageSentListener listener,
                                         String peer_id,
                                         Map<String, Object> payload) {
-    return sendReliableMessage(listener, peer_id, 0, payload);
+    return sendReliableMessage(listener, peer_id, (byte)0, payload);
   }
   /**
    * Sends a reliable message to a participant in the room. The caller will
@@ -1371,7 +1371,7 @@ public final class Session extends Thread {
    * @throws IllegalArgumentException if the listener is <code>null</code>
    */
   public static int sendReliableMessage(final MessageSentListener listener,
-                                        final String peer_id, final int tag,
+                                        final String peer_id, final byte tag,
                                         final Map<String, Object> payload) {
     checkInstance();
     if (listener == null)
@@ -1404,7 +1404,7 @@ public final class Session extends Thread {
     }
   }
   private int sendReliableMessage(String room_id, MessageSentListener listener,
-                                  String peer_id, int tag,
+                                  String peer_id, byte tag,
                                   Map<String, Object> payload) {
     if (!isSessionConnected()) {
       return STATUS_SESSION_NOT_CONNECTED;
