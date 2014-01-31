@@ -97,6 +97,7 @@ message InMessage {
 }
 
 
+
 // ====================================================================
 message OutMessage {
   enum Type {
@@ -164,6 +165,7 @@ message Connected {
   required uint32   mm_time    = 1;
   required string   session_id = 2;
   repeated MapEntry info       = 3;
+  optional uint32   udp_port   = 4 [ default = 0 ];
 }
 
 message ConnectionClosed {
