@@ -68,7 +68,7 @@ public class UDPConnection extends AsyncTask<Void, Void, Void> {
       socket = new DatagramSocket();
       socket.connect(srvaddr);
       socket.setSoTimeout(Session.getUdpHeartbeatTimeout());
-      execute(null);
+      execute((Void)null);
     }
     catch (UnknownHostException e) {
       Log.e("Scoreflex", "Failed to create UDP socket: "+e);
@@ -92,7 +92,6 @@ public class UDPConnection extends AsyncTask<Void, Void, Void> {
 
   protected boolean sendMessage(Proto.InMessage message) {
     try {
-      // FIXME: chunk message
       byte[] data   = message.toByteArray();
       byte[] buffer = new byte[1 + data.length];
       buffer[0] = (byte)(MESSAGE | START_SEQ | END_SEQ); // Header
@@ -104,7 +103,7 @@ public class UDPConnection extends AsyncTask<Void, Void, Void> {
       return true;
     }
     catch (IOException e) {
-      Log.e("Scoreflex", "Failed to send message: "+e);
+      Log.e("Scoreflex", "Failed to send message on UDP socket: "+e);
       synchronized (this) { is_connected = false; }
       return false;
     }
@@ -117,12 +116,10 @@ public class UDPConnection extends AsyncTask<Void, Void, Void> {
       DatagramPacket sndpacket = new DatagramPacket(heartbeat, heartbeat.length,
                                                     srvaddr);
 
-      Log.e("Scoreflex", "Init UDP socket");
       socket.send(sndpacket);
-
       while (true) {
         if (isCancelled())
-          break;
+          return null;
 
         try {
           rcvpacket.setLength(8192);
@@ -133,10 +130,7 @@ public class UDPConnection extends AsyncTask<Void, Void, Void> {
           if ((Hdrs & HEARTBEAT) == HEARTBEAT) {
             continue;
           }
-          Log.i("Scoreflex",
-                "UDP receive a message of "+(rcvpacket.getLength()-1)+" bytes");
 
-          // FIXME: check chunked message
           ByteString s = ByteString.copyFrom(buffer, 1, rcvpacket.getLength()-1);
           Proto.OutMessage outmessage = Proto.OutMessage.parseFrom(s);
           onMessageReceived(outmessage);
@@ -145,7 +139,8 @@ public class UDPConnection extends AsyncTask<Void, Void, Void> {
           socket.send(sndpacket);
         }
         catch (InvalidProtocolBufferException e) {
-          Log.e("Scoreflex", "UDP receive error: "+e);
+          if (!isCancelled())
+            Log.e("Scoreflex", "Failed to read message on UDP socket: "+e);
         }
         catch (SocketException e) {
           throw e;
@@ -156,12 +151,15 @@ public class UDPConnection extends AsyncTask<Void, Void, Void> {
       }
     }
     catch (SocketException e) {
-      Log.e("Scoreflex", "UDP socket error: "+e);
+      if (!isCancelled())
+        Log.e("Scoreflex", "Failed to read message on UDP socket: "+e);
     }
     catch (IOException e) {
-      Log.e("Scoreflex", "UDP socket error: "+e);
+      if (!isCancelled())
+        Log.e("Scoreflex", "Failed to read message on UDP socket: "+e);
     }
 
+    socket.close();
     return null;
   }
 

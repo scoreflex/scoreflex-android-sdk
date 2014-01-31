@@ -39,36 +39,37 @@ import com.scoreflex.Scoreflex;
  * and handles connections with the Scoreflex's realtime service.
  */
 public final class Session extends Thread {
-  private static Session            session = new Session();
-  private        Handler            main_handler;
-  private        Handler            local_handler;
-  private        Boolean            is_initialized = false;
-  private        Boolean            is_started     = false;
+  private static Session session = new Session();
 
-  private       ConnectionListener  connection_listener;
-  private       ConnectionState     connection_status;
-  private       TCPConnection       connection;
-  private       UDPConnection       udp_connection;
-  private       String              host;
-  private       int                 port;
-  private       boolean             reconnect_flag;
-  private       int                 reconnect_timeout;
-  private       int                 max_retries;
-  private       int                 retries;
+  private Handler               main_handler;
+  private Handler               local_handler;
+  private Boolean               is_initialized = false;
+  private Boolean               is_started     = false;
 
-  private       String              session_id;
-  private       Map<String, Object> session_info;
-  private       Room                current_room;
-  private       int                 mm_time;
-  private       int                 mm_latency;
-  private       long                mm_clock_last_update;
-  private       int                 last_msgid;
-  private       int                 last_ackid;
-  private       int                 last_reliable_id;
-  private       int                 last_unreliable_id;
+  private ConnectionListener    connection_listener;
+  private ConnectionState       connection_status;
+  private TCPConnection         connection;
+  private UDPConnection         udp_connection;
+  private String                host;
+  private int                   port;
+  private boolean               reconnect_flag;
+  private int                   reconnect_timeout;
+  private int                   max_retries;
+  private int                   retries;
 
-  private       int                 tcp_heartbeat_timeout = 200;
-  private       int                 udp_heartbeat_timeout = 200;
+  private String                session_id;
+  private Map<String, Object>   session_info;
+  private Room                  current_room;
+  private int                   mm_time;
+  private int                   mm_latency;
+  private long                  mm_clock_last_update;
+  private int                   last_msgid;
+  private int                   last_ackid;
+  private int                   last_reliable_id;
+  private Map<Integer, Integer> last_unreliable_ids;
+
+  private int                   tcp_heartbeat_timeout = 200;
+  private int                   udp_heartbeat_timeout = 200;
 
   private Map<Integer, Proto.InMessage>   inmsg_queue;
   private Map<Integer, Proto.OutMessage>  outmsg_queue;
@@ -248,7 +249,7 @@ public final class Session extends Thread {
       session.last_msgid          = 0;
       session.last_ackid          = 0;
       session.last_reliable_id    = 0;
-      session.last_unreliable_id  = 0;
+      session.last_unreliable_ids = new HashMap<Integer, Integer>();;
 
       session.inmsg_queue  = new HashMap<Integer, Proto.InMessage>();
       session.outmsg_queue = new HashMap<Integer, Proto.OutMessage>();
@@ -583,12 +584,8 @@ public final class Session extends Thread {
     if (session_id != null) {
       builder.setSessionId(session_id);
     }
+
     Proto.Connect msg = builder.build();
-
-    Log.i("Scoreflex", "[thread-id="+Thread.currentThread().getId()+"] " +
-          "Open new connection on "+host+":"+port+
-          " [last_reliable_id="+last_reliable_id+"]");
-
     Proto.InMessage inmsg =
       InMessageBuilder.build(0, last_reliable_id, true, msg);
     connection.connect(inmsg);
@@ -613,9 +610,6 @@ public final class Session extends Thread {
     });
   }
   private void doDisconnect() {
-    Log.i("Scoreflex", "[thread-id="+Thread.currentThread().getId()+"] " +
-          "Disconnect session");
-
     if (udp_connection != null) {
       udp_connection.disconnect();
       udp_connection = null;
@@ -626,15 +620,15 @@ public final class Session extends Thread {
       connection.disconnect(InMessageBuilder.build(0, 0, true, message));
     }
 
-    connection_status  = ConnectionState.DISCONNECTED;
-    connection         = null;
-    udp_connection     = null;
-    session_id         = null;
-    session_info       = null;
-    last_msgid         = 0;
-    last_ackid         = 0;
-    last_unreliable_id = 0;
-    last_reliable_id   = 0;
+    connection_status = ConnectionState.DISCONNECTED;
+    connection        = null;
+    udp_connection    = null;
+    session_id        = null;
+    session_info      = null;
+    last_msgid        = 0;
+    last_ackid        = 0;
+    last_reliable_id  = 0;
+    last_unreliable_ids.clear();
     synchronized (this) { current_room = null; }
     inmsg_queue.clear();
     outmsg_queue.clear();
@@ -692,11 +686,9 @@ public final class Session extends Thread {
     }
 
     if (!res) {
-      Log.i("Scoreflex", "Failed to send Ping message - id="+id);
       onPang(listener);
       return;
     }
-    Log.i("Scoreflex", "Ping message sent - id="+id);
 
     ping_listeners.put(id, listener);
     local_handler.postDelayed(new Runnable() {
@@ -772,14 +764,10 @@ public final class Session extends Thread {
       InMessageBuilder.build(last_msgid+1, last_reliable_id, true, msg);
 
     if (!connection.sendMessage(inmsg)) {
-      Log.i("Scoreflex", "Failed to send CreateRoom message - id="+(last_msgid+1)+
-            " [last_reliable_id="+last_reliable_id+"]");
       onRoomCreated(config.getRoomListener(), STATUS_NETWORK_ERROR, null);
       return;
     }
 
-    Log.i("Scoreflex", "CreateRoom message sent - id="+(last_msgid+1)+
-          " [last_reliable_id="+last_reliable_id+"]");
     last_msgid++;
     inmsg_queue.put(last_msgid, inmsg);
   }
@@ -846,14 +834,10 @@ public final class Session extends Thread {
       InMessageBuilder.build(last_msgid+1, last_reliable_id, true, msg);
 
     if (!connection.sendMessage(inmsg)) {
-      Log.i("Scoreflex", "Failed to send JoinRoom message - id="+(last_msgid+1)+
-            " [last_reliable_id="+last_reliable_id+"]");
       onRoomJoined(room_listener, STATUS_NETWORK_ERROR, null);
       return;
     }
 
-    Log.i("Scoreflex", "JoinRoom message sent - id="+(last_msgid+1)+
-          " [last_reliable_id="+last_reliable_id+"]");
     last_msgid++;
     inmsg_queue.put(last_msgid, inmsg);
   }
@@ -899,14 +883,10 @@ public final class Session extends Thread {
       InMessageBuilder.build(last_msgid+1, last_reliable_id, true, msg);
 
     if (!connection.sendMessage(inmsg)) {
-      Log.i("Scoreflex", "Failed to send LeaveRoom message - id="+(last_msgid+1)+
-            " [last_reliable_id="+last_reliable_id+"]");
       onRoomLeft(room_listener, STATUS_NETWORK_ERROR, room_id);
       return;
     }
 
-    Log.i("Scoreflex", "LeaveRoom message sent - id="+(last_msgid+1)+
-          " [last_reliable_id="+last_reliable_id+"]");
     last_msgid++;
     inmsg_queue.put(last_msgid, inmsg);
   }
@@ -957,15 +937,11 @@ public final class Session extends Thread {
       InMessageBuilder.build(last_msgid+1, last_reliable_id, true, msg);
 
     if (!connection.sendMessage(inmsg)) {
-      Log.i("Scoreflex", "Failed to send StartGame message - id="+(last_msgid+1)+
-            " [last_reliable_id="+last_reliable_id+"]");
       onMatchStateChanged(room_listener, STATUS_NETWORK_ERROR, room,
                           MatchState.UNKNOWN);
       return;
     }
 
-    Log.i("Scoreflex", "StartGame message sent - id="+(last_msgid+1)+
-          " [last_reliable_id="+last_reliable_id+"]");
     last_msgid++;
     inmsg_queue.put(last_msgid, inmsg);
   }
@@ -1016,16 +992,11 @@ public final class Session extends Thread {
       InMessageBuilder.build(last_msgid+1, last_reliable_id, true, msg);
 
     if (!connection.sendMessage(inmsg)) {
-      Log.i("Scoreflex", "Failed to send StopGame message - id="+(last_msgid+1)+
-            " [last_reliable_id="+last_reliable_id+"]");
-
       onMatchStateChanged(room_listener, STATUS_NETWORK_ERROR, room,
                           MatchState.UNKNOWN);
       return;
     }
 
-    Log.i("Scoreflex", "StopGame message sent - id="+(last_msgid+1)+
-          " [last_reliable_id="+last_reliable_id+"]");
     last_msgid++;
     inmsg_queue.put(last_msgid, inmsg);
   }
@@ -1076,15 +1047,11 @@ public final class Session extends Thread {
       InMessageBuilder.build(last_msgid+1, last_reliable_id, true, msg);
 
     if (!connection.sendMessage(inmsg)) {
-      Log.i("Scoreflex", "Failed to send ResetGame message - id="+(last_msgid+1)+
-            " [last_reliable_id="+last_reliable_id+"]");
       onMatchStateChanged(room_listener, STATUS_NETWORK_ERROR, room,
                           MatchState.UNKNOWN);
           return;
         }
 
-        Log.i("Scoreflex", "RestGame message sent - id="+(last_msgid+1)+
-              " [last_reliable_id="+last_reliable_id+"]");
         last_msgid++;
         inmsg_queue.put(last_msgid, inmsg);
   }
@@ -1142,16 +1109,11 @@ public final class Session extends Thread {
       InMessageBuilder.build(last_msgid+1, last_reliable_id, true, msg);
 
     if (!connection.sendMessage(inmsg)) {
-      Log.i("Scoreflex",
-            "Failed to send SetRoomProperty message - id="+(last_msgid+1)+
-            " [last_reliable_id="+last_reliable_id+"]");
       onRoomPropertyChanged(room_listener, STATUS_NETWORK_ERROR, room,
                             Scoreflex.getPlayerId(), key);
       return;
     }
 
-    Log.i("Scoreflex", "SetRoomProperty message sent - id="+(last_msgid+1)+
-          " [last_reliable_id="+last_reliable_id+"]");
     last_msgid++;
     inmsg_queue.put(last_msgid, inmsg);
   }
@@ -1213,16 +1175,11 @@ public final class Session extends Thread {
       InMessageBuilder.build(last_msgid+1, last_reliable_id, true, msg);
 
     if (!connection.sendMessage(inmsg)) {
-      Log.i("Scoreflex",
-            "Failed to send SetPlayerProperty message - id="+(last_msgid+1)+
-            " [last_reliable_id="+last_reliable_id+"]");
       onParticipantPropertyChanged(room_listener, STATUS_NETWORK_ERROR, room,
                                    Scoreflex.getPlayerId(), key);
       return;
     }
 
-    Log.i("Scoreflex", "SetPlayerProperty message sent - id="+(last_msgid+1)+
-          " [last_reliable_id="+last_reliable_id+"]");
     last_msgid++;
     inmsg_queue.put(last_msgid, inmsg);
   }
@@ -1294,7 +1251,6 @@ public final class Session extends Thread {
       return result.intValue();
     }
     catch (Exception e) {
-      Log.i("Scoreflex", "Failed to run future task: "+e);
       return STATUS_INTERNAL_ERROR;
     }
   }
@@ -1328,14 +1284,8 @@ public final class Session extends Thread {
     }
 
     if (!res) {
-      Log.i("Scoreflex",
-            "Failed to send unreliable RoomMessage message - id="+msgid+
-            " [last_reliable_id="+last_reliable_id+"]");
       return STATUS_NETWORK_ERROR;
     }
-
-    Log.i("Scoreflex", "Unreliable RoomMessage message sent - id="+msgid+
-          " [last_reliable_id="+last_reliable_id+"]");
 
     return STATUS_SUCCESS;
   }
@@ -1399,7 +1349,6 @@ public final class Session extends Thread {
       return result.intValue();
     }
     catch (Exception e) {
-      Log.i("Scoreflex", "Failed to run future task: "+e);
       return STATUS_INTERNAL_ERROR;
     }
   }
@@ -1425,14 +1374,9 @@ public final class Session extends Thread {
       InMessageBuilder.build(last_msgid+1, last_reliable_id, true, msg);
 
     if (!connection.sendMessage(inmsg)) {
-      Log.i("Scoreflex",
-            "Failed to send reliable RoomMessage message - id="+(last_msgid+1)+
-            " [last_reliable_id="+last_reliable_id+"]");
       return STATUS_NETWORK_ERROR;
     }
 
-    Log.i("Scoreflex", "Reliable RoomMessage message sent - id="+(last_msgid+1)+
-          " [last_reliable_id="+last_reliable_id+"]");
     last_msgid++;
     snd_message_listeners.put(last_msgid, listener);
     inmsg_queue.put(last_msgid, inmsg);
@@ -1444,9 +1388,6 @@ public final class Session extends Thread {
   private void onConnected() {
     if (connection_listener == null)
       return;
-
-    Log.i("Scoreflex", "[thread-id="+Thread.currentThread().getId()+"] " +
-          "onConnected");
 
     main_handler.post(new Runnable() {
       @Override
@@ -1460,9 +1401,6 @@ public final class Session extends Thread {
     if (connection_listener == null)
       return;
 
-    Log.i("Scoreflex", "[thread-id="+Thread.currentThread().getId()+"] " +
-          "onReconnecting");
-
     main_handler.post(new Runnable() {
       @Override
       public void run() {
@@ -1475,9 +1413,6 @@ public final class Session extends Thread {
     if (connection_listener == null)
       return;
 
-    Log.i("Scoreflex", "[thread-id="+Thread.currentThread().getId()+"] " +
-          "onConnectionFailed");
-
     main_handler.post(new Runnable() {
       @Override
       public void run() {
@@ -1489,9 +1424,6 @@ public final class Session extends Thread {
   private void onConnectionClosed(final int status_code) {
     if (connection_listener == null)
       return;
-
-    Log.i("Scoreflex", "[thread-id="+Thread.currentThread().getId()+"] " +
-          "onConnectionClosed");
 
     main_handler.post(new Runnable() {
       @Override
@@ -1506,9 +1438,6 @@ public final class Session extends Thread {
     if (listener == null)
       return;
 
-    Log.i("Scoreflex", "[thread-id="+Thread.currentThread().getId()+"] " +
-          "onPong");
-
     main_handler.post(new Runnable() {
       @Override
       public void run() {
@@ -1520,9 +1449,6 @@ public final class Session extends Thread {
   private void onPang(final PingListener listener) {
     if (listener == null)
       return;
-
-    Log.i("Scoreflex", "[thread-id="+Thread.currentThread().getId()+"] " +
-          "onPang");
 
     main_handler.post(new Runnable() {
       @Override
@@ -1538,9 +1464,6 @@ public final class Session extends Thread {
     if (listener == null)
       return;
 
-    Log.i("Scoreflex", "[thread-id="+Thread.currentThread().getId()+"] " +
-          "onRoomCreated");
-
     main_handler.post(new Runnable() {
       @Override
       public void run() {
@@ -1554,9 +1477,6 @@ public final class Session extends Thread {
                             final String room_id) {
     if (listener == null)
       return;
-
-    Log.i("Scoreflex", "[thread-id="+Thread.currentThread().getId()+"] " +
-          "onRoomClosed");
 
     main_handler.post(new Runnable() {
       @Override
@@ -1572,9 +1492,6 @@ public final class Session extends Thread {
     if (listener == null)
       return;
 
-    Log.i("Scoreflex", "[thread-id="+Thread.currentThread().getId()+"] " +
-          "onRoomJoined");
-
     main_handler.post(new Runnable() {
       @Override
       public void run() {
@@ -1588,9 +1505,6 @@ public final class Session extends Thread {
                           final String room_id) {
     if (listener == null)
       return;
-
-    Log.i("Scoreflex", "[thread-id="+Thread.currentThread().getId()+"] " +
-          "onRoomLeft");
 
     main_handler.post(new Runnable() {
       @Override
@@ -1606,9 +1520,6 @@ public final class Session extends Thread {
     if (listener == null)
       return;
 
-    Log.i("Scoreflex", "[thread-id="+Thread.currentThread().getId()+"] " +
-          "onPeerJoined");
-
     main_handler.post(new Runnable() {
       @Override
       public void run() {
@@ -1622,9 +1533,6 @@ public final class Session extends Thread {
                           final String peer_id) {
     if (listener == null)
       return;
-
-    Log.i("Scoreflex", "[thread-id="+Thread.currentThread().getId()+"] " +
-          "onPeerLeft");
 
     main_handler.post(new Runnable() {
       @Override
@@ -1640,9 +1548,6 @@ public final class Session extends Thread {
                                    final MatchState state) {
     if (listener == null)
       return;
-
-    Log.i("Scoreflex", "[thread-id="+Thread.currentThread().getId()+"] " +
-          "onMatchStateChanged");
 
     main_handler.post(new Runnable() {
       @Override
@@ -1660,9 +1565,6 @@ public final class Session extends Thread {
     if (listener == null)
       return;
 
-    Log.i("Scoreflex", "[thread-id="+Thread.currentThread().getId()+"] " +
-          "onRoomPropertyChanged");
-
     main_handler.post(new Runnable() {
       @Override
       public void run() {
@@ -1679,9 +1581,6 @@ public final class Session extends Thread {
     if (listener == null)
       return;
 
-    Log.i("Scoreflex", "[thread-id="+Thread.currentThread().getId()+"] " +
-          "onParticipantPropertyChanged");
-
     main_handler.post(new Runnable() {
       @Override
       public void run() {
@@ -1694,9 +1593,6 @@ public final class Session extends Thread {
                                          final Message msg) {
     if (listener == null)
       return;
-
-    Log.i("Scoreflex", "[thread-id="+Thread.currentThread().getId()+"] " +
-          "onMessageReceived");
 
     main_handler.post(new Runnable() {
       @Override
@@ -1711,9 +1607,6 @@ public final class Session extends Thread {
                                      final int msg_id) {
     if (listener == null)
       return;
-
-    Log.i("Scoreflex", "[thread-id="+Thread.currentThread().getId()+"] " +
-          "onMessageSent");
 
     main_handler.post(new Runnable() {
       @Override
@@ -1752,7 +1645,6 @@ public final class Session extends Thread {
 
   private void ackReliableMessages(int ackid) {
     for (; last_ackid <= ackid; last_ackid++) {
-      Log.i("Scoreflex", "Ack reliable msg "+last_ackid);
       inmsg_queue.remove(last_ackid);
     }
   }
@@ -1760,18 +1652,10 @@ public final class Session extends Thread {
   private void onReliableMessageReceived(Proto.OutMessage msg) {
     int msgid = msg.getMsgid();
 
-    if (msgid <= last_reliable_id) {
-      Log.i("Scoreflex", "Drop reliable msg "+msgid+
-            " [last_reliable_id="+last_reliable_id+"]");
-    }
-    else if (msgid > last_reliable_id + 1) {
-      Log.i("Scoreflex", "Queue reliable msg "+msgid+
-            " [last_reliable_id="+last_reliable_id+"]");
+    if (msgid > last_reliable_id + 1) {
       outmsg_queue.put(msgid, msg);
     }
-    else {
-      Log.i("Scoreflex", "Handle reliable msg "+msgid+
-            " [last_reliable_id="+last_reliable_id+"]");
+    else if (msgid == last_reliable_id + 1) {
       last_reliable_id = msgid;
       handleOutMessage(msg);
 
@@ -1779,8 +1663,6 @@ public final class Session extends Thread {
         Proto.OutMessage nextmsg = outmsg_queue.remove(last_reliable_id + 1);
         if (nextmsg == null)
           break;
-        Log.i("Scoreflex", "Handle queued reliable msg "+nextmsg.getMsgid()+
-              " [last_reliable_id="+last_reliable_id+"]");
         last_reliable_id = nextmsg.getMsgid();
         handleOutMessage(nextmsg);
       }
@@ -1788,16 +1670,25 @@ public final class Session extends Thread {
   }
 
   private void onUnreliableMessageReceived(Proto.OutMessage msg) {
-    int msgid = msg.getMsgid();
+    int                  idx;
+    int                   msgid = msg.getMsgid();
+    Proto.OutMessage.Type type  = msg.getType();
 
-    if (msgid <= last_unreliable_id) {
-      Log.i("Scoreflex", "Drop unreliable msg "+msgid+
-            " [last_unreliable_id="+last_unreliable_id+"]");
+    if (type == Proto.OutMessage.Type.ROOM_MESSAGE) {
+      Proto.RoomMessage room_msg = msg.getRoomMessage();
+      idx = room_msg.getTag();
+      if (idx == 0) {
+        handleOutMessage(room_msg);
+        return;
+      }
     }
     else {
-      Log.i("Scoreflex", "Handle unreliable msg "+msgid+
-            " [last_unreliable_id="+last_unreliable_id+"]");
-      last_unreliable_id = msgid;
+      idx = 256 + type.getNumber();
+    }
+
+    Integer last_id = last_unreliable_ids.get(idx);
+    if (last_id == null || msgid > last_id) {
+      last_unreliable_ids.put(idx, msgid);
       handleOutMessage(msg);
     }
   }
@@ -1856,7 +1747,6 @@ public final class Session extends Thread {
         handleOutMessage(msg.getAck());
         break;
       default:
-        Log.e("Scoreflex", "Unhandled outgoing message: "+msg.getType());
     }
   }
   private void handleOutMessage(Proto.Connected msg) {
@@ -1869,7 +1759,6 @@ public final class Session extends Thread {
     mm_time              = msg.getMmTime();
     mm_clock_last_update = getMonotonicTime();
 
-    Log.i("Scoreflex", "Client connected - mm_time="+(int)getMmTime());
     onConnected();
 
     int udp_port = msg.getUdpPort();
@@ -1877,7 +1766,6 @@ public final class Session extends Thread {
       try {
         udp_connection = new UDPConnection(this, host, udp_port);
         udp_connection.connect();
-        Log.i("Scoreflex", "UDP connection created");
       }
       catch (Exception e) {
         udp_connection = null;
@@ -1946,15 +1834,15 @@ public final class Session extends Thread {
 
     switch(msg.getStatus()) {
       case SESSION_CLOSED:
-        connection         = null;
-        connection_status  = ConnectionState.DISCONNECTED;
-        session_id         = null;
-        session_info       = null;
-        retries            = 0;
-        last_msgid         = 0;
-        last_ackid         = 0;
-        last_unreliable_id = 0;
-        last_reliable_id   = 0;
+        connection        = null;
+        connection_status = ConnectionState.DISCONNECTED;
+        session_id        = null;
+        session_info      = null;
+        retries           = 0;
+        last_msgid        = 0;
+        last_ackid        = 0;
+        last_reliable_id  = 0;
+        last_unreliable_ids.clear();
         synchronized (this) { current_room = null; }
         inmsg_queue.clear();
         outmsg_queue.clear();
@@ -2005,8 +1893,6 @@ public final class Session extends Thread {
   private void handleOutMessage(Proto.Sync msg) {
     mm_latency            = msg.getLatency();
     mm_clock_last_update -= mm_latency;
-
-    Log.i("Scoreflex", "Client synchronized - mm_time="+(int)getMmTime());
   }
   private void handleOutMessage(Proto.Ping msg) {
     mm_time              = msg.getTimestamp();

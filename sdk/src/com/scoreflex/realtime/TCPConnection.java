@@ -67,7 +67,7 @@ public class TCPConnection extends AsyncTask<Proto.InMessage, Void, Void> {
       return true;
     }
     catch (IOException e) {
-      Log.e("Scoreflex", "Failed to send message: "+e);
+      Log.e("Scoreflex", "Failed to send message on TCP socket: "+e);
       return false;
     }
   }
@@ -79,7 +79,8 @@ public class TCPConnection extends AsyncTask<Proto.InMessage, Void, Void> {
 
   @Override
   protected Void doInBackground(Proto.InMessage... inmessages) {
-    Proto.ConnectionFailed.StatusCode status;
+    Proto.ConnectionFailed.StatusCode status =
+      Proto.ConnectionFailed.StatusCode.NETWORK_ERROR;
 
     try {
       InetAddress server_addr = InetAddress.getByName(host);
@@ -114,38 +115,48 @@ public class TCPConnection extends AsyncTask<Proto.InMessage, Void, Void> {
           socket.getOutputStream().write(0);
         }
         catch (IOException e) {
-          break;
+          throw e;
         }
       }
-
-      status = Proto.ConnectionFailed.StatusCode.NETWORK_ERROR;
+      if (isCancelled())
+        return null;
       socket.close();
     }
     catch (UnknownHostException e) {
+      if (isCancelled())
+        return null;
+      Log.e("Scoreflex", "Failed to read message on TCP socket: "+e);
       status = Proto.ConnectionFailed.StatusCode.NETWORK_ERROR;
     }
     catch (InvalidProtocolBufferException e) {
+      if (isCancelled())
+        return null;
+      Log.e("Scoreflex", "Failed to read message on TCP socket: "+e);
       status = Proto.ConnectionFailed.StatusCode.PROTOCOL_ERROR;
     }
     catch (IOException e) {
+      if (isCancelled())
+        return null;
+      Log.e("Scoreflex", "Failed to read message on TCP socket: "+e);
       status = Proto.ConnectionFailed.StatusCode.NETWORK_ERROR;
     }
     catch (Exception e) {
+      if (isCancelled())
+        return null;
+      Log.e("Scoreflex", "Failed to read message on TCP socket: "+e);
       status = Proto.ConnectionFailed.StatusCode.INTERNAL_ERROR;
     }
 
-    if (!isCancelled()) {
-      Proto.ConnectionFailed msg = Proto.ConnectionFailed.newBuilder()
-        .setStatus(status)
-        .build();
-      Proto.OutMessage outmessage = Proto.OutMessage.newBuilder()
-        .setMsgid(0)
-        .setAckid(0)
-        .setType(Proto.OutMessage.Type.CONNECTION_FAILED)
-        .setConnectionFailed(msg)
-        .build();
-      onMessageReceived(outmessage);
-    }
+    Proto.ConnectionFailed msg = Proto.ConnectionFailed.newBuilder()
+      .setStatus(status)
+      .build();
+    Proto.OutMessage outmessage = Proto.OutMessage.newBuilder()
+      .setMsgid(0)
+      .setAckid(0)
+      .setType(Proto.OutMessage.Type.CONNECTION_FAILED)
+      .setConnectionFailed(msg)
+      .build();
+    onMessageReceived(outmessage);
     return null;
   }
 
