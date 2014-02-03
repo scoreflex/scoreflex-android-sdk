@@ -20,7 +20,9 @@ public class ScoreflexActivity extends Activity {
 	public final static String INTENT_EXTRA_SHOW_DEVELOPER_PROFILE = "developerProfile";
 	public final static String INTENT_EXTRA_SHOW_FULLSCREEN_VIEW = "fullScreenView";
 	public final static String INTENT_EXTRA_FULLSCREEN_RESOURCE = "fullScreenViewResource";
+	public final static String INTENT_EXTRA_SHOW_CHALLENGE_DETAIL = "challengeDetail";
 	public final static String INTENT_EXTRA_SHOW_DEVELOPER_GAMES = "developerGames";
+	public final static String INTENT_EXTRA_CHALLENGE_INSTANCE_ID = "challengeInstanceId";
 	public final static String INTENT_EXTRA_DEVELOPER_PROFILE_ID = "developerProfileId";
 	public final static String INTENT_EXTRA_SHOW_GAME_DETAIL = "gameDetail";
 	public final static String INTENT_EXTRA_GAME_ID = "gameId";
@@ -116,6 +118,11 @@ public class ScoreflexActivity extends Activity {
 	  			Scoreflex.showLeaderboardOverview(this, leaderboardId, params);
 	  		}
 
+	  	}
+	  	if (action.equals(INTENT_EXTRA_SHOW_CHALLENGE_DETAIL)) {
+	  		String challengeInstanceId = startIntent.getStringExtra(INTENT_EXTRA_CHALLENGE_INSTANCE_ID);
+	  		final String resource = "/web/challenges/instances/" + challengeInstanceId;
+	  		Scoreflex.showFullScreenView(this, resource, params);
 	  	}
 	  	if (action.equals(INTENT_EXTRA_SHOW_CHALLENGES)) {
 	  		Scoreflex.showChallenges(this, params);
