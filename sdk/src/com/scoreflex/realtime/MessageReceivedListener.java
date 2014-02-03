@@ -30,8 +30,9 @@ public interface MessageReceivedListener {
    * <br>
    * This callback is called on the main thread.
    *
-   * @see Session#sendUnreliableMessage(String, int, Map)
-   * @see Session#sendReliableMessage(MessageSentListener, String, int, Map)
+   * @see Session#sendUnreliableMessage(String, int, RealtimeMap)
+   * @see Session#sendReliableMessage(MessageSentListener, String, int,
+   * RealtimMap)
    *
    * @param msg The message that was received.
    */

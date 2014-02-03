@@ -19,10 +19,6 @@
 
 package com.scoreflex.realtime;
 
-import java.util.Map;
-import java.nio.ByteBuffer;
-import android.util.Log;
-
 /**
  * A convenience class to extend when you only want to listen for a subset of
  * the room events. This implements all methods in the {@link RoomListener}

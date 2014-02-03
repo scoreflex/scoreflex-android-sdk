@@ -19,8 +19,6 @@
 
 package com.scoreflex.realtime;
 
-import java.util.Map;
-
 /**
  * A convenience class to extend when you only want to listen for a subset of
  * the connection events. This implements all methods in the {@link
@@ -33,10 +31,10 @@ public class SimpleConnectionListener implements ConnectionListener {
    *
    * @see ConnectionListener#onConnected
    *
-   * @param session_info a {@link Map} containing information about the player's
+   * @param session_info a {@link RealtimeMap} containing information about the player's
    * session.
    */
-  public void onConnected(Map<String, Object> session_info) {
+  public void onConnected(RealtimeMap session_info) {
   }
 
   /**

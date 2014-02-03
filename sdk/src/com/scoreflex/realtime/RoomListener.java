@@ -53,7 +53,7 @@ public interface RoomListener {
    * <br>
    * This callback is called on the main thread.
    *
-   * @see Session#createRoom(String, RoomConfig, Map, Map)
+   * @see Session#createRoom(String, RoomConfig, RealtimeMap, RealtimeMap)
    *
    * @param status_code A status code indication the result of the operation.
    * @param room The room that was created. If an error occurred, the room is
@@ -106,7 +106,7 @@ public interface RoomListener {
    * <br>
    * This callback is called on the main thread.
    *
-   * @see Session#joinRoom(String, RoomConfig, Map)
+   * @see Session#joinRoom(String, RoomConfig, RealtimeMap)
    *
    * @param status_code A status code indication the result of the operation.
    * @param room The room that was joined. If an error occurred, the room is

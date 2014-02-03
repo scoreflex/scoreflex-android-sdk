@@ -19,8 +19,6 @@
 
 package com.scoreflex.realtime;
 
-import java.util.Map;
-
 /**
  * An interface that contains the callbacks used by the {@link Session realtime
  * session} to notify the application when the connection's state changes.
@@ -42,10 +40,10 @@ public interface ConnectionListener {
    * @see Session#connect(ConnectionListener)
    * @see Session#reconnect()
    *
-   * @param session_info a {@link Map} containing information about the player's
-   * session.
+   * @param session_info a {@link RealtimeMap} containing information about the
+   * player's session.
    */
-  public void onConnected(Map<String, Object> session_info);
+  public void onConnected(RealtimeMap session_info);
 
   /**
    * This method is called when an error occurred on the connection. After this

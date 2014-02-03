@@ -19,9 +19,6 @@
 
 package com.scoreflex.realtime;
 
-import java.util.Map;
-import java.util.Collections;
-
 /**
  * A participant is a player inside a realtime room. When a player joins a room,
  * he defines his set of properties and he can update them by calling {@link
@@ -32,17 +29,16 @@ import java.util.Collections;
  * RoomListener#onParticipantPropertyChanged(int, Room, String, String)}.
  */
 public class Participant {
-  private final String              id;
-  private final String              room_id;
-  private final Map<String, Object> properties;
-  private final Map<String, Object> propertiesView;
+  private final String      id;
+  private final String      room_id;
+  private final RealtimeMap properties;
+  private final RealtimeMap propertiesView;
 
-  protected Participant(String id, String room_id,
-                        Map<String, Object> properties) {
+  protected Participant(String id, String room_id, RealtimeMap properties) {
     this.id             = id;
     this.room_id        = room_id;
-    this.properties     = Collections.unmodifiableMap(properties);
-    this.propertiesView = Collections.unmodifiableMap(this.properties);
+    this.properties     = properties;
+    this.propertiesView = RealtimeMap.unmodifiableRealtimeMap(this.properties);
   }
 
   /**
@@ -68,7 +64,7 @@ public class Participant {
    *
    * @return The participant's properties.
    */
-  public Map<String, Object> getProperties() {
+  public RealtimeMap getProperties() {
     return propertiesView;
   }
 

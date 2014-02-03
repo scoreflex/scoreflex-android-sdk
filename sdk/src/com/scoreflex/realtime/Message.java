@@ -19,25 +19,22 @@
 
 package com.scoreflex.realtime;
 
-import java.util.Map;
-import java.util.Collections;
-
 /**
  * Message received in a realtime room. The room's participants receive it in
  * the callback {@link MessageReceivedListener#onMessageReceived(Message)}.
  */
 public class Message {
-  private final String              room_id;
-  private final String              sender_id;
-  private final int                 tag;
-  private final Map<String, Object> payload;
-  private final Map<String, Object> payloadView;
+  private final String      room_id;
+  private final String      sender_id;
+  private final int         tag;
+  private final RealtimeMap payload;
+  private final RealtimeMap payloadView;
 
   protected static class Builder {
-    private String              room_id;
-    private String              sender_id;
-    private int                 tag;
-    private Map<String, Object> payload;
+    private String      room_id;
+    private String      sender_id;
+    private int         tag;
+    private RealtimeMap payload;
 
     protected Builder() {
     }
@@ -57,7 +54,7 @@ public class Message {
       return this;
     }
 
-    protected Builder setPayload(Map<String, Object> payload) {
+    protected Builder setPayload(RealtimeMap payload) {
       this.payload = payload;
       return this;
     }
@@ -76,7 +73,7 @@ public class Message {
     this.sender_id   = builder.sender_id;
     this.tag         = builder.tag;
     this.payload     = builder.payload;
-    this.payloadView = Collections.unmodifiableMap(this.payload);
+    this.payloadView = RealtimeMap.unmodifiableRealtimeMap(this.payload);
   }
 
   /**
@@ -111,7 +108,7 @@ public class Message {
    *
    * @return The message's payload.
    */
-  public Map<String, Object> getPayload() {
+  public RealtimeMap getPayload() {
     return payloadView;
   }
 }

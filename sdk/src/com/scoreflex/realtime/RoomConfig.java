@@ -19,8 +19,6 @@
 
 package com.scoreflex.realtime;
 
-import java.util.Map;
-import java.util.HashMap;
 import java.lang.IllegalStateException;
 
 /**
@@ -30,7 +28,7 @@ import java.lang.IllegalStateException;
 public class RoomConfig {
   private final RoomListener            room_listener;
   private       MessageReceivedListener message_listener;
-  private       Map<String, Object>     room_config;
+  private       RealtimeMap             room_config;
 
 
   /**
@@ -143,7 +141,7 @@ public class RoomConfig {
 
   private RoomConfig(Builder builder) {
     this.room_listener = builder.room_listener;
-    this.room_config   = new HashMap<String, Object>();
+    this.room_config   = new RealtimeMap();
 
     if (builder.max_participants != null)
       this.room_config.put("max_players", builder.max_participants);
@@ -182,9 +180,9 @@ public class RoomConfig {
    * Retrieves the room's configuration as defined by the builder used to create
    * the {@link RoomConfig}.
    *
-   * @return a Map representing the room's configuration.
+   * @return a {@link RealtimeMap} representing the room's configuration.
    */
-  public Map<String, Object> getRoomConfig() {
+  public RealtimeMap getRoomConfig() {
     return room_config;
   }
 }

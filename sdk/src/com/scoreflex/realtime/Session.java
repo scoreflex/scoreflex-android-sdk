@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Collections;
-import java.nio.ByteBuffer;
 import java.util.concurrent.Callable;
 import java.util.concurrent.FutureTask;
 import android.os.SystemClock;
@@ -58,7 +57,7 @@ public final class Session extends Thread {
   private int                   retries;
 
   private String                session_id;
-  private Map<String, Object>   session_info;
+  private RealtimeMap           session_info;
   private Room                  current_room;
   private int                   mm_time;
   private int                   mm_latency;
@@ -460,13 +459,13 @@ public final class Session extends Thread {
   /**
    * Retrieves information associated to the realtime session.
    *
-   * @return A Map representing the session's information. If the session is not
-   * connected, this method returns <code>null</code>.
+   * @return A {@link RealtimeMap} representing the session's information. If
+   * the session is not connected, this method returns <code>null</code>.
    *
    * @throws IllegalStateException if the realtime session is not initialized
    * yet.
    */
-  public static Map<String, Object> getSessionInfo() {
+  public static RealtimeMap getSessionInfo() {
     checkInstance();
     return session.session_info;
   }
@@ -517,7 +516,7 @@ public final class Session extends Thread {
    * Connects the session to the Scoreflex realtime service.
    * <br>
    * This method will return immediatly, and will call {@link
-   * ConnectionListener#onConnected(Map)} or {@link
+   * ConnectionListener#onConnected(RealtimeMap)} or {@link
    * ConnectionListener#onConnectionFailed(int)} depending of the operation's
    * result.
    *
@@ -701,18 +700,18 @@ public final class Session extends Thread {
 
 
   /**
-   * Same as {@link #createRoom(String, RoomConfig, Map, Map) createRoom(id,
-   * config, null, null)}.
+   * Same as {@link #createRoom(String, RoomConfig, RealtimeMap, RealtimeMap)
+   * createRoom(id, config, null, null)}.
    */
   public static void createRoom(String id, RoomConfig config) {
     createRoom(id, config, null, null);
   }
   /**
-   * Same as {@link #createRoom(String, RoomConfig, Map, Map) createRoom(id,
-   * config, room_props, null)}.
+   * Same as {@link #createRoom(String, RoomConfig, RealtimeMap, RealtimeMap)
+   * createRoom(id, config, room_props, null)}.
    */
   public static void createRoom(String id, RoomConfig config,
-                                Map<String, Object> room_props) {
+                                RealtimeMap room_props) {
     createRoom(id, config, room_props, null);
   }
   /**
@@ -730,8 +729,8 @@ public final class Session extends Thread {
    * @throws IllegalArgumentException if the room's configuration is <code>null</code>
    */
   public static void createRoom(final String id, final RoomConfig config,
-                                final Map<String, Object> room_props,
-                                final Map<String, Object> participant_props) {
+                                final RealtimeMap room_props,
+                                final RealtimeMap participant_props) {
     checkInstance();
     if (config == null)
       throw new IllegalArgumentException("Room configuration cannot be null");
@@ -743,8 +742,8 @@ public final class Session extends Thread {
     });
   }
   private void sendCreateRoom(String id, RoomConfig config,
-                              Map<String, Object> room_props,
-                              Map<String, Object> participant_props) {
+                              RealtimeMap room_props,
+                              RealtimeMap participant_props) {
     if (!isConnected()) {
       onRoomCreated(config.getRoomListener(), STATUS_SESSION_NOT_CONNECTED,
                     null);
@@ -756,9 +755,9 @@ public final class Session extends Thread {
 
     Proto.CreateRoom msg = Proto.CreateRoom.newBuilder()
       .setRoomId(id)
-      .addAllRoomConfig(javaMapToProtoMap(config.getRoomConfig()))
-      .addAllRoomProperties(javaMapToProtoMap(room_props))
-      .addAllPlayerProperties(javaMapToProtoMap(participant_props))
+      .addAllRoomConfig(realtimeMapToProtoMap(config.getRoomConfig()))
+      .addAllRoomProperties(realtimeMapToProtoMap(room_props))
+      .addAllPlayerProperties(realtimeMapToProtoMap(participant_props))
       .build();
     Proto.InMessage inmsg =
       InMessageBuilder.build(last_msgid+1, last_reliable_id, true, msg);
@@ -775,7 +774,7 @@ public final class Session extends Thread {
 
   /**
    * Same as {@link #joinRoom(String, RoomListener, MessageReceivedListener,
-   * Map) joinRoom(id, room_listener, message_listener, null)}.
+   * RealtimeMap) joinRoom(id, room_listener, message_listener, null)}.
    */
   public static void joinRoom(String id, RoomListener room_listener,
                               MessageReceivedListener message_listener) {
@@ -800,7 +799,7 @@ public final class Session extends Thread {
    */
   public static void joinRoom(final String id, final RoomListener room_listener,
                               final MessageReceivedListener message_listener,
-                              final Map<String, Object> participant_props) {
+                              final RealtimeMap participant_props) {
     checkInstance();
     if (room_listener == null)
       throw new IllegalArgumentException("Room listener cannot be null");
@@ -816,7 +815,7 @@ public final class Session extends Thread {
   }
   private void sendJoinRoom(String id, RoomListener room_listener,
                             MessageReceivedListener message_listener,
-                            Map<String, Object> participant_props) {
+                            RealtimeMap participant_props) {
     if (!isConnected()) {
       onRoomJoined(room_listener, STATUS_SESSION_NOT_CONNECTED,
                    null);
@@ -828,7 +827,7 @@ public final class Session extends Thread {
 
     Proto.JoinRoom msg = Proto.JoinRoom.newBuilder()
       .setRoomId(id)
-      .addAllPlayerProperties(javaMapToProtoMap(participant_props))
+      .addAllPlayerProperties(realtimeMapToProtoMap(participant_props))
       .build();
     Proto.InMessage inmsg =
       InMessageBuilder.build(last_msgid+1, last_reliable_id, true, msg);
@@ -1186,26 +1185,24 @@ public final class Session extends Thread {
 
 
   /**
-   * Same as {@link #sendUnreliableMessage(String, byte, Map)
+   * Same as {@link #sendUnreliableMessage(String, byte, RealtimeMap)
    * sendUnreliableMessage(null, 0, payload)}.
    */
-  public static int sendUnreliableMessage(Map<String, Object> payload) {
+  public static int sendUnreliableMessage(RealtimeMap payload) {
     return sendUnreliableMessage(null, (byte)0, payload);
   }
   /**
-   * Same as {@link #sendUnreliableMessage(String, byte, Map)
+   * Same as {@link #sendUnreliableMessage(String, byte, RealtimeMap)
    * sendUnreliableMessage(peer_id, 0, payload)}.
    */
-  public static int sendUnreliableMessage(String peer_id,
-                                          Map<String, Object> payload) {
+  public static int sendUnreliableMessage(String peer_id, RealtimeMap payload) {
     return sendUnreliableMessage(peer_id, (byte)0, payload);
   }
   /**
-   * Same as {@link #sendUnreliableMessage(String, byte, Map)
+   * Same as {@link #sendUnreliableMessage(String, byte, RealtimeMap)
    * sendUnreliableMessage(null, tag, payload)}.
    */
-  public static int sendUnreliableMessage(byte tag,
-                                          Map<String, Object> payload) {
+  public static int sendUnreliableMessage(byte tag, RealtimeMap payload) {
     return sendUnreliableMessage(null, tag, payload);
   }
   /**
@@ -1226,7 +1223,7 @@ public final class Session extends Thread {
    * yet or if no room is joined.
    */
   public static int sendUnreliableMessage(final String peer_id, final byte tag,
-                                          final Map<String, Object> payload) {
+                                          final RealtimeMap payload) {
     checkInstance();
     FutureTask<Integer> t;
 
@@ -1255,7 +1252,7 @@ public final class Session extends Thread {
     }
   }
   private int sendUnreliableMessage(String room_id, String peer_id,
-                                    byte tag, Map<String, Object> payload) {
+                                    byte tag, RealtimeMap payload) {
     if (!isSessionConnected()) {
       return STATUS_SESSION_NOT_CONNECTED;
     }
@@ -1266,7 +1263,7 @@ public final class Session extends Thread {
       .setTimestamp(msgid)
       .setTag(tag)
       .setIsReliable(false)
-      .addAllPayload(javaMapToProtoMap(payload));
+      .addAllPayload(realtimeMapToProtoMap(payload));
     if (peer_id != null) {
       builder.setToId(peer_id);
     }
@@ -1292,12 +1289,12 @@ public final class Session extends Thread {
 
 
   /**
-   * Same as {@link #sendReliableMessage(MessageSentListener, String, byte, Map)
-   * sendReliableMessage(listener, peer_id, 0, payload)}.
+   * Same as {@link #sendReliableMessage(MessageSentListener, String, byte,
+   * RealtimeMap) sendReliableMessage(listener, peer_id, 0, payload)}.
    */
   public static int sendReliableMessage(MessageSentListener listener,
                                         String peer_id,
-                                        Map<String, Object> payload) {
+                                        RealtimeMap payload) {
     return sendReliableMessage(listener, peer_id, (byte)0, payload);
   }
   /**
@@ -1322,7 +1319,7 @@ public final class Session extends Thread {
    */
   public static int sendReliableMessage(final MessageSentListener listener,
                                         final String peer_id, final byte tag,
-                                        final Map<String, Object> payload) {
+                                        final RealtimeMap payload) {
     checkInstance();
     if (listener == null)
       throw new IllegalArgumentException("Room listener cannot be null");
@@ -1354,7 +1351,7 @@ public final class Session extends Thread {
   }
   private int sendReliableMessage(String room_id, MessageSentListener listener,
                                   String peer_id, byte tag,
-                                  Map<String, Object> payload) {
+                                  RealtimeMap payload) {
     if (!isSessionConnected()) {
       return STATUS_SESSION_NOT_CONNECTED;
     }
@@ -1364,7 +1361,7 @@ public final class Session extends Thread {
       .setTimestamp((int)getMmTime())
       .setTag(tag)
       .setIsReliable(true)
-      .addAllPayload(javaMapToProtoMap(payload));
+      .addAllPayload(realtimeMapToProtoMap(payload));
     if (peer_id != null) {
       builder.setToId(peer_id);
     }
@@ -1750,12 +1747,12 @@ public final class Session extends Thread {
     }
   }
   private void handleOutMessage(Proto.Connected msg) {
-    Map<String, Object> info = protoMapToJavaMap(msg.getInfoList());
+    RealtimeMap info = protoMapToRealtimeMap(msg.getInfoList());
 
     connection_status    = ConnectionState.CONNECTED;
     retries              = 0;
     session_id           = msg.getSessionId();
-    session_info         = Collections.unmodifiableMap(info);
+    session_info         = RealtimeMap.unmodifiableRealtimeMap(info);
     mm_time              = msg.getMmTime();
     mm_clock_last_update = getMonotonicTime();
 
@@ -1924,7 +1921,7 @@ public final class Session extends Thread {
         Map<String, Participant> participants = new HashMap<String, Participant>();
 
         for (Proto.Player entry: r.getPlayersList()) {
-          Map<String, Object> props = protoMapToJavaMap(entry.getPropertiesList());
+          RealtimeMap props = protoMapToRealtimeMap(entry.getPropertiesList());
           participants.put(entry.getClientId(),
                            new Participant(entry.getClientId(), r.getRoomId(),
                                            props));
@@ -1953,8 +1950,8 @@ public final class Session extends Thread {
           .setId(r.getRoomId())
           .setSession(this)
           .setMatchState(state)
-          .setConfig(protoMapToJavaMap(r.getConfigList()))
-          .setProperties(protoMapToJavaMap(r.getPropertiesList()))
+          .setConfig(protoMapToRealtimeMap(r.getConfigList()))
+          .setProperties(protoMapToRealtimeMap(r.getPropertiesList()))
           .setParticipants(participants)
           .build();
 
@@ -2014,7 +2011,7 @@ public final class Session extends Thread {
         Map<String, Participant> participants = new HashMap<String, Participant>();
 
         for (Proto.Player entry: r.getPlayersList()) {
-          Map<String, Object> props = protoMapToJavaMap(entry.getPropertiesList());
+          RealtimeMap props = protoMapToRealtimeMap(entry.getPropertiesList());
           participants.put(entry.getClientId(),
                            new Participant(entry.getClientId(), r.getRoomId(),
                                            props));
@@ -2044,8 +2041,8 @@ public final class Session extends Thread {
             .setId(r.getRoomId())
             .setSession(this)
             .setMatchState(state)
-            .setConfig(protoMapToJavaMap(r.getConfigList()))
-            .setProperties(protoMapToJavaMap(r.getPropertiesList()))
+            .setConfig(protoMapToRealtimeMap(r.getConfigList()))
+            .setProperties(protoMapToRealtimeMap(r.getPropertiesList()))
             .setParticipants(participants)
             .build();
         }
@@ -2109,7 +2106,7 @@ public final class Session extends Thread {
 
     Proto.Player p   = msg.getPlayer();
     Participant peer = new Participant(p.getClientId(), msg.getRoomId(),
-                                       protoMapToJavaMap(p.getPropertiesList()));
+                                       protoMapToRealtimeMap(p.getPropertiesList()));
     current_room.addParticipant(peer);
 
     onPeerJoined(room_listeners.get(current_room.getId()), current_room, peer);
@@ -2220,7 +2217,7 @@ public final class Session extends Thread {
       .setRoomId(current_room.getId())
       .setSenderId(msg.getFromId())
       .setTag(msg.getTag())
-      .setPayload(protoMapToJavaMap(msg.getPayloadList()))
+      .setPayload(protoMapToRealtimeMap(msg.getPayloadList()))
       .build();
 
     onRealTimeMessageReceived(rcv_message_listeners.get(current_room.getId()),
@@ -2252,15 +2249,15 @@ public final class Session extends Thread {
   }
 
   /***************************************************************************/
-  private static Map<String, Object> protoMapToJavaMap(List<Proto.MapEntry> pmap) {
-    HashMap<String, Object> jmap = new HashMap<String, Object>();
+  private static RealtimeMap protoMapToRealtimeMap(List<Proto.MapEntry> pmap) {
+    RealtimeMap rtmap = new RealtimeMap();
 
     for (Proto.MapEntry entry: pmap) {
       Object value = mapEntrytoObject(entry);
       if (value != null)
-        jmap.put(entry.getName(), value);
+        rtmap.put(entry.getName(), value);
     }
-    return jmap;
+    return rtmap;
   }
 
   private static Object mapEntrytoObject(Proto.MapEntry entry) {
@@ -2286,18 +2283,18 @@ public final class Session extends Thread {
       case STRING:
         return entry.getStringVal();
       case BYTES:
-        return ByteBuffer.wrap(entry.getBytesVal().toByteArray());
+        return entry.getBytesVal().toByteArray();
       default:
         return null;
     }
   }
 
-  private static List<Proto.MapEntry> javaMapToProtoMap(Map<String, Object> jmap) {
+  private static List<Proto.MapEntry> realtimeMapToProtoMap(RealtimeMap rtmap) {
     List<Proto.MapEntry> pmap = new ArrayList<Proto.MapEntry>();
-    if (jmap == null)
+    if (rtmap == null)
       return pmap;
 
-    for (Map.Entry<String, Object> entry: jmap.entrySet()) {
+    for (Map.Entry<String, Object> entry: rtmap.entrySet()) {
       pmap.add(objectToMapEntry(entry.getKey(), entry.getValue()));
     }
     return pmap;
@@ -2344,10 +2341,10 @@ public final class Session extends Thread {
       entry_builder.setType(Proto.MapEntry.Type.STRING);
       entry_builder.setStringVal((String)value);
     }
-    else if (value instanceof ByteBuffer) {
+    else if (value instanceof byte[]) {
       entry_builder.setType(Proto.MapEntry.Type.BYTES);
       entry_builder.setBytesVal(
-        com.google.protobuf.ByteString.copyFrom((ByteBuffer)value)
+        com.google.protobuf.ByteString.copyFrom((byte[])value)
       );
     }
     else {

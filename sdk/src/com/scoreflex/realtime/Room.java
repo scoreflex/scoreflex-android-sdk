@@ -20,30 +20,31 @@
 package com.scoreflex.realtime;
 
 import java.util.Map;
+import java.util.HashMap;
 import java.util.Collections;
 
 /**
  * A realtime room with its configuration, properties and participants. Such
  * rooms can be created by calling {@link Session#createRoom(String, RoomConfig,
- * Map, Map)}.
+ * RealtimeMap, RealtimeMap)}.
  */
 public class Room {
   private final String                   id;
   private final Session                  session;
   private       MatchState               state;
-  private       Map<String, Object>      config;
-  private       Map<String, Object>      properties;
+  private       RealtimeMap              config;
+  private       RealtimeMap              properties;
   private       Map<String, Participant> participants;
-  private final Map<String, Object>      configView;
-  private final Map<String, Object>      propertiesView;
+  private final RealtimeMap              configView;
+  private final RealtimeMap              propertiesView;
   private final Map<String, Participant> participantsView;
 
   protected static class Builder {
     private String                   id;
     private Session                  session;
     private MatchState                state;
-    private Map<String, Object>      config;
-    private Map<String, Object>      properties;
+    private RealtimeMap      config;
+    private RealtimeMap      properties;
     private Map<String, Participant> participants;
 
     protected Builder() {
@@ -64,12 +65,12 @@ public class Room {
       return this;
     }
 
-    protected Builder setConfig(Map<String, Object> config) {
+    protected Builder setConfig(RealtimeMap config) {
       this.config = config;
       return this;
     }
 
-    protected Builder setProperties(Map<String, Object> properties) {
+    protected Builder setProperties(RealtimeMap properties) {
       this.properties = properties;
       return this;
     }
@@ -95,8 +96,8 @@ public class Room {
     this.config           = builder.config;
     this.properties       = builder.properties;
     this.participants     = builder.participants;
-    this.configView       = Collections.unmodifiableMap(this.config);
-    this.propertiesView   = Collections.unmodifiableMap(this.properties);
+    this.configView       = RealtimeMap.unmodifiableRealtimeMap(this.config);
+    this.propertiesView   = RealtimeMap.unmodifiableRealtimeMap(this.properties);
     this.participantsView = Collections.unmodifiableMap(this.participants);
   }
 
@@ -114,7 +115,7 @@ public class Room {
    *
    * @return The room's configuration.
    */
-  public Map<String, Object> getConfig() {
+  public RealtimeMap getConfig() {
     return configView;
   }
 
@@ -134,7 +135,7 @@ public class Room {
    *
    * @return The room's properties.
    */
-  public Map<String, Object> getProperties() {
+  public RealtimeMap getProperties() {
     return propertiesView;
   }
 

@@ -19,8 +19,6 @@
 
 package com.scoreflex.realtime;
 
-import java.util.Map;
-
 /**
  * An interface that contains callbacks used by the {@link Session realtime
  * session} in reply to a Ping request.
