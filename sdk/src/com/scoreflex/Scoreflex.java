@@ -24,6 +24,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -46,6 +47,8 @@ import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import android.util.Log;
@@ -60,6 +63,8 @@ import com.scoreflex.facebook.ScoreflexFacebookWrapper;
 import com.scoreflex.facebook.ScoreflexFacebookWrapper.FacebookException;
 import com.scoreflex.google.ScoreflexGcmWrapper;
 import com.scoreflex.google.ScoreflexGoogleWrapper;
+import com.scoreflex.model.JSONParcelable;
+
 import android.content.res.Configuration;
 import org.OpenUDID.*;
 
@@ -1088,7 +1093,19 @@ public class Scoreflex {
 	 *
 	 */
 	public static class RequestParams extends
-			com.loopj.android.http.RequestParams {
+			com.loopj.android.http.RequestParams implements Parcelable {
+
+		public static final String TAG = "RequestParams";
+
+		public RequestParams(Parcel in) throws JSONException  {
+			JSONObject json = new JSONObject(in.readString());
+			Iterator<?> it = json.keys();
+			String key;
+			while (it.hasNext()) {
+				key = (String)it.next();
+				this.put(key, json.optString(key));
+			}
+		}
 
 		/**
 		 * Constructs a new empty <code>RequestParams</code> instance.
@@ -1184,6 +1201,45 @@ public class Scoreflex {
 			return getParamString();
 		}
 
+		@Override
+		public int describeContents() {
+			return 0;
+		}
+
+		public JSONObject toJSONObject() {
+			JSONObject result = new JSONObject();
+			java.util.List<org.apache.http.message.BasicNameValuePair> params = getParamsList();
+			for (org.apache.http.message.BasicNameValuePair parameter : params ) { 
+				try {
+					result.put(parameter.getName(), parameter.getValue());
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+			}
+			return result;
+		}
+
+		@Override
+		public void writeToParcel(Parcel destination, int flags) {
+			destination.writeString(toJSONObject().toString());
+		}
+
+		public static final Parcelable.Creator<Scoreflex.RequestParams> CREATOR =
+				new Parcelable.Creator<Scoreflex.RequestParams>() {
+
+				public RequestParams createFromParcel(Parcel in) {
+					try {
+						return new RequestParams(in);
+					} catch (JSONException e) {
+						Log.e(TAG, "Error while unserializing JSON from a Scoreflex.RequestParams", e);
+						return null;
+					}
+				}
+
+				public RequestParams[] newArray(int size) {
+					return new RequestParams[size];
+				}
+			};
 	}
 
 	/**

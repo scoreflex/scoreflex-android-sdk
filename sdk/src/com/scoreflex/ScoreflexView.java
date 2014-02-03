@@ -686,7 +686,6 @@ public class ScoreflexView extends FrameLayout {
 		@Override
 		public void onPageStarted(final WebView view, String url, Bitmap favicon) {
 			super.onPageStarted(view, url, favicon);
-
 			// OnPageStarted is called twice on error
 			if (!mIsLoading) {
 				mError = false;
