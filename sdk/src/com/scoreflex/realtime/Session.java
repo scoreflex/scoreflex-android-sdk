@@ -79,6 +79,13 @@ public final class Session extends Thread {
   private Map<Integer, MessageSentListener>      snd_message_listeners;
 
   /**
+   * The maximum size of a serialazed payload allowas in unreliable messages.
+   *
+   * @see RealtimeMap#getSerializedSize()
+   */
+  public static final int MAX_UNRELIABLE_PAYLOAD_SIZE = 1300;
+
+  /**
    * The status code used in callbacks when an operation was successful.
    */
   public static final int STATUS_SUCCESS                    =  0;
@@ -726,12 +733,15 @@ public final class Session extends Thread {
    *
    * @throws IllegalStateException if the realtime session is not initialized
    * yet.
-   * @throws IllegalArgumentException if the room's configuration is <code>null</code>
+   * @throws IllegalArgumentException if the room's id or the room's
+   * configuration are <code>null</code>
    */
   public static void createRoom(final String id, final RoomConfig config,
                                 final RealtimeMap room_props,
                                 final RealtimeMap participant_props) {
     checkInstance();
+    if (id == null)
+      throw new IllegalArgumentException("Room id cannot be null");
     if (config == null)
       throw new IllegalArgumentException("Room configuration cannot be null");
     session.local_handler.post(new Runnable() {
@@ -795,12 +805,14 @@ public final class Session extends Thread {
    * @throws IllegalStateException if the realtime session is not initialized
    * yet.
    * @throws IllegalArgumentException if the one of listeners is
-   * <code>null</code>
+   * <code>null</code> or if the room's id is <code>null</code>.
    */
   public static void joinRoom(final String id, final RoomListener room_listener,
                               final MessageReceivedListener message_listener,
                               final RealtimeMap participant_props) {
     checkInstance();
+    if (id == null)
+      throw new IllegalArgumentException("Room id cannot be null");
     if (room_listener == null)
       throw new IllegalArgumentException("Room listener cannot be null");
     if (message_listener == null)
@@ -1206,9 +1218,10 @@ public final class Session extends Thread {
     return sendUnreliableMessage(null, tag, payload);
   }
   /**
-   * Sends a unreliable message to a participant in the room. If peer_id is
-   * <code>null</code>, the message will be broadcasted to all participants in
-   * the room.
+   * Sends a unreliable message to a participant in the room. If
+   * <code>peer_id</code> is <code>null</code>, the message will be broadcasted
+   * to all participants in the room. The maximum payload size supported, once
+   * serialized, is {@link #MAX_UNRELIABLE_PAYLOAD_SIZE} bytes.
    *
    * @param peer_id The participant's ID to send the message to.
    * @param tag The tag of the message.
@@ -1221,11 +1234,19 @@ public final class Session extends Thread {
    *
    * @throws IllegalStateException if the realtime session is not initialized
    * yet or if no room is joined.
+   * @throws IllegalArgumentException if the </code>peer_id</code> is the
+   * current player or if the serialized payload size exceeds {@link
+   * #MAX_UNRELIABLE_PAYLOAD_SIZE}.
    */
   public static int sendUnreliableMessage(final String peer_id, final byte tag,
                                           final RealtimeMap payload) {
     checkInstance();
     FutureTask<Integer> t;
+
+    if (peer_id != null && peer_id.equals(Scoreflex.getPlayerId()))
+      throw new IllegalArgumentException("Invalid participant's id");
+    if (payload.getSerializedSize() > MAX_UNRELIABLE_PAYLOAD_SIZE)
+      throw new IllegalArgumentException("Serialized payload exceeds MAX_UNRELIABLE_PAYLOAD_SIZE");
 
     synchronized (session) {
       if (session.current_room == null)
@@ -1315,7 +1336,8 @@ public final class Session extends Thread {
    *
    * @throws IllegalStateException if the realtime session is not initialized
    * yet or if no room is joined.
-   * @throws IllegalArgumentException if the listener is <code>null</code>
+   * @throws IllegalArgumentException if the listener is <code>null</code> or if
+   * the </code>peer_id</code> is <code>null</code> or is the current player.
    */
   public static int sendReliableMessage(final MessageSentListener listener,
                                         final String peer_id, final byte tag,
@@ -1323,6 +1345,9 @@ public final class Session extends Thread {
     checkInstance();
     if (listener == null)
       throw new IllegalArgumentException("Room listener cannot be null");
+    if (peer_id == null || peer_id.equals(Scoreflex.getPlayerId()))
+      throw new IllegalArgumentException("Invalid participant's id");
+
     FutureTask<Integer> t;
 
     synchronized (session) {
