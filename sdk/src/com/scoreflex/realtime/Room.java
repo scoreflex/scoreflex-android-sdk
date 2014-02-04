@@ -26,7 +26,7 @@ import java.util.Collections;
 /**
  * A realtime room with its configuration, properties and participants. Such
  * rooms can be created by calling {@link Session#createRoom(String, RoomConfig,
- * RealtimeMap, RealtimeMap)}.
+ * RealtimeMap)}.
  */
 public class Room {
   private final String                   id;
@@ -185,23 +185,25 @@ public class Room {
     return id.equals(id);
   }
 
-  protected void addParticipant(Participant p) {
-    participants.put(p.getId(), p);
+  protected Participant addParticipant(Participant p) {
+    return participants.put(p.getId(), p);
   }
 
-  protected void removeParticipant(String id) {
-    participants.remove(id);
+  protected Participant removeParticipant(String id) {
+    return participants.remove(id);
   }
 
-  protected void setMatchState(MatchState state) {
+  protected MatchState setMatchState(MatchState state) {
+    MatchState oldState = this.state;
     this.state = state;
+    return oldState;
   }
 
-  protected void addProperty(String key, Object value) {
-    properties.put(key, value);
+  protected Object addProperty(String key, Object value) {
+    return properties.put(key, value);
   }
 
-  protected void removeProperty(String key) {
-    properties.remove(key);
+  protected Object removeProperty(String key) {
+    return properties.remove(key);
   }
 }
