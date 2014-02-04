@@ -584,7 +584,7 @@ public final class Session extends Thread {
     connection_status = ConnectionState.CONNECTING;
 
     Proto.Connect.Builder builder = Proto.Connect.newBuilder()
-      .setClientId(Scoreflex.getPlayerId())
+      .setPlayerId(Scoreflex.getPlayerId())
       .setGameId(Scoreflex.getClientId())
       .setAccessToken(Scoreflex.getAccessToken());
     if (session_id != null) {
@@ -1046,7 +1046,7 @@ public final class Session extends Thread {
   /**
    * Sets or Updates a room's property given its key. The result of this
    * operation will be notified by the callback {@link
-   * RoomListener#onRoomPropertyChanged(int, Room, String, String)} to the given
+   * RoomListener#onRoomPropertyChanged(Room, Participant, String)} to the given
    * {@link RoomListener} set when the player has created or joined the room.
    * <br>
    * If the value is <code>null</code>, the property will be removed.
@@ -1082,8 +1082,8 @@ public final class Session extends Thread {
   private void sendSetRoomProperty(Room room, RoomListener room_listener,
                                    String key, Object value) {
     if (!isSessionConnected()) {
-      onRoomPropertyChanged(room_listener, STATUS_SESSION_NOT_CONNECTED, room,
-                            Scoreflex.getPlayerId(), key);
+      onSetRoomPropertyFailed(room_listener, STATUS_SESSION_NOT_CONNECTED,
+                              room, key);
       return;
     }
 
@@ -1095,8 +1095,7 @@ public final class Session extends Thread {
       InMessageBuilder.build(last_msgid+1, last_reliable_id, true, msg);
 
     if (!connection.sendMessage(inmsg)) {
-      onRoomPropertyChanged(room_listener, STATUS_NETWORK_ERROR, room,
-                            Scoreflex.getPlayerId(), key);
+      onSetRoomPropertyFailed(room_listener, STATUS_NETWORK_ERROR, room, key);
       return;
     }
 
@@ -1488,9 +1487,8 @@ public final class Session extends Thread {
   }
 
   private void onRoomPropertyChanged(final RoomListener listener,
-                                     final int status_code,
                                      final Room room,
-                                     final String from,
+                                     final Participant from,
                                      final String name) {
     if (listener == null)
       return;
@@ -1498,7 +1496,22 @@ public final class Session extends Thread {
     main_handler.post(new Runnable() {
       @Override
       public void run() {
-        listener.onRoomPropertyChanged(status_code, room, from, name);
+        listener.onRoomPropertyChanged(room, from, name);
+      }
+    });
+  }
+
+  private void onSetRoomPropertyFailed(final RoomListener listener,
+                                       final int status_code,
+                                       final Room room,
+                                       final String name) {
+    if (listener == null)
+      return;
+
+    main_handler.post(new Runnable() {
+      @Override
+      public void run() {
+        listener.onSetRoomPropertyFailed(status_code, room, name);
       }
     });
   }
@@ -2013,7 +2026,7 @@ public final class Session extends Thread {
     if (current_room == null || !current_room.isSameRoom(msg.getRoomId()))
       return;
 
-    Participant peer = new Participant(msg.getPlayer(), msg.getRoomId());
+    Participant peer = new Participant(msg.getPlayerId(), msg.getRoomId());
     current_room.addParticipant(peer);
 
     onPeerJoined(room_listeners.get(current_room.getId()), current_room, peer);
@@ -2022,9 +2035,9 @@ public final class Session extends Thread {
     if (current_room == null || !current_room.isSameRoom(msg.getRoomId()))
       return;
 
-    current_room.removeParticipant(msg.getPlayer());
+    current_room.removeParticipant(msg.getPlayerId());
     onPeerLeft(room_listeners.get(current_room.getId()), current_room,
-               msg.getPlayer());
+               msg.getPlayerId());
   }
   private void handleOutMessage(Proto.GameStateChanged msg) {
     if (current_room == null || !current_room.isSameRoom(msg.getRoomId()))
@@ -2081,14 +2094,13 @@ public final class Session extends Thread {
           current_room.removeProperty(name);
         else
           current_room.addProperty(name, value);
+        Participant peer = current_room.getParticipant(msg.getPlayerId());
         onRoomPropertyChanged(room_listeners.get(current_room.getId()),
-                              STATUS_SUCCESS, current_room,
-                              msg.getPlayer(), name);
+                              current_room, peer, name);
         break;
       case ROOM_NOT_JOINED:
-        onRoomPropertyChanged(room_listeners.get(current_room.getId()),
-                              STATUS_ROOM_NOT_JOINED, current_room,
-                              Scoreflex.getPlayerId(), name);
+        onSetRoomPropertyFailed(room_listeners.get(current_room.getId()),
+                                STATUS_ROOM_NOT_JOINED, current_room, name);
         break;
     }
   }

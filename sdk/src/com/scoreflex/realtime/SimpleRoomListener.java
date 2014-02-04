@@ -85,9 +85,16 @@ public class SimpleRoomListener implements RoomListener {
   /**
    * Called when a property of a room change.
    *
-   * @see RoomListener#onRoomPropertyChanged(int, Room, String, String)
+   * @see RoomListener#onRoomPropertyChanged(Room, String, String)
    */
-  public void onRoomPropertyChanged(int status_code, Room room,
-                                    String participant_id, String key) {
+  public void onRoomPropertyChanged(Room room, Participant from, String key) {
+  }
+
+  /**
+   * Called when an attempt to change a room's property failed.
+   *
+   * @see RoomListener#onSetRoomPropertyFailed(int, Room, String)
+   */
+  public void onSetRoomPropertyFailed(int status_code, Room room, String key) {
   }
 }
