@@ -72,7 +72,6 @@ message InMessage {
     RESET_GAME          = 10;
     ROOM_MESSAGE        = 11;
     SET_ROOM_PROPERTY   = 12;
-    SET_PLAYER_PROPERTY = 13;
   }
 
   required Type   type        = 1;
@@ -93,7 +92,6 @@ message InMessage {
   optional ResetGame         reset_game          = 19;
   optional RoomMessage       room_message        = 20;
   optional SetRoomProperty   set_room_property   = 21;
-  optional SetPlayerProperty set_player_property = 22;
 }
 
 
@@ -119,7 +117,6 @@ message OutMessage {
     GAME_STATE_CHANGED      = 15;
     ROOM_MESSAGE            = 16;
     ROOM_PROPERTY_UPDATED   = 17;
-    PLAYER_PROPERTY_UPDATED = 18;
   }
 
   required Type   type        = 1;
@@ -145,7 +142,6 @@ message OutMessage {
   optional GameStateChanged      game_state_changed      = 23;
   optional RoomMessage           room_message            = 24;
   optional RoomPropertyUpdated   room_property_updated   = 25;
-  optional PlayerPropertyUpdated player_property_updated = 26;
 }
 
 
@@ -234,18 +230,13 @@ enum GameState {
   FINISHED = 4;
 }
 
-message Player {
-  required string   client_id  = 1;
-  repeated MapEntry properties = 2;
-}
-
 message Room {
   required string    room_id    = 1;
   optional GameState game_state = 2;
 
   repeated MapEntry  config     = 10;
   repeated MapEntry  properties = 11;
-  repeated Player    players    = 12;
+  repeated string    players    = 12;
 }
 
 message CreateRoom {
@@ -253,13 +244,10 @@ message CreateRoom {
 
   repeated MapEntry room_config       = 10;
   repeated MapEntry room_properties   = 11;
-  repeated MapEntry player_properties = 12;
 }
 
 message JoinRoom {
   required string room_id = 1;
-
-  repeated MapEntry player_properties = 10;
 }
 
 message LeaveRoom {
@@ -317,12 +305,12 @@ message RoomLeft {
 
 message PeerJoinedRoom {
   required string room_id = 1;
-  required Player player  = 2;
+  required string player  = 2;
 }
 
 message PeerLeftRoom {
-  required string room_id   = 1;
-  required string client_id = 2;
+  required string room_id = 1;
+  required string player  = 2;
 }
 
 message StartGame {
@@ -367,31 +355,14 @@ message SetRoomProperty {
   required MapEntry property = 2;
 }
 
-message SetPlayerProperty {
-  required string   room_id  = 1;
-  required MapEntry property = 2;
-}
-
 message RoomPropertyUpdated {
   enum StatusCode {
     SUCCESS         = 0;
     ROOM_NOT_JOINED = 1;
   }
 
-  required string     room_id   = 1;
-  required string     client_id = 2;
-  required MapEntry   property  = 3;
-  optional StatusCode status    = 4 [ default = SUCCESS ];
-}
-
-message PlayerPropertyUpdated {
-  enum StatusCode {
-    SUCCESS         = 0;
-    ROOM_NOT_JOINED = 1;
-  }
-
-  required string     room_id   = 1;
-  required string     client_id = 2;
-  required MapEntry   property  = 3;
-  optional StatusCode status    = 4 [ default = SUCCESS ];
+  required string     room_id  = 1;
+  required string     player   = 2;
+  required MapEntry   property = 3;
+  optional StatusCode status   = 4 [ default = SUCCESS ];
 }

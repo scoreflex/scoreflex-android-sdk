@@ -204,17 +204,4 @@ public class Room {
   protected void removeProperty(String key) {
     properties.remove(key);
   }
-
-  protected void addParticipantProperty(String id, String key, Object value) {
-    Participant participant = participants.get(id);
-    if (participant != null)
-      participant.addProperty(key, value);
-  }
-
-  protected void removeParticipantProperty(String id, String key) {
-    Participant participant = participants.get(id);
-    if (participant != null)
-      participant.removeProperty(key);
-  }
-
 }

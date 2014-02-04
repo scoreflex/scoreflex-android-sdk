@@ -20,25 +20,15 @@
 package com.scoreflex.realtime;
 
 /**
- * A participant is a player inside a realtime room. When a player joins a room,
- * he defines his set of properties and he can update them by calling {@link
- * Session#setCurrentParticipantProperty(String, Object)}.
- * <br>
- * These properties are public, all room's participants can see them and they
- * are notfified of any changes with the callback {@link
- * RoomListener#onParticipantPropertyChanged(int, Room, String, String)}.
+ * A participant is a player inside a realtime room.
  */
 public class Participant {
   private final String      id;
   private final String      room_id;
-  private final RealtimeMap properties;
-  private final RealtimeMap propertiesView;
 
-  protected Participant(String id, String room_id, RealtimeMap properties) {
+  protected Participant(String id, String room_id) {
     this.id             = id;
     this.room_id        = room_id;
-    this.properties     = properties;
-    this.propertiesView = RealtimeMap.unmodifiableRealtimeMap(this.properties);
   }
 
   /**
@@ -57,32 +47,5 @@ public class Participant {
    */
   public String getRoomId() {
     return room_id;
-  }
-
-  /**
-   * Retrieves the participant's properties.
-   *
-   * @return The participant's properties.
-   */
-  public RealtimeMap getProperties() {
-    return propertiesView;
-  }
-
-  /**
-   * Retrieves a specific participant's property, given its key.
-   *
-   * @return The property value or <code>null</code> if the property does not
-   * exists.
-   */
-  public Object getProperty(String key) {
-    return properties.get(key);
-  }
-
-  protected void addProperty(String key, Object value) {
-    properties.put(key, value);
-  }
-
-  protected void removeProperty(String key) {
-    properties.remove(key);
   }
 }

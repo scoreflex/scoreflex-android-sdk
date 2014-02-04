@@ -79,7 +79,7 @@ public final class Session extends Thread {
   private Map<Integer, MessageSentListener>      snd_message_listeners;
 
   /**
-   * The maximum size of a serialazed payload allowas in unreliable messages.
+   * The maximum size of a serialazed payload allowed in unreliable messages.
    *
    * @see RealtimeMap#getSerializedSize()
    */
@@ -707,19 +707,11 @@ public final class Session extends Thread {
 
 
   /**
-   * Same as {@link #createRoom(String, RoomConfig, RealtimeMap, RealtimeMap)
-   * createRoom(id, config, null, null)}.
+   * Same as {@link #createRoom(String, RoomConfig, RealtimeMap)
+   * createRoom(id, config, null)}.
    */
   public static void createRoom(String id, RoomConfig config) {
-    createRoom(id, config, null, null);
-  }
-  /**
-   * Same as {@link #createRoom(String, RoomConfig, RealtimeMap, RealtimeMap)
-   * createRoom(id, config, room_props, null)}.
-   */
-  public static void createRoom(String id, RoomConfig config,
-                                RealtimeMap room_props) {
-    createRoom(id, config, room_props, null);
+    createRoom(id, config, null);
   }
   /**
    * Creates a realtime room. The result of this operation will be notified by
@@ -729,7 +721,6 @@ public final class Session extends Thread {
    * @param id The room's ID.
    * @param config The room's configuration.
    * @param room_props The room's properties.
-   * @param participant_props The participant's properties.
    *
    * @throws IllegalStateException if the realtime session is not initialized
    * yet.
@@ -737,8 +728,7 @@ public final class Session extends Thread {
    * configuration are <code>null</code>
    */
   public static void createRoom(final String id, final RoomConfig config,
-                                final RealtimeMap room_props,
-                                final RealtimeMap participant_props) {
+                                final RealtimeMap room_props) {
     checkInstance();
     if (id == null)
       throw new IllegalArgumentException("Room id cannot be null");
@@ -747,13 +737,12 @@ public final class Session extends Thread {
     session.local_handler.post(new Runnable() {
       @Override
       public void run() {
-        session.sendCreateRoom(id, config, room_props, participant_props);
+        session.sendCreateRoom(id, config, room_props);
       }
     });
   }
   private void sendCreateRoom(String id, RoomConfig config,
-                              RealtimeMap room_props,
-                              RealtimeMap participant_props) {
+                              RealtimeMap room_props) {
     if (!isConnected()) {
       onRoomCreated(config.getRoomListener(), STATUS_SESSION_NOT_CONNECTED,
                     null);
@@ -767,7 +756,6 @@ public final class Session extends Thread {
       .setRoomId(id)
       .addAllRoomConfig(realtimeMapToProtoMap(config.getRoomConfig()))
       .addAllRoomProperties(realtimeMapToProtoMap(room_props))
-      .addAllPlayerProperties(realtimeMapToProtoMap(participant_props))
       .build();
     Proto.InMessage inmsg =
       InMessageBuilder.build(last_msgid+1, last_reliable_id, true, msg);
@@ -783,14 +771,6 @@ public final class Session extends Thread {
 
 
   /**
-   * Same as {@link #joinRoom(String, RoomListener, MessageReceivedListener,
-   * RealtimeMap) joinRoom(id, room_listener, message_listener, null)}.
-   */
-  public static void joinRoom(String id, RoomListener room_listener,
-                              MessageReceivedListener message_listener) {
-    joinRoom(id, room_listener, message_listener, null);
-  }
-  /**
    * Joins a realtime room. The result of this operation will be notified by the
    * callback {@link RoomListener#onRoomJoined(int, Room)} to the given {@link
    * RoomListener}.
@@ -800,7 +780,6 @@ public final class Session extends Thread {
    * room's state changes.
    * @param message_listener The {@link MessageReceivedListener} used to notify
    * the player when a message is received.
-   * @param participant_props The participant's properties.
    *
    * @throws IllegalStateException if the realtime session is not initialized
    * yet.
@@ -808,8 +787,7 @@ public final class Session extends Thread {
    * <code>null</code> or if the room's id is <code>null</code>.
    */
   public static void joinRoom(final String id, final RoomListener room_listener,
-                              final MessageReceivedListener message_listener,
-                              final RealtimeMap participant_props) {
+                              final MessageReceivedListener message_listener) {
     checkInstance();
     if (id == null)
       throw new IllegalArgumentException("Room id cannot be null");
@@ -820,14 +798,12 @@ public final class Session extends Thread {
     session.local_handler.post(new Runnable() {
       @Override
       public void run() {
-        session.sendJoinRoom(id, room_listener, message_listener,
-                             participant_props);
+        session.sendJoinRoom(id, room_listener, message_listener);
       }
     });
   }
   private void sendJoinRoom(String id, RoomListener room_listener,
-                            MessageReceivedListener message_listener,
-                            RealtimeMap participant_props) {
+                            MessageReceivedListener message_listener) {
     if (!isConnected()) {
       onRoomJoined(room_listener, STATUS_SESSION_NOT_CONNECTED,
                    null);
@@ -839,7 +815,6 @@ public final class Session extends Thread {
 
     Proto.JoinRoom msg = Proto.JoinRoom.newBuilder()
       .setRoomId(id)
-      .addAllPlayerProperties(realtimeMapToProtoMap(participant_props))
       .build();
     Proto.InMessage inmsg =
       InMessageBuilder.build(last_msgid+1, last_reliable_id, true, msg);
@@ -1128,73 +1103,6 @@ public final class Session extends Thread {
     last_msgid++;
     inmsg_queue.put(last_msgid, inmsg);
   }
-
-
-  /**
-   * Sets or Updates a player's property given its key. The result of this
-   * operation will be notified by the callback {@link
-   * RoomListener#onParticipantPropertyChanged(int, Room, String, String)} to
-   * the given {@link RoomListener} set when the player has created or joined
-   * the room.
-   * <br>
-   * If the value is <code>null</code>, the property will be removed.
-   *
-   * @param key The property's key.
-   * @param value The new property's value.
-   *
-   * @throws IllegalStateException if the realtime session is not initialized
-   * yet or if no room is joined.
-   * @throws IllegalArgumentException if the property's key is <code>null</code>
-   */
-  public static void setCurrentParticipantProperty(final String key,
-                                                   final Object value) {
-    checkInstance();
-    if (key == null)
-      throw new IllegalArgumentException("Property key cannot be null");
-    Runnable r;
-
-    synchronized (session) {
-      if (session.current_room == null)
-        throw new IllegalStateException("No room is joined");
-      final Room         room          = session.current_room;
-      final RoomListener room_listener = session.room_listeners.get(room.getId());
-
-      r = new Runnable() {
-        @Override
-        public void run() {
-          session.sendSetCurrentParticipantProperty(room, room_listener,
-                                                    key, value);
-        }
-      };
-    }
-    session.local_handler.post(r);
-  }
-  private void sendSetCurrentParticipantProperty(Room room,
-                                                 RoomListener room_listener,
-                                                 String key, Object value) {
-    if (!isSessionConnected()) {
-      onParticipantPropertyChanged(room_listener, STATUS_SESSION_NOT_CONNECTED,
-                                   room, Scoreflex.getPlayerId(), key);
-      return;
-    }
-
-    Proto.SetPlayerProperty msg = Proto.SetPlayerProperty.newBuilder()
-      .setRoomId(room.getId())
-      .setProperty(objectToMapEntry(key, value))
-      .build();
-    Proto.InMessage inmsg =
-      InMessageBuilder.build(last_msgid+1, last_reliable_id, true, msg);
-
-    if (!connection.sendMessage(inmsg)) {
-      onParticipantPropertyChanged(room_listener, STATUS_NETWORK_ERROR, room,
-                                   Scoreflex.getPlayerId(), key);
-      return;
-    }
-
-    last_msgid++;
-    inmsg_queue.put(last_msgid, inmsg);
-  }
-
 
   /**
    * Same as {@link #sendUnreliableMessage(String, byte, RealtimeMap)
@@ -1595,22 +1503,6 @@ public final class Session extends Thread {
     });
   }
 
-  private void onParticipantPropertyChanged(final RoomListener listener,
-                                            final int status_code,
-                                            final Room room,
-                                            final String peer_id,
-                                            final String name) {
-    if (listener == null)
-      return;
-
-    main_handler.post(new Runnable() {
-      @Override
-      public void run() {
-        listener.onParticipantPropertyChanged(status_code, room, peer_id, name);
-      }
-    });
-  }
-
   private void onRealTimeMessageReceived(final MessageReceivedListener listener,
                                          final Message msg) {
     if (listener == null)
@@ -1716,6 +1608,7 @@ public final class Session extends Thread {
   }
 
   private void handleOutMessage(Proto.OutMessage msg) {
+    Log.i("Scoreflex", "msg "+msg.getType()+" received");
     switch (msg.getType()) {
       case CONNECTED:
         handleOutMessage(msg.getConnected());
@@ -1758,9 +1651,6 @@ public final class Session extends Thread {
         break;
       case ROOM_PROPERTY_UPDATED:
         handleOutMessage(msg.getRoomPropertyUpdated());
-        break;
-      case PLAYER_PROPERTY_UPDATED:
-        handleOutMessage(msg.getPlayerPropertyUpdated());
         break;
       case ROOM_MESSAGE:
         handleOutMessage(msg.getRoomMessage());
@@ -1945,11 +1835,8 @@ public final class Session extends Thread {
       case SUCCESS:
         Map<String, Participant> participants = new HashMap<String, Participant>();
 
-        for (Proto.Player entry: r.getPlayersList()) {
-          RealtimeMap props = protoMapToRealtimeMap(entry.getPropertiesList());
-          participants.put(entry.getClientId(),
-                           new Participant(entry.getClientId(), r.getRoomId(),
-                                           props));
+        for (String playerId: r.getPlayersList()) {
+          participants.put(playerId, new Participant(playerId, r.getRoomId()));
         }
 
         MatchState state;
@@ -2035,11 +1922,8 @@ public final class Session extends Thread {
       case SUCCESS:
         Map<String, Participant> participants = new HashMap<String, Participant>();
 
-        for (Proto.Player entry: r.getPlayersList()) {
-          RealtimeMap props = protoMapToRealtimeMap(entry.getPropertiesList());
-          participants.put(entry.getClientId(),
-                           new Participant(entry.getClientId(), r.getRoomId(),
-                                           props));
+        for (String playerId: r.getPlayersList()) {
+          participants.put(playerId, new Participant(playerId, r.getRoomId()));
         }
 
         MatchState state;
@@ -2129,9 +2013,7 @@ public final class Session extends Thread {
     if (current_room == null || !current_room.isSameRoom(msg.getRoomId()))
       return;
 
-    Proto.Player p   = msg.getPlayer();
-    Participant peer = new Participant(p.getClientId(), msg.getRoomId(),
-                                       protoMapToRealtimeMap(p.getPropertiesList()));
+    Participant peer = new Participant(msg.getPlayer(), msg.getRoomId());
     current_room.addParticipant(peer);
 
     onPeerJoined(room_listeners.get(current_room.getId()), current_room, peer);
@@ -2140,9 +2022,9 @@ public final class Session extends Thread {
     if (current_room == null || !current_room.isSameRoom(msg.getRoomId()))
       return;
 
-    current_room.removeParticipant(msg.getClientId());
+    current_room.removeParticipant(msg.getPlayer());
     onPeerLeft(room_listeners.get(current_room.getId()), current_room,
-               msg.getClientId());
+               msg.getPlayer());
   }
   private void handleOutMessage(Proto.GameStateChanged msg) {
     if (current_room == null || !current_room.isSameRoom(msg.getRoomId()))
@@ -2201,36 +2083,12 @@ public final class Session extends Thread {
           current_room.addProperty(name, value);
         onRoomPropertyChanged(room_listeners.get(current_room.getId()),
                               STATUS_SUCCESS, current_room,
-                              msg.getClientId(), name);
+                              msg.getPlayer(), name);
         break;
       case ROOM_NOT_JOINED:
         onRoomPropertyChanged(room_listeners.get(current_room.getId()),
                               STATUS_ROOM_NOT_JOINED, current_room,
                               Scoreflex.getPlayerId(), name);
-        break;
-    }
-  }
-  private void handleOutMessage(Proto.PlayerPropertyUpdated msg) {
-    if (current_room == null || !current_room.isSameRoom(msg.getRoomId()))
-      return;
-
-    String name  = msg.getProperty().getName();
-    Object value = mapEntrytoObject(msg.getProperty());
-
-    switch (msg.getStatus()) {
-      case SUCCESS:
-        if (value == null)
-          current_room.removeParticipantProperty(msg.getClientId(), name);
-        else
-          current_room.addParticipantProperty(msg.getClientId(), name, value);
-        onParticipantPropertyChanged(room_listeners.get(current_room.getId()),
-                                     STATUS_SUCCESS, current_room,
-                                     msg.getClientId(), name);
-        break;
-      case ROOM_NOT_JOINED:
-        onParticipantPropertyChanged(room_listeners.get(current_room.getId()),
-                                     STATUS_ROOM_NOT_JOINED, current_room,
-                                     Scoreflex.getPlayerId(), name);
         break;
     }
   }
@@ -2516,16 +2374,6 @@ public final class Session extends Thread {
         .setIsReliable(reliable)
         .setType(Proto.InMessage.Type.SET_ROOM_PROPERTY)
         .setSetRoomProperty(message)
-        .build();
-    }
-    public static Proto.InMessage build(int msgid, int ackid, boolean reliable,
-                                        Proto.SetPlayerProperty message) {
-      return Proto.InMessage.newBuilder()
-        .setMsgid(msgid)
-        .setAckid(ackid)
-        .setIsReliable(reliable)
-        .setType(Proto.InMessage.Type.SET_PLAYER_PROPERTY)
-        .setSetPlayerProperty(message)
         .build();
     }
     public static Proto.InMessage build(int msgid, int ackid, boolean reliable,

@@ -115,7 +115,8 @@ public class TCPConnection extends AsyncTask<Proto.InMessage, Void, Void> {
           socket.getOutputStream().write(0);
         }
         catch (IOException e) {
-          throw e;
+          if (!socket.isConnected())
+            break;
         }
       }
       if (isCancelled())

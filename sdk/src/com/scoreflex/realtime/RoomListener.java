@@ -232,37 +232,4 @@ public interface RoomListener {
    */
   public void onRoomPropertyChanged(int status_code, Room room,
                                     String participant_id, String key);
-
-  /**
-   * This method is called when a property of a participant change. This is done
-   * by calling {@link Session#setCurrentParticipantProperty(String,
-   * Object)}. If the operation succeed, all participants will be notified. But,
-   * he will be the only one notified when an error occurred.
-   * <br>
-   * Possible status codes are:
-   *
-   * <ul>
-   *   <li>{@link Session#STATUS_SUCCESS} The participant's property has
-   *   changed.</li>
-   *   <li>{@link Session#STATUS_SESSION_NOT_CONNECTED} The attempt to change
-   *   the participant's property failed because the player's session is not
-   *   connected to the service.</li>
-   *   <li>{@link Session#STATUS_NETWORK_ERROR} The attempt to change the
-   *   participant's property failed due to a network error.</li>
-   *   <li>{@link Session#STATUS_ROOM_NOT_JOINED} The attempt to change the
-   *   participant's property failed because the player is not a room's
-   *   participant.</li>
-   * </ul>
-   * <br>
-   * This callback is called on the main thread.
-   *
-   * @see Session#setCurrentParticipantProperty(String, Object)
-   *
-   * @param status_code A status code indication the result of the operation.
-   * @param room The room.
-   * @param participant_id The participant's ID that performs the operation.
-   * @param key The property key that was changed.
-   */
-  public void onParticipantPropertyChanged(int status_code, Room room,
-                                           String participant_id, String key);
 }

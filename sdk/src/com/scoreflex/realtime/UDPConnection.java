@@ -138,15 +138,11 @@ public class UDPConnection extends AsyncTask<Void, Void, Void> {
         catch (SocketTimeoutException e) {
           socket.send(sndpacket);
         }
-        catch (InvalidProtocolBufferException e) {
-          if (!isCancelled())
-            Log.e("Scoreflex", "Failed to read message on UDP socket: "+e);
-        }
-        catch (SocketException e) {
-          throw e;
-        }
         catch (IOException e) {
-          throw e;
+          if (!socket.isConnected()) {
+            Log.e("Scoreflex", "Failed to read message on UDP socket: "+e);
+            break;
+          }
         }
       }
     }
