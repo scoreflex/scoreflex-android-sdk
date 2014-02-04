@@ -147,7 +147,7 @@ message OutMessage {
 
 // ====================================================================
 message Connect {
-  required string client_id    = 1;
+  required string player_id    = 1;
   required string game_id      = 2;
   required string access_token = 3;
   optional string session_id   = 4;
@@ -304,13 +304,13 @@ message RoomLeft {
 
 
 message PeerJoinedRoom {
-  required string room_id = 1;
-  required string player  = 2;
+  required string room_id   = 1;
+  required string player_id = 2;
 }
 
 message PeerLeftRoom {
-  required string room_id = 1;
-  required string player  = 2;
+  required string room_id   = 1;
+  required string player_id = 2;
 }
 
 message StartGame {
@@ -361,8 +361,8 @@ message RoomPropertyUpdated {
     ROOM_NOT_JOINED = 1;
   }
 
-  required string     room_id  = 1;
-  required string     player   = 2;
-  required MapEntry   property = 3;
-  optional StatusCode status   = 4 [ default = SUCCESS ];
+  required string     room_id   = 1;
+  required string     player_id = 2;
+  required MapEntry   property  = 3;
+  optional StatusCode status    = 4 [ default = SUCCESS ];
 }
