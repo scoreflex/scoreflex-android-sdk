@@ -212,10 +212,9 @@ message Ack {
   enum StatusCode {
     SUCCESS         = 0;
     INTERNAL_ERROR  = 1;
-    NETWORK_ERROR   = 2;
-    ROOM_NOT_JOINED = 3;
-    PEER_NOT_FOUND  = 4;
-    INVALID_MESSAGE = 5;
+    ROOM_NOT_JOINED = 2;
+    PEER_NOT_FOUND  = 3;
+    INVALID_MESSAGE = 4;
   }
 
   required uint32     msgid  = 1;
