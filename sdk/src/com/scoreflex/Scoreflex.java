@@ -940,7 +940,7 @@ public class Scoreflex {
 			params = new Scoreflex.RequestParams();
 		}
 
-		params.put("Score", Long.toString(score));
+		params.put("score", Long.toString(score));
 		submitScore(leaderboardId, params, responseHandler);
 	}
 
