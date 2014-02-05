@@ -99,6 +99,7 @@ public class ScoreflexView extends FrameLayout {
 	UserInterfaceState mUserInterfaceState;
 	ValueCallback<Uri> mUploadMessage;
 	String mInitialResource;
+	ScoreflexViewListener mScoreflexViewHandler;
 	Scoreflex.RequestParams mInitialRequestParams;
 	boolean mIsPreloading;
 	protected boolean isLoginSource;
@@ -406,6 +407,15 @@ public class ScoreflexView extends FrameLayout {
 		this.startAnimation(animation);
 	}
 
+
+	/**
+	 * Sets the listener that will be called during the lifecycle of the view  
+	 * @param listener the listener
+	 */
+	public void setScoreflexViewListener(ScoreflexViewListener listener) { 
+		mScoreflexViewHandler = listener;
+	}
+
 	/**
 	 * Closes this ScoreflexView. If the view is attached to the developer
 	 * hierarchy it will be detached. If the view is attached to a
@@ -431,6 +441,10 @@ public class ScoreflexView extends FrameLayout {
 				public void onAnimationEnd(Animation arg0) {
 					ViewGroup parentGroup = (ViewGroup) parent;
 					parentGroup.removeView(ScoreflexView.this);
+					if (mScoreflexViewHandler != null) { 
+						mScoreflexViewHandler.onViewClosed();
+						mScoreflexViewHandler = null;
+					}
 				}
 
 				@Override
@@ -448,6 +462,10 @@ public class ScoreflexView extends FrameLayout {
 		} else if (null != parent && parent instanceof ViewGroup) {
 			ViewGroup parentGroup = (ViewGroup) parent;
 			parentGroup.removeView(this);
+			if (mScoreflexViewHandler != null) { 
+				mScoreflexViewHandler.onViewClosed();
+				mScoreflexViewHandler = null;
+			}
 		}
 	}
 
@@ -1516,6 +1534,16 @@ public class ScoreflexView extends FrameLayout {
 		public void onLeaveState() {
 			mProgressBar.setVisibility(View.GONE);
 		}
+	}
+
+	/**
+	 * A simple interface to get notified when a scoreflex view is closed
+	 */
+	public interface ScoreflexViewListener { 
+		/**
+		 * this method is called when the ScoreflexView is closed.
+		 */
+		public void onViewClosed();
 	}
 
 	private class WebContentState extends UserInterfaceState {

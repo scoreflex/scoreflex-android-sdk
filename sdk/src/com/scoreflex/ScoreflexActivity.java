@@ -1,5 +1,7 @@
 package com.scoreflex;
 
+import com.scoreflex.ScoreflexView.ScoreflexViewListener;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -60,81 +62,91 @@ public class ScoreflexActivity extends Activity {
 		Scoreflex.registerNetworkReceiver(this);
 		Intent startIntent = getIntent();
 	  String action = startIntent.getStringExtra(INTENT_SHOW_EXTRA_KEY);
+	  ScoreflexView sfxView = null;
 	  if (action != null) {
 	  	Scoreflex.RequestParams params = startIntent.getParcelableExtra(INTENT_EXTRA_REQUEST_PARAMS_KEY);
 	  	if (action.equals(INTENT_EXTRA_SHOW_PLAYER_PROFILE)) {
 	  		String playerId = getPlayerId(startIntent);
-	  		Scoreflex.showPlayerProfile(this, playerId,params);
+	  		sfxView = Scoreflex.showPlayerProfile(this, playerId,params);
 	  	}
 	  	if (action.equals(INTENT_EXTRA_SHOW_PLAYER_FRIENDS)) {
 	  		String playerId = getPlayerId(startIntent);
-	  		Scoreflex.showPlayerFriends(this, playerId, params);
+	  		sfxView = Scoreflex.showPlayerFriends(this, playerId, params);
 	  	}
 	  	if (action.equals(INTENT_EXTRA_SHOW_PLAYER_NEWS_FEED)) {
-	  		Scoreflex.showPlayerNewsFeed(this, params);
+	  		sfxView = Scoreflex.showPlayerNewsFeed(this, params);
 	  	}
 	  	if (action.equals(INTENT_EXTRA_SHOW_PLAYER_PROFILE_EDIT)) {
-	  		Scoreflex.showPlayerProfileEdit(this, params);
+	  		sfxView = Scoreflex.showPlayerProfileEdit(this, params);
 	  	}
 	  	if (action.equals(INTENT_EXTRA_SHOW_PLAYER_SETTINGS)) {
-	  		Scoreflex.showPlayerSettings(this, params);
+	  		sfxView = Scoreflex.showPlayerSettings(this, params);
 	  	}
 	  	if (action.equals(INTENT_EXTRA_SHOW_PLAYER_RATING)) {
-	  		Scoreflex.showPlayerRating(this, params);
+	  		sfxView = Scoreflex.showPlayerRating(this, params);
 	  	}
 	  	if (action.equals(INTENT_EXTRA_SHOW_DEVELOPER_PROFILE)) {
 	  		String developerId = getDeveloperId(startIntent);
 	  		if (developerId != null) {
-	  			Scoreflex.showDeveloperProfile(this, developerId, params);
+	  			sfxView = Scoreflex.showDeveloperProfile(this, developerId, params);
 	  		}
 	  	}
 	  	if (action.equals(INTENT_EXTRA_SHOW_DEVELOPER_GAMES)) {
 	  		String developerId = getDeveloperId(startIntent);
 	  		if (developerId != null) {
-	  			Scoreflex.showDeveloperGames(this, developerId, params);
+	  			sfxView = Scoreflex.showDeveloperGames(this, developerId, params);
 	  		}
 	  	}
 	  	if (action.equals(INTENT_EXTRA_SHOW_GAME_DETAIL)) {
 	  		String gameId = getGameId(startIntent);
 	  		if (gameId != null) {
-	  			Scoreflex.showGameDetails(this, gameId, params);
+	  			sfxView = Scoreflex.showGameDetails(this, gameId, params);
 	  		}
 	  	}
 	  	if (action.equals(INTENT_EXTRA_SHOW_GAME_PLAYERS)) {
 	  		String gameId = getGameId(startIntent);
 	  		if (gameId != null) {
-	  			Scoreflex.showGamePlayers(this, gameId, params);
+	  			sfxView = Scoreflex.showGamePlayers(this, gameId, params);
 	  		}
 	  	}
 	  	if (action.equals(INTENT_EXTRA_SHOW_LEADERBOARD)) {
 	  		String leaderboardId = getLeaderboardId(startIntent);
 	  		if (leaderboardId != null) {
-	  			Scoreflex.showLeaderboard(this, leaderboardId, params);
+	  			sfxView = Scoreflex.showLeaderboard(this, leaderboardId, params);
 	  		}
 	  	}
 	  	if (action.equals(INTENT_EXTRA_SHOW_LEADERBOARD_OVERVIEW)) {
 	  		String leaderboardId = getLeaderboardId(startIntent);
 	  		if (leaderboardId != null) {
-	  			Scoreflex.showLeaderboardOverview(this, leaderboardId, params);
+	  			sfxView = Scoreflex.showLeaderboardOverview(this, leaderboardId, params);
 	  		}
 
 	  	}
 	  	if (action.equals(INTENT_EXTRA_SHOW_CHALLENGE_DETAIL)) {
 	  		String challengeInstanceId = startIntent.getStringExtra(INTENT_EXTRA_CHALLENGE_INSTANCE_ID);
 	  		final String resource = "/web/challenges/instances/" + challengeInstanceId;
-	  		Scoreflex.showFullScreenView(this, resource, params);
+	  		sfxView = Scoreflex.showFullScreenView(this, resource, params);
 	  	}
 	  	if (action.equals(INTENT_EXTRA_SHOW_CHALLENGES)) {
-	  		Scoreflex.showChallenges(this, params);
+	  		sfxView = Scoreflex.showChallenges(this, params);
 	  	}
 	  	if (action.equals(INTENT_EXTRA_SHOW_SEARCH)) {
-	  		Scoreflex.showSearch(this, params);
+	  		sfxView = Scoreflex.showSearch(this, params);
 	  	}
 	  	if (action.equals(INTENT_EXTRA_SHOW_FULLSCREEN_VIEW)) {
 	  		String resource = startIntent.getStringExtra(INTENT_EXTRA_FULLSCREEN_RESOURCE);
 	  		if (resource != null) {
-	  			Scoreflex.showFullScreenView(this, resource, params);
+	  			sfxView = Scoreflex.showFullScreenView(this, resource, params);
 	  		}
+	  	}
+	  	if (sfxView != null) { 
+	  		sfxView.setScoreflexViewListener(new ScoreflexViewListener() {
+	  			
+					@Override
+					public void onViewClosed() {
+						ScoreflexActivity.this.finish();						
+					} 
+	  		});
 	  	}
 	  }
 	}
