@@ -79,11 +79,26 @@ public final class Session extends Thread {
   private Map<Integer, MessageSentListener>      snd_message_listeners;
 
   /**
-   * The maximum size of a serialazed payload allowed in unreliable messages.
+   * The maximum serialized size allowed for a payload in the unreliable
+   * messages.
    *
    * @see RealtimeMap#getSerializedSize()
    */
   public static final int MAX_UNRELIABLE_PAYLOAD_SIZE = 1300;
+
+  /**
+   * The maximum serialized size allowed for a payload in the reliable messages.
+   *
+   * @see RealtimeMap#getSerializedSize()
+   */
+  public static final int MAX_RELIABLE_PAYLOAD_SIZE = 2048;
+
+  /**
+   * The maximum serliazed size allowed for the room's property list.
+   *
+   * @see RealtimeMap#getSerializedSize()
+   */
+  public static final int MAX_ROOM_PROPERTIES_SIZE = 1500;
 
   /**
    * The status code used in callbacks when an operation was successful.
@@ -726,6 +741,8 @@ public final class Session extends Thread {
    * yet.
    * @throws IllegalArgumentException if the room's id or the room's
    * configuration are <code>null</code>
+   * @throws IllegalArgumentException if the serialized size of the room's
+   * property list exceeds {@link MAX_ROOM_PROPERTIES_SIZE}.
    */
   public static void createRoom(final String id, final RoomConfig config,
                                 final RealtimeMap room_props) {
@@ -734,6 +751,9 @@ public final class Session extends Thread {
       throw new IllegalArgumentException("Room id cannot be null");
     if (config == null)
       throw new IllegalArgumentException("Room configuration cannot be null");
+    if (room_props != null && room_props.getSerializedSize() > MAX_ROOM_PROPERTIES_SIZE)
+      throw new IllegalArgumentException("Serialized size of the room's properties exceeds MAX_ROOM_PROPERTIES_SIZE");
+
     session.local_handler.post(new Runnable() {
       @Override
       public void run() {
@@ -1057,6 +1077,9 @@ public final class Session extends Thread {
    * @throws IllegalStateException if the realtime session is not initialized
    * yet or if no room is joined.
    * @throws IllegalArgumentException if the property's key is <code>null</code>
+   * or if the value's type is inappropriate.
+   * @throws IllegalArgumentException if the serialized size of the updated
+   * room's properties exceeds MAX_ROOM_PROPERTIES_SIZE.
    */
   public static void setRoomProperty(final String key, final Object value) {
     checkInstance();
@@ -1067,6 +1090,25 @@ public final class Session extends Thread {
     synchronized (session) {
       if (session.current_room == null)
         throw new IllegalStateException("No room is joined");
+
+      if (value != null) {
+        try {
+          RealtimeMap props = session.current_room.getProperties();
+          Object old_value  = props.get(key);
+          int props_size    = props.getSerializedSize();
+          if (old_value != null)
+            props_size -= RealtimeMap.getSerializedSize(key,old_value);
+          props_size += RealtimeMap.getSerializedSize(key,value);
+
+          if (props_size > MAX_ROOM_PROPERTIES_SIZE)
+            throw new IllegalArgumentException("Serialized size of the room's properties exceeds MAX_ROOM_PROPERTIES_SIZE");
+        }
+        catch (ClassCastException e) {
+          throw new IllegalArgumentException("Invalid value type");
+        }
+      }
+
+
       final Room         room          = session.current_room;
       final RoomListener room_listener = session.room_listeners.get(room.getId());
 
@@ -1154,7 +1196,7 @@ public final class Session extends Thread {
     if (peer_id != null && peer_id.equals(Scoreflex.getPlayerId()))
       throw new IllegalArgumentException("Invalid participant's id");
     if (payload.getSerializedSize() > MAX_UNRELIABLE_PAYLOAD_SIZE)
-      throw new IllegalArgumentException("Serialized payload exceeds MAX_UNRELIABLE_PAYLOAD_SIZE");
+      throw new IllegalArgumentException("Serialized size of the payload exceeds MAX_UNRELIABLE_PAYLOAD_SIZE");
 
     synchronized (session) {
       if (session.current_room == null)
@@ -1244,8 +1286,11 @@ public final class Session extends Thread {
    *
    * @throws IllegalStateException if the realtime session is not initialized
    * yet or if no room is joined.
-   * @throws IllegalArgumentException if the listener is <code>null</code> or if
-   * the </code>peer_id</code> is <code>null</code> or is the current player.
+   * @throws IllegalArgumentException if the listener is <code>null</code>.
+   * @throws IllegalArgumentException if the </code>peer_id</code> is
+   * <code>null</code> or is the current player.
+   * @throws IllegalArgumentException if the serialized size of the payload
+   * exceeds {@link #MAX_RELIABLE_PAYLOAD_SIZE}.
    */
   public static int sendReliableMessage(final MessageSentListener listener,
                                         final String peer_id, final byte tag,
@@ -1255,6 +1300,8 @@ public final class Session extends Thread {
       throw new IllegalArgumentException("Room listener cannot be null");
     if (peer_id == null || peer_id.equals(Scoreflex.getPlayerId()))
       throw new IllegalArgumentException("Invalid participant's id");
+    if (payload.getSerializedSize() > MAX_RELIABLE_PAYLOAD_SIZE)
+      throw new IllegalArgumentException("Serialized size of the payload exceeds MAX_RELIABLE_PAYLOAD_SIZE");
 
     FutureTask<Integer> t;
 

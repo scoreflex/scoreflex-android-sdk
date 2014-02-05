@@ -194,113 +194,16 @@ public class RealtimeMap extends AbstractMap<String,Object> {
   }
 
   /**
-   * Maps the specified key to the specified <code>Integer</code> instance.
-   *
-   * @param key The key.
-   * @param value The value.
-   *
-   * @return The value of any previous mapping with the specified key or
-   * <code>null</code> if there was no mapping.
-   */
-  public Object put(String key, Integer value) {
-    Object old_value = remove(key);
-    serialized_size += key.length() + getNumberOfBytes(value);
-    serialized_size += ((key.length() < 128) ? 1: 2);
-    map.put(key, value);
-    return old_value;
-  }
-
-  /**
-   * Maps the specified key to the specified <code>Long</code> instance.
-   *
-   * @param key The key.
-   * @param value The value.
-   *
-   * @return The value of any previous mapping with the specified key or
-   * <code>null</code> if there was no mapping.
-   */
-  public Object put(String key, Long value) {
-    Object old_value = remove(key);
-    serialized_size += key.length() + getNumberOfBytes(value);
-    serialized_size += ((key.length() < 128) ? 1: 2);
-    map.put(key, value);
-    return old_value;
-  }
-
-  /**
-   * Maps the specified key to the specified <code>Double</code> instance.
-   *
-   * @param key The key.
-   * @param value The value.
-   *
-   * @return The value of any previous mapping with the specified key or
-   * <code>null</code> if there was no mapping.
-   */
-  public Object put(String key, Double value) {
-    Object old_value = remove(key);
-    serialized_size += key.length() + 8;
-    serialized_size += ((key.length() < 128) ? 1: 2);
-    map.put(key, value);
-    return old_value;
-  }
-
-  /**
-   * Maps the specified key to the specified <code>Boolean</code> instance.
-   *
-   * @param key The key.
-   * @param value The value.
-   *
-   * @return The value of any previous mapping with the specified key or
-   * <code>null</code> if there was no mapping.
-   */
-  public Object put(String key, Boolean value) {
-    Object old_value = remove(key);
-    serialized_size += key.length() + 1;
-    serialized_size += ((key.length() < 128) ? 1: 2);
-    map.put(key, value);
-    return old_value;
-  }
-
-  /**
-   * Maps the specified key to the specified <code>String</code> instance.
-   *
-   * @param key The key.
-   * @param value The value.
-   *
-   * @return The value of any previous mapping with the specified key or
-   * <code>null</code> if there was no mapping.
-   */
-  public Object put(String key, String value) {
-    Object old_value = remove(key);
-    // value.length() must be < (2^13 - 1)
-    serialized_size += key.length() + value.length();
-    serialized_size += ((key.length() < 128) ? 1 : 2);
-    serialized_size += ((value.length() < 128) ? 1 : 2);
-    map.put(key, value);
-    return old_value;
-  }
-
-  /**
-   * Maps the specified key to the specified <code>Byte[]</code> instance.
-   *
-   * @param key The key.
-   * @param value The value.
-   *
-   * @return The value of any previous mapping with the specified key or
-   * <code>null</code> if there was no mapping.
-   */
-  public Object put(String key, byte[] value) {
-    Object old_value = remove(key);
-    // value.length must be < (2^13 - 1)
-    serialized_size += key.length() + value.length;
-    serialized_size += ((key.length() < 128) ? 1: 2);
-    serialized_size += ((value.length < 128) ? 1: 2);
-    map.put(key, value);
-    return old_value;
-  }
-
-  /**
-   * Maps the specified key to the specified value.
+   * Maps the specified key to the specified value. Valid types for the value
+   * object are:
+   * <ul>
+   *   <li><code>Integer</code></li>
+   *   <li><code>Long</code></li>
+   *   <li><code>Double</code></li>
+   *   <li><code>Boolean</code></li>
+   *   <li><code>String</code></li>
+   *   <li><code>byte[]</code></li>
+   * </ul>
    *
    * @param key The key.
    * @param value The value.
@@ -308,25 +211,15 @@ public class RealtimeMap extends AbstractMap<String,Object> {
    * @return The value of any previous mapping with the specified key or
    * <code>null</code> if there was no mapping.
    *
-   * @throws ClassCastException if the value is inappropriate for this map.
+   * @throws ClassCastException if the value's type is inappropriate for this map.
    */
   public Object put(String key, Object value) {
-    if (value instanceof Integer)
-      return put(key, (Integer)value);
-    if (value instanceof Long)
-      return put(key, (Long)value);
-    if (value instanceof Double)
-      return put(key, (Double)value);
-    if (value instanceof Boolean)
-      return put(key, (Boolean)value);
-    if (value instanceof Boolean)
-      return put(key, (Boolean)value);
-    if (value instanceof String)
-      return put(key, (String)value);
-    if (value instanceof byte[])
-      return put(key, (byte[])value);
-
-    throw new ClassCastException();
+    Object old_value = remove(key);
+    if (value != null) {
+      serialized_size += getSerializedSize(key, value);
+      map.put(key, value);
+    }
+    return old_value;
   }
 
   /**
@@ -338,33 +231,11 @@ public class RealtimeMap extends AbstractMap<String,Object> {
    * <code>null</code> if there was no mapping.
    */
   public Object remove(String key) {
-    Object v = map.remove(key);
-    if (v == null)
-      return v;
-
-    serialized_size -= ((key.length() < 128) ? 1: 2);
-    if (v instanceof Integer) {
-      serialized_size -=  key.length() + getNumberOfBytes((Integer)v);
-    }
-    else if (v instanceof Long) {
-      serialized_size -= key.length() + getNumberOfBytes((Long)v);
-    }
-    else if (v instanceof Double) {
-      serialized_size -= key.length() + 8;
-    }
-    else if (v instanceof Boolean) {
-      serialized_size -= key.length() + 1;
-    }
-    else if (v instanceof String) {
-      serialized_size -= key.length() + ((String)v).length();
-      serialized_size -= ((((String)v).length() < 128) ? 1 : 2);
-    }
-    else if (v instanceof byte[]) {
-      serialized_size -= key.length() + ((byte[])v).length;
-      serialized_size -= ((((byte[])v).length < 128) ? 1: 2);
-    }
-
-    return v;
+    Object old_value = map.remove(key);
+    if (old_value == null)
+      return old_value;
+    serialized_size -= getSerializedSize(key, old_value);
+    return old_value;
   }
 
   /**
@@ -546,7 +417,35 @@ public class RealtimeMap extends AbstractMap<String,Object> {
   }
 
 
-  private int getNumberOfBytes(Integer value) {
+  protected static int getSerializedSize(String key, Object value) {
+    int sz = key.length() + ((key.length() < 128) ? 1: 2);
+
+    if (value instanceof Integer) {
+      return (sz + getNumberOfBytes((Integer)value));
+    }
+    if (value instanceof Long) {
+      return (sz + getNumberOfBytes((Long)value));
+    }
+    if (value instanceof Double) {
+      return (sz + 8);
+    }
+    if (value instanceof Boolean) {
+      return (sz + 1);
+    }
+    if (value instanceof String) {
+      int len = ((String)value).length();
+      return (sz + len + (len<128 ? 1 : 2));
+    }
+    if (value instanceof byte[]) {
+      int len = ((byte[])value).length;
+      return (sz + len + (len<128 ? 1 : 2));
+    }
+
+    throw new ClassCastException();
+  }
+
+
+  private static int getNumberOfBytes(Integer value) {
     if (value < 0) {
       if (value >= -0x00000040)
         return 1;
@@ -585,7 +484,7 @@ public class RealtimeMap extends AbstractMap<String,Object> {
     */
   }
 
-  private int getNumberOfBytes(Long value) {
+  private static int getNumberOfBytes(Long value) {
     if (value < 0) {
       if (value >= -0x00000040)
         return 1;
