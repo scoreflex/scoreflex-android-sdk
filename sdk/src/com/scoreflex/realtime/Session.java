@@ -916,7 +916,7 @@ public final class Session extends Thread {
       return;
     }
 
-    Proto.StartGame msg = Proto.StartGame.newBuilder()
+    Proto.StartMatch msg = Proto.StartMatch.newBuilder()
       .setRoomId(room.getId())
       .build();
     Proto.InMessage inmsg =
@@ -971,7 +971,7 @@ public final class Session extends Thread {
       return;
     }
 
-    Proto.StopGame msg = Proto.StopGame.newBuilder()
+    Proto.StopMatch msg = Proto.StopMatch.newBuilder()
       .setRoomId(room.getId())
       .build();
     Proto.InMessage inmsg =
@@ -1026,7 +1026,7 @@ public final class Session extends Thread {
       return;
     }
 
-    Proto.ResetGame msg = Proto.ResetGame.newBuilder()
+    Proto.ResetMatch msg = Proto.ResetMatch.newBuilder()
       .setRoomId(room.getId())
       .build();
     Proto.InMessage inmsg =
@@ -1142,8 +1142,9 @@ public final class Session extends Thread {
    * @throws IllegalStateException if the realtime session is not initialized
    * yet or if no room is joined.
    * @throws IllegalArgumentException if the </code>peer_id</code> is the
-   * current player or if the serialized payload size exceeds {@link
-   * #MAX_UNRELIABLE_PAYLOAD_SIZE}.
+   * current player.
+   * @throws IllegalArgumentException if the serialized size of the payload
+   * exceeds {@link #MAX_UNRELIABLE_PAYLOAD_SIZE}.
    */
   public static int sendUnreliableMessage(final String peer_id, final byte tag,
                                           final RealtimeMap payload) {
@@ -1659,8 +1660,8 @@ public final class Session extends Thread {
       case PEER_LEFT_ROOM:
         handleOutMessage(msg.getPeerLeftRoom());
         break;
-      case GAME_STATE_CHANGED:
-        handleOutMessage(msg.getGameStateChanged());
+      case MATCH_STATE_CHANGED:
+        handleOutMessage(msg.getMatchStateChanged());
         break;
       case ROOM_PROPERTY_UPDATED:
         handleOutMessage(msg.getRoomPropertyUpdated());
@@ -1853,7 +1854,7 @@ public final class Session extends Thread {
         }
 
         MatchState state;
-        switch (r.getGameState()) {
+        switch (r.getMatchState()) {
           case PENDING:
             state = MatchState.PENDING;
             break;
@@ -1940,7 +1941,7 @@ public final class Session extends Thread {
         }
 
         MatchState state;
-        switch (r.getGameState()) {
+        switch (r.getMatchState()) {
           case PENDING:
             state = MatchState.PENDING;
             break;
@@ -2039,14 +2040,14 @@ public final class Session extends Thread {
     onPeerLeft(room_listeners.get(current_room.getId()), current_room,
                msg.getPlayerId());
   }
-  private void handleOutMessage(Proto.GameStateChanged msg) {
+  private void handleOutMessage(Proto.MatchStateChanged msg) {
     if (current_room == null || !current_room.isSameRoom(msg.getRoomId()))
       return;
 
     switch (msg.getStatus()) {
       case SUCCESS:
         MatchState state;
-        switch (msg.getGameState()) {
+        switch (msg.getMatchState()) {
           case PENDING:
             state = MatchState.PENDING;
             break;
@@ -2349,33 +2350,33 @@ public final class Session extends Thread {
         .build();
     }
     public static Proto.InMessage build(int msgid, int ackid, boolean reliable,
-                                        Proto.StartGame message) {
+                                        Proto.StartMatch message) {
       return Proto.InMessage.newBuilder()
         .setMsgid(msgid)
         .setAckid(ackid)
         .setIsReliable(reliable)
-        .setType(Proto.InMessage.Type.START_GAME)
-        .setStartGame(message)
+        .setType(Proto.InMessage.Type.START_MATCH)
+        .setStartMatch(message)
         .build();
     }
     public static Proto.InMessage build(int msgid, int ackid, boolean reliable,
-                                        Proto.StopGame message) {
+                                        Proto.StopMatch message) {
       return Proto.InMessage.newBuilder()
         .setMsgid(msgid)
         .setAckid(ackid)
         .setIsReliable(reliable)
-        .setType(Proto.InMessage.Type.STOP_GAME)
-        .setStopGame(message)
+        .setType(Proto.InMessage.Type.STOP_MATCH)
+        .setStopMatch(message)
         .build();
     }
     public static Proto.InMessage build(int msgid, int ackid, boolean reliable,
-                                        Proto.ResetGame message) {
+                                        Proto.ResetMatch message) {
       return Proto.InMessage.newBuilder()
         .setMsgid(msgid)
         .setAckid(ackid)
         .setIsReliable(reliable)
-        .setType(Proto.InMessage.Type.RESET_GAME)
-        .setResetGame(message)
+        .setType(Proto.InMessage.Type.RESET_MATCH)
+        .setResetMatch(message)
         .build();
     }
     public static Proto.InMessage build(int msgid, int ackid, boolean reliable,

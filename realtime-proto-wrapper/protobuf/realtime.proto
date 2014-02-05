@@ -67,9 +67,9 @@ message InMessage {
     CREATE_ROOM         = 5;
     JOIN_ROOM           = 6;
     LEAVE_ROOM          = 7;
-    START_GAME          = 8;
-    STOP_GAME           = 9;
-    RESET_GAME          = 10;
+    START_MATCH         = 8;
+    STOP_MATCH          = 9;
+    RESET_MATCH         = 10;
     ROOM_MESSAGE        = 11;
     SET_ROOM_PROPERTY   = 12;
   }
@@ -87,9 +87,9 @@ message InMessage {
   optional CreateRoom        create_room         = 14;
   optional JoinRoom          join_room           = 15;
   optional LeaveRoom         leave_room          = 16;
-  optional StartGame         start_game          = 17;
-  optional StopGame          stop_game           = 18;
-  optional ResetGame         reset_game          = 19;
+  optional StartMatch        start_match         = 17;
+  optional StopMatch         stop_match          = 18;
+  optional ResetMatch        reset_match         = 19;
   optional RoomMessage       room_message        = 20;
   optional SetRoomProperty   set_room_property   = 21;
 }
@@ -114,7 +114,7 @@ message OutMessage {
     ROOM_LEFT               = 12;
     PEER_JOINED_ROOM        = 13;
     PEER_LEFT_ROOM          = 14;
-    GAME_STATE_CHANGED      = 15;
+    MATCH_STATE_CHANGED     = 15;
     ROOM_MESSAGE            = 16;
     ROOM_PROPERTY_UPDATED   = 17;
   }
@@ -139,7 +139,7 @@ message OutMessage {
   optional RoomLeft              room_left               = 20;
   optional PeerJoinedRoom        peer_joined_room        = 21;
   optional PeerLeftRoom          peer_left_room          = 22;
-  optional GameStateChanged      game_state_changed      = 23;
+  optional MatchStateChanged     match_state_changed     = 23;
   optional RoomMessage           room_message            = 24;
   optional RoomPropertyUpdated   room_property_updated   = 25;
 }
@@ -223,7 +223,7 @@ message Ack {
 }
 
 // ====================================================================
-enum GameState {
+enum MatchState {
   PENDING  = 1;
   READY    = 2;
   RUNNING  = 3;
@@ -231,8 +231,8 @@ enum GameState {
 }
 
 message Room {
-  required string    room_id    = 1;
-  optional GameState game_state = 2;
+  required string     room_id     = 1;
+  optional MatchState match_state = 2;
 
   repeated MapEntry  config     = 10;
   repeated MapEntry  properties = 11;
@@ -313,28 +313,28 @@ message PeerLeftRoom {
   required string player_id = 2;
 }
 
-message StartGame {
+message StartMatch {
   required string room_id = 1;
 }
 
-message StopGame {
+message StopMatch {
   required string room_id = 1;
 }
 
-message ResetGame {
+message ResetMatch {
   required string room_id = 1;
 }
 
-message GameStateChanged {
+message MatchStateChanged {
   enum StatusCode {
     SUCCESS         = 0;
     ROOM_NOT_JOINED = 1;
     BAD_STATE       = 2;
   }
 
-  required string     room_id    = 1;
-  optional GameState  game_state = 2;
-  optional StatusCode status     = 3 [ default = SUCCESS ];
+  required string     room_id     = 1;
+  optional MatchState match_state = 2;
+  optional StatusCode status      = 3 [ default = SUCCESS ];
 }
 
 
