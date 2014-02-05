@@ -294,6 +294,34 @@ public final class Session extends Thread {
     return session.is_initialized;
   }
 
+
+  /**
+   * Retrieves the server address currently used to connect.
+   *
+   * @return the server address  currently used.
+   *
+   * @throws IllegalStateException if the realtime session is not initialized
+   * yet.
+   */
+  public static String getServerHost() {
+    checkInstance();
+    return session.host;
+  }
+
+  /**
+   * Retrieves the current port number on which the realtime service is listening for
+   * incoming requests.
+   *
+   * @return the server port currently used.
+   *
+   * @throws IllegalStateException if the realtime session is not initialized
+   * yet.
+   */
+  public static int getServerPort() {
+    checkInstance();
+    return session.port;
+  }
+
   /**
    * Sets the value of the reconnect flag. By setting it to <code>true</code>,
    * the session will be automatically reconnected when an error occurs. The
