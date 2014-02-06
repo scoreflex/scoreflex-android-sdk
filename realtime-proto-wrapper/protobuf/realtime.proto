@@ -284,6 +284,7 @@ message RoomJoined {
     ROOM_NOT_FOUND    = 2;
     PERMISSION_DENIED = 3;
     ROOM_FULL         = 4;
+    NO_DROP_IN_MATCH  = 5;
   }
 
   required Room       room   = 1;

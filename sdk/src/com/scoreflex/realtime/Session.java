@@ -198,22 +198,29 @@ public final class Session extends Thread {
   public static final int STATUS_ROOM_FULL                  = 15;
 
   /**
+   * The status code used in {@link RoomListener#onRoomJoined} when the player
+   * attempts to join a room during a running match whereas the drpop-in-match
+   * option is disabled.
+   */
+  public static final int STATUS_NO_DROP_IN_MATCH           = 16;
+
+  /**
    * The status code used in {@link RoomListener#onRoomCreated} when the player
    * uses an invalid configuration to create a room.
    */
-  public static final int STATUS_INVALID_DATA               = 16;
+  public static final int STATUS_INVALID_DATA               = 17;
 
   /**
    * The status code used in {@link RoomListener#onMatchStateChanged} when the
    * player attempts to do an invalid change of the match's state.
    */
-  public static final int STATUS_BAD_STATE                  = 17;
+  public static final int STATUS_BAD_STATE                  = 18;
 
   /**
    * The status code used in {@link MessageSentListener#onMessageSent} when the
    * player attempts to send a reliable message to a unknown participant.
    */
-  public static final int STATUS_PEER_NOT_FOUND             = 18;
+  public static final int STATUS_PEER_NOT_FOUND             = 19;
 
   private Session() {
   }
@@ -2061,6 +2068,12 @@ public final class Session extends Thread {
         rcv_message_listeners.remove(r.getRoomId());
         onRoomJoined(room_listeners.remove(r.getRoomId()),
                      STATUS_ROOM_NOT_FOUND, null);
+        break;
+
+      case NO_DROP_IN_MATCH:
+        rcv_message_listeners.remove(r.getRoomId());
+        onRoomJoined(room_listeners.remove(r.getRoomId()),
+                     STATUS_NO_DROP_IN_MATCH, null);
         break;
 
       case ROOM_FULL:

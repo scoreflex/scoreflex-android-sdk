@@ -100,6 +100,8 @@ public interface RoomListener {
    *   <li>{@link Session#STATUS_ROOM_FULL} The attempt to join the room failed
    *   because the maximum number of participants allowed to join the room was
    *   reached.</li>
+   *   <li>{@link Session#STATUS_NO_DROP_IN_MATCH} The attempt to join the room
+   *   failed because the drop-in-match option was disabled.</li>
    *   <li>{@link Session#STATUS_INTERNAL_ERROR} The attempt to join the room
    *   failed due to an unexpected error.</li>
    * </ul>

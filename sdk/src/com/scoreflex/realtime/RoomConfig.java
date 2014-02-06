@@ -42,6 +42,7 @@ public class RoomConfig {
     private       Integer                 tick_time;
     private       Boolean                 auto_start;
     private       Boolean                 auto_stop;
+    private       Boolean                 drop_in_match;
 
 
     private Builder(RoomListener listener) {
@@ -84,7 +85,9 @@ public class RoomConfig {
     }
 
     /**
-     * Sets the auto-start flag for the room. This is a required parameter.
+     * Sets the auto-start flag for the room. This is an optional parameter.
+     * <br>
+     * This option is set to <code>false</code> by default.
      *
      * @param b The auto-start flag value.
      */
@@ -94,12 +97,26 @@ public class RoomConfig {
     }
 
     /**
-     * Sets the auto-stop flag for the room. This is a required parameter.
+     * Sets the auto-stop flag for the room. This is an optional parameter.
+     * <br>
+     * This option is set to <code>false</code> by default.
      *
      * @param b The auto-stop flag value.
      */
     public Builder setAutoStop(boolean b) {
       auto_stop = b;
+      return this;
+    }
+
+    /**
+     * Sets the drop-in-match flag for the room. This is an optional parameter.
+     * <br>
+     * This option is set to <code>true</code> by default.
+     *
+     * @param b The drop-in-match flag value.
+     */
+    public Builder setDropInMatch(boolean b) {
+      drop_in_match = b;
       return this;
     }
 
@@ -153,6 +170,8 @@ public class RoomConfig {
       this.room_config.put("auto_start", builder.auto_start);
     if (builder.auto_stop != null)
       this.room_config.put("auto_stop", builder.auto_stop);
+    if (builder.drop_in_match != null)
+      this.room_config.put("drop_in_match", builder.drop_in_match);
 
     this.message_listener = builder.message_listener;
   }
