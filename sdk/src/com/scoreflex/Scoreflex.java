@@ -327,13 +327,13 @@ public class Scoreflex {
 							.fetchAnonymousAccessTokenIfNeeded(new ResponseHandler() {
 								@Override
 								public void onFailure(Throwable e, Response errorResponse) {
-									if (errorResponse != null) {
-										Intent broadcast = new Intent(INTENT_SCOREFLEX_INTIALIZE_FAILED);
-										JSONParcelable parcelable = new JSONParcelable(errorResponse.getJSONObject());
-										broadcast.putExtra(INTENT_SCOREFLEX_INTIALIZE_FAILED_EXTRA_REASON, parcelable);
-										LocalBroadcastManager.getInstance(
-												Scoreflex.getApplicationContext()).sendBroadcast(broadcast);
-									}
+								  Intent broadcast = new Intent(INTENT_SCOREFLEX_INTIALIZE_FAILED);
+								  if (errorResponse != null) {
+								    JSONParcelable parcelable = new JSONParcelable(errorResponse.getJSONObject());
+								    broadcast.putExtra(INTENT_SCOREFLEX_INTIALIZE_FAILED_EXTRA_REASON, parcelable);
+								  }
+								  LocalBroadcastManager.getInstance(
+								    Scoreflex.getApplicationContext()).sendBroadcast(broadcast);
 								}
 
 								@Override
@@ -350,14 +350,14 @@ public class Scoreflex {
 						Scoreflex.get("/network/ping", null, new ResponseHandler() {
 							@Override
 							public void onFailure(Throwable e, Response errorResponse) {
-								if (errorResponse != null) {
-									Intent broadcast = new Intent(INTENT_SCOREFLEX_INTIALIZE_FAILED);
-									JSONParcelable parcelable = new JSONParcelable(errorResponse.getJSONObject());
-									broadcast.putExtra(INTENT_SCOREFLEX_INTIALIZE_FAILED_EXTRA_REASON, parcelable);
-									LocalBroadcastManager.getInstance(
-											Scoreflex.getApplicationContext()).sendBroadcast(broadcast);
+								  Intent broadcast = new Intent(INTENT_SCOREFLEX_INTIALIZE_FAILED);
+								  if (errorResponse != null) {
+								    JSONParcelable parcelable = new JSONParcelable(errorResponse.getJSONObject());
+								    broadcast.putExtra(INTENT_SCOREFLEX_INTIALIZE_FAILED_EXTRA_REASON, parcelable);
+								  }
+								  LocalBroadcastManager.getInstance(
+								    Scoreflex.getApplicationContext()).sendBroadcast(broadcast);
 								}
-							}
 
 							@Override
 							public void onSuccess(Response response) {
