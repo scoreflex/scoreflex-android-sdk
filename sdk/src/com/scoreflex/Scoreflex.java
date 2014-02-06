@@ -59,6 +59,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 
+import com.scoreflex.ScoreflexView.ScoreflexViewListener;
 import com.scoreflex.facebook.ScoreflexFacebookWrapper;
 import com.scoreflex.facebook.ScoreflexFacebookWrapper.FacebookException;
 import com.scoreflex.google.ScoreflexGcmWrapper;
@@ -168,7 +169,8 @@ public class Scoreflex {
 	public static final int NOTIFICATION_TYPE_FRIEND_JOINED_GAME = 103;
 
 	/**
-	 * A notification received when the player highscore has been beaten by a friend.
+	 * A notification received when the player highscore has been beaten by a
+	 * friend.
 	 */
 	public static final int NOTIFICATION_TYPE_FRIEND_BEAT_YOUR_HIGHSCORE = 104;
 
@@ -200,8 +202,8 @@ public class Scoreflex {
 	public static final String INTENT_CONNECTIVITY_EXTRA_CONNECTIVITY = "scoreflexConnectivityState";
 
 	/**
-	 * Local intent broadcasted when the Scoreflex sdk has been initialized and is
-	 * reachable.
+	 * Local intent broadcasted when the Scoreflex sdk has been initialized and
+	 * is reachable.
 	 */
 	public static final String INTENT_SCOREFLEX_INTIALIZED = "scoreflexInitialized";
 
@@ -211,8 +213,8 @@ public class Scoreflex {
 	public static final String INTENT_SCOREFLEX_INTIALIZE_FAILED = "scoreflexInitializeFailed";
 
 	/**
-	 * The extra key for the scoreflex initialisation failed reason in a 
-	 *  {@link #INTENT_SCOREFLEX_INTIALIZE_FAILED} intent.
+	 * The extra key for the scoreflex initialisation failed reason in a
+	 * {@link #INTENT_SCOREFLEX_INTIALIZE_FAILED} intent.
 	 */
 	public static final String INTENT_SCOREFLEX_INTIALIZE_FAILED_EXTRA_REASON = "scoreflexInitializeFailedReason";
 
@@ -250,7 +252,8 @@ public class Scoreflex {
 	public static final String INTENT_PLAY_LEVEL = "scoreflexPlayLevel";
 
 	/**
-	 * The extra key for the leaderboard ID in a {@link #INTENT_PLAY_LEVEL} intent.
+	 * The extra key for the leaderboard ID in a {@link #INTENT_PLAY_LEVEL}
+	 * intent.
 	 */
 	public static final String INTENT_PLAY_LEVEL_EXTRA_LEADERBOARD_ID = "leaderboardId";
 
@@ -258,20 +261,20 @@ public class Scoreflex {
 
 	protected static final String DEFAULT_LANGUAGE_CODE = "en";
 	protected static final String[] VALID_LANGUAGE_CODES = { "af", "ar", "be",
-			"bg", "bn", "ca", "cs", "da", "de", "el", "en", "en_GB", "en_US", "es",
-			"es_ES", "es_MX", "et", "fa", "fi", "fr", "fr_FR", "fr_CA", "he", "hi",
-			"hr", "hu", "id", "is", "it", "ja", "ko", "lt", "lv", "mk", "ms", "nb",
-			"nl", "pa", "pl", "pt", "pt_PT", "pt_BR", "ro", "ru", "sk", "sl", "sq",
-			"sr", "sv", "sw", "ta", "th", "tl", "tr", "uk", "vi", "zh", "zh_CN",
-			"zh_TW", "zh_HK", };
+			"bg", "bn", "ca", "cs", "da", "de", "el", "en", "en_GB", "en_US",
+			"es", "es_ES", "es_MX", "et", "fa", "fi", "fr", "fr_FR", "fr_CA",
+			"he", "hi", "hr", "hu", "id", "is", "it", "ja", "ko", "lt", "lv",
+			"mk", "ms", "nb", "nl", "pa", "pl", "pt", "pt_PT", "pt_BR", "ro",
+			"ru", "sk", "sl", "sq", "sr", "sv", "sw", "ta", "th", "tl", "tr",
+			"uk", "vi", "zh", "zh_CN", "zh_TW", "zh_HK", };
 	static final int FILECHOOSER_RESULTCODE = 0;
 	private static long playingSessionStart;
 
-    /**
-     * Checks if Scoreflex is initialized.
-     *
+	/**
+	 * Checks if Scoreflex is initialized.
+	 *
 	 * @return True if the SDK is initialized.
-     */
+	 */
 	public static boolean isInitialized() {
 		return sIsInitialized;
 	}
@@ -281,9 +284,9 @@ public class Scoreflex {
 	 * initialize a production mode not sandbox
 	 *
 	 * @param clientId
-	 *          The clientId of your game.
+	 *            The clientId of your game.
 	 * @param clientSecret
-	 *          The clientSecret of your game.
+	 *            The clientSecret of your game.
 	 */
 	public static void initialize(Context context, String clientId,
 			String clientSecret) {
@@ -291,8 +294,10 @@ public class Scoreflex {
 	}
 
 	/**
-	 * Initialize Scoreflex. Call this method before using Scoreflex.
-	 * A good place to initialize Scoreflex is in your main activity's onCreate method as follow
+	 * Initialize Scoreflex. Call this method before using Scoreflex. A good
+	 * place to initialize Scoreflex is in your main activity's onCreate method
+	 * as follow
+	 *
 	 * <pre>
 	 * <code>
 	 * protected void onCreate(Bundle savedInstance) {
@@ -302,9 +307,9 @@ public class Scoreflex {
 	 * </pre>
 	 *
 	 * @param clientId
-	 *          The clientId of your game.
+	 *            The clientId of your game.
 	 * @param clientSecret
-	 *          The clientSecret of your game.
+	 *            The clientSecret of your game.
 	 */
 	public static void initialize(Context context, final String clientId,
 			String clientSecret, boolean useSandbox) {
@@ -338,14 +343,16 @@ public class Scoreflex {
 
 								@Override
 								public void onSuccess(Response response) {
-									Intent broadcast = new Intent(INTENT_SCOREFLEX_INTIALIZED);
+									Intent broadcast = new Intent(
+											INTENT_SCOREFLEX_INTIALIZED);
 									LocalBroadcastManager.getInstance(
-											Scoreflex.getApplicationContext()).sendBroadcast(
-											broadcast);
+											Scoreflex.getApplicationContext())
+											.sendBroadcast(broadcast);
 								}
 							});
 					if (!isFetchingToken) {
-						// even if we have an access token, we need to ensure connectivity
+						// even if we have an access token, we need to ensure
+						// connectivity
 						// state
 						Scoreflex.get("/network/ping", null, new ResponseHandler() {
 							@Override
@@ -381,6 +388,7 @@ public class Scoreflex {
 	 * True if the SDK is running in sandbox mode.
 	 *
 	 * (@see {@link #initialize(Context, String, String, boolean) Sandbox}).
+	 *
 	 * @return True if the SDK is running in sandbox mode.
 	 */
 	public static boolean usesSandbox() {
@@ -388,8 +396,8 @@ public class Scoreflex {
 	}
 
 	/**
-	 * Returns the base URL for the Scoreflex API. This is the URL used to prefix
-	 * every API resource path and might change depending if you're using
+	 * Returns the base URL for the Scoreflex API. This is the URL used to
+	 * prefix every API resource path and might change depending if you're using
 	 * {@link #initialize(Context, String, String, boolean) Sandbox}.
 	 *
 	 * @return The base URL.
@@ -403,6 +411,7 @@ public class Scoreflex {
 	 * scheme.
 	 *
 	 * (@see {@link #getBaseURL()}).
+	 *
 	 * @return The base URL.
 	 */
 	public static String getNonSecureBaseURL() {
@@ -413,11 +422,11 @@ public class Scoreflex {
 	 * A GET request.
 	 *
 	 * @param resource
-	 *          The resource path, starting with /.
+	 *            The resource path, starting with /.
 	 * @param params
-	 *          AsyncHttpClient request parameters.
+	 *            AsyncHttpClient request parameters.
 	 * @param responseHandler
-	 *          An AsyncHttpClient response handler.
+	 *            An AsyncHttpClient response handler.
 	 */
 	public static void get(String resource, Scoreflex.RequestParams params,
 			Scoreflex.ResponseHandler responseHandler) {
@@ -428,11 +437,11 @@ public class Scoreflex {
 	 * A POST request.
 	 *
 	 * @param resource
-	 *          The resource path, starting with /.
+	 *            The resource path, starting with /.
 	 * @param params
-	 *          AsyncHttpClient request parameters.
+	 *            AsyncHttpClient request parameters.
 	 * @param responseHandler
-	 *          An AsyncHttpClient response handler.
+	 *            An AsyncHttpClient response handler.
 	 */
 	public static void post(String resource, Scoreflex.RequestParams params,
 			Scoreflex.ResponseHandler responseHandler) {
@@ -440,18 +449,21 @@ public class Scoreflex {
 	}
 
 	/**
-	 * A POST request that is guaranteed to be executed when a network connection
-	 * is present, surviving application reboot. The responseHandler will be
-	 * called only if the network is present when the request is first run.
+	 * A POST request that is guaranteed to be executed when a network
+	 * connection is present, surviving application reboot. The responseHandler
+	 * will be called only if the network is present when the request is first
+	 * run.
 	 *
 	 * @param resource
 	 * @param params
-	 *          The request parameters. Only serializable parameters are
-	 *          guaranteed to survive a network error or device reboot.
-	 * @param responseHandler An AsyncHttpClient response handler.
+	 *            The request parameters. Only serializable parameters are
+	 *            guaranteed to survive a network error or device reboot.
+	 * @param responseHandler
+	 *            An AsyncHttpClient response handler.
 	 */
 	public static void postEventually(String resource,
-			Scoreflex.RequestParams params, Scoreflex.ResponseHandler responseHandler) {
+			Scoreflex.RequestParams params,
+			Scoreflex.ResponseHandler responseHandler) {
 		ScoreflexRestClient.postEventually(resource, params, responseHandler);
 	}
 
@@ -459,11 +471,11 @@ public class Scoreflex {
 	 * A PUT request.
 	 *
 	 * @param resource
-	 *          The resource path, starting with /.
+	 *            The resource path, starting with /.
 	 * @param params
-	 *          AsyncHttpClient request parameters.
+	 *            AsyncHttpClient request parameters.
 	 * @param responseHandler
-	 *          An AsyncHttpClient response handler.
+	 *            An AsyncHttpClient response handler.
 	 */
 	public static void put(String resource, Scoreflex.RequestParams params,
 			Scoreflex.ResponseHandler responseHandler) {
@@ -474,11 +486,11 @@ public class Scoreflex {
 	 * A DELETE request.
 	 *
 	 * @param resource
-	 *          The resource path, starting with /.
+	 *            The resource path, starting with /.
 	 * @param params
-	 *          AsyncHttpClient request parameters.
+	 *            AsyncHttpClient request parameters.
 	 * @param responseHandler
-	 *          An AsyncHttpClient response handler.
+	 *            An AsyncHttpClient response handler.
 	 */
 	public static void delete(String resource,
 			Scoreflex.ResponseHandler responseHandler) {
@@ -489,7 +501,7 @@ public class Scoreflex {
 	 * Changes the default gravity.
 	 *
 	 * @param defaultGravity
-	 *          The new default gravity.
+	 *            The new default gravity.
 	 */
 	public static void setDefaultGravity(int defaultGravity) {
 		if (Gravity.TOP == (defaultGravity & Gravity.VERTICAL_GRAVITY_MASK))
@@ -512,11 +524,11 @@ public class Scoreflex {
 	 * gravity.
 	 *
 	 * @param activity
-	 *          The activity that will host the view.
+	 *            The activity that will host the view.
 	 * @param leaderboardId
-	 *          The leaderboard id of the rankbox that you want to show.
+	 *            The leaderboard id of the rankbox that you want to show.
 	 * @param score
-	 *          The last score the user did.
+	 *            The last score the user did.
 	 */
 	public static ScoreflexView showRanksPanel(Activity activity,
 			String leaderboardId, long score) {
@@ -527,13 +539,13 @@ public class Scoreflex {
 	 * Displays a Scoreflex panel on the provided activity.
 	 *
 	 * @param activity
-	 *          The activity that will host the view.
+	 *            The activity that will host the view.
 	 * @param leaderboardId
-	 *          The leaderboard id of the rankbox that you want to show.
+	 *            The leaderboard id of the rankbox that you want to show.
 	 * @param score
-	 *          the last score the user did.
+	 *            the last score the user did.
 	 * @param gravity
-	 *          Choose if the view should be up are down of the screen.
+	 *            Choose if the view should be up are down of the screen.
 	 */
 	public static ScoreflexView showRanksPanel(Activity activity,
 			String leaderboardId, long score, int gravity) {
@@ -548,11 +560,11 @@ public class Scoreflex {
 	 * Shows a view of the specified resource to the user.
 	 *
 	 * @param activity
-	 *          The activity that will host the view.
+	 *            The activity that will host the view.
 	 * @param resource
-	 *          The string of the Scoreflex resource you want to display.
+	 *            The string of the Scoreflex resource you want to display.
 	 * @param params
-	 *          The parameter to be given to the resource (query string).
+	 *            The parameter to be given to the resource (query string).
 	 * @return The displayed view call close() to hide it.
 	 */
 
@@ -567,181 +579,282 @@ public class Scoreflex {
 	}
 
 	/**
+	 * Shows a view of the specified url to the user.
+	 *
+	 * @param activity
+	 *            The activity that will host the view.
+	 * @param url
+	 *            the url to show
+	 * @return The displayed view call close() to hide it.
+	 */
+	public static ScoreflexView showFullScreenView(Activity activity, String url) {
+		ScoreflexView view = Scoreflex.view(activity, url, true);
+
+		activity.addContentView(view, view.getLayoutParams());
+		view.requestFocus();
+		view.requestFocusFromTouch();
+		return view;
+	}
+
+	/**
 	 * Shows a panel view (small view) of the specified resource to the user.
 	 *
 	 * @param activity
-	 *          The activity that will host the view.
+	 *            The activity that will host the view.
 	 * @param resource
-	 *          The string of the Scoreflex resource you want to display.
+	 *            The string of the Scoreflex resource you want to display.
 	 * @param params
-	 *          The parameter to be given to the resource (query string).
+	 *            The parameter to be given to the resource (query string).
 	 * @param gravity
-	 *          Whether the panel should be shown on top or bottom of the screen.
+	 *            Whether the panel should be shown on top or bottom of the
+	 *            screen.
 	 * @return The displayed view call close() to hide it.
 	 */
-	public static ScoreflexView showPanelView(Activity activity, String resource,
-			Scoreflex.RequestParams params, int gravity) {
+	public static ScoreflexView showPanelView(Activity activity,
+			String resource, Scoreflex.RequestParams params, int gravity) {
 		ScoreflexView view = Scoreflex.view(activity, resource, params, false);
 		attachView(activity, view, gravity);
 		return view;
 	}
 
-
 	/**
-	 * Shows the player profile of the player (playerId) or the logged player if playerId is null. Endpoint: <code>/web/players/:id</code>.
-	 * @param activity The activity that will host the view.
-	 * @param playerId The identifier of the player or null for the current logged player.
-	 * @param params The parameter to be given to the resource (query string).
+	 * Shows the player profile of the player (playerId) or the logged player if
+	 * playerId is null. Endpoint: <code>/web/players/:id</code>.
+	 *
+	 * @param activity
+	 *            The activity that will host the view.
+	 * @param playerId
+	 *            The identifier of the player or null for the current logged
+	 *            player.
+	 * @param params
+	 *            The parameter to be given to the resource (query string).
 	 * @return The Scoreflex view on screen.
 	 */
-	public static ScoreflexView showPlayerProfile(Activity activity, String playerId, Scoreflex.RequestParams params) {
+	public static ScoreflexView showPlayerProfile(Activity activity,
+			String playerId, Scoreflex.RequestParams params) {
 		if (null == playerId) {
 			playerId = "me";
 		}
 
-		return showFullScreenView(activity, "/web/players/"+playerId, params);
+		return showFullScreenView(activity, "/web/players/" + playerId, params);
 	}
 
 	/**
-	 * Shows the friends of the player (playerId) or the logged player if playerId is null. Endpoint: <code>/web/players/:id/friends</code>.
-	 * @param activity The activity that will host the view.
-	 * @param playerId The identifier of the player or null for the current logged player.
-	 * @param params The parameter to be given to the resource (query string).
+	 * Shows the friends of the player (playerId) or the logged player if
+	 * playerId is null. Endpoint: <code>/web/players/:id/friends</code>.
+	 *
+	 * @param activity
+	 *            The activity that will host the view.
+	 * @param playerId
+	 *            The identifier of the player or null for the current logged
+	 *            player.
+	 * @param params
+	 *            The parameter to be given to the resource (query string).
 	 * @return The Scoreflex view on screen.
 	 */
-	public static ScoreflexView showPlayerFriends(Activity activity, String playerId, Scoreflex.RequestParams params) {
+	public static ScoreflexView showPlayerFriends(Activity activity,
+			String playerId, Scoreflex.RequestParams params) {
 		if (null == playerId) {
 			playerId = "me";
 		}
 
-		return showFullScreenView(activity, "/web/players/"+playerId+"/friends", params);
+		return showFullScreenView(activity, "/web/players/" + playerId
+				+ "/friends", params);
 	}
 
 	/**
-	 * Shows the news feed of the logged player. Endpoint: <code>/web/players/me/newsfeed</code>.
-	 * @param activity The activity that will host the view.
-	 * @param params The parameter to be given to the resource (query string).
+	 * Shows the news feed of the logged player. Endpoint:
+	 * <code>/web/players/me/newsfeed</code>.
+	 *
+	 * @param activity
+	 *            The activity that will host the view.
+	 * @param params
+	 *            The parameter to be given to the resource (query string).
 	 * @return The Scoreflex view on screen.
 	 */
-	public static ScoreflexView showPlayerNewsFeed(Activity activity, Scoreflex.RequestParams params) {
+	public static ScoreflexView showPlayerNewsFeed(Activity activity,
+			Scoreflex.RequestParams params) {
 		return showFullScreenView(activity, "/web/players/me/newsfeed", params);
 	}
 
 	/**
-	 * Shows the edit profile form of the logged player. Endpoint: <code>/web/players/me/edit</code>.
-	 * @param activity The activity that will host the view.
-	 * @param params The parameter to be given to the resource (query string).
+	 * Shows the edit profile form of the logged player. Endpoint:
+	 * <code>/web/players/me/edit</code>.
+	 *
+	 * @param activity
+	 *            The activity that will host the view.
+	 * @param params
+	 *            The parameter to be given to the resource (query string).
 	 * @return The Scoreflex view on screen.
 	 */
-	public static ScoreflexView showPlayerProfileEdit(Activity activity, Scoreflex.RequestParams params) {
+	public static ScoreflexView showPlayerProfileEdit(Activity activity,
+			Scoreflex.RequestParams params) {
 		return showFullScreenView(activity, "/web/players/me/edit", params);
 	}
 
 	/**
-	 * Shows the settings form of the logged player. Endpoint: <code>/web/players/me/settings</code>.
-	 * @param activity The activity that will host the view.
-	 * @param params The parameter to be given to the resource (query string).
+	 * Shows the settings form of the logged player. Endpoint:
+	 * <code>/web/players/me/settings</code>.
+	 *
+	 * @param activity
+	 *            The activity that will host the view.
+	 * @param params
+	 *            The parameter to be given to the resource (query string).
 	 * @return The Scoreflex view on screen.
 	 */
-	public static ScoreflexView showPlayerSettings(Activity activity, Scoreflex.RequestParams params) {
+	public static ScoreflexView showPlayerSettings(Activity activity,
+			Scoreflex.RequestParams params) {
 		return showFullScreenView(activity, "/web/players/me/settings", params);
 	}
 
 	/**
-	 * Shows the rating of the logged player. Endpoint: <code>/web/players/me/rating</code>
-	 * @param activity The activity that will host the view.
-	 * @param params The parameter to be given to the resource (query string).
+	 * Shows the rating of the logged player. Endpoint:
+	 * <code>/web/players/me/rating</code>
+	 *
+	 * @param activity
+	 *            The activity that will host the view.
+	 * @param params
+	 *            The parameter to be given to the resource (query string).
 	 * @return The Scoreflex view on screen.
 	 */
-	public static ScoreflexView showPlayerRating(Activity activity, Scoreflex.RequestParams params) {
+	public static ScoreflexView showPlayerRating(Activity activity,
+			Scoreflex.RequestParams params) {
 		return showFullScreenView(activity, "/web/players/me/rating", params);
 	}
 
 	/**
-	 * Shows the profile of the developer (developerId). Endpoint: <code>/web/developers/:id</code>.
-	 * @param activity The activity that will host the view.
-	 * @param developerId The identifier of the developer.
-	 * @param params The parameter to be given to the resource (query string).
+	 * Shows the profile of the developer (developerId). Endpoint:
+	 * <code>/web/developers/:id</code>.
+	 *
+	 * @param activity
+	 *            The activity that will host the view.
+	 * @param developerId
+	 *            The identifier of the developer.
+	 * @param params
+	 *            The parameter to be given to the resource (query string).
 	 * @return The Scoreflex view on screen.
 	 */
-	public static ScoreflexView showDeveloperProfile(Activity activity, String developerId, Scoreflex.RequestParams params) {
-		return showFullScreenView(activity, "/web/developers/"+developerId, params);
+	public static ScoreflexView showDeveloperProfile(Activity activity,
+			String developerId, Scoreflex.RequestParams params) {
+		return showFullScreenView(activity, "/web/developers/" + developerId,
+				params);
 	}
 
 	/**
-	 * Shows the games of the developer (developerId). Endpoint: <code>/web/developers/:id/games</code>.
-	 * @param activity The activity that will host the view.
-	 * @param developerId The identifier of the developer.
-	 * @param params The parameter to be given to the resource (query string).
+	 * Shows the games of the developer (developerId). Endpoint:
+	 * <code>/web/developers/:id/games</code>.
+	 *
+	 * @param activity
+	 *            The activity that will host the view.
+	 * @param developerId
+	 *            The identifier of the developer.
+	 * @param params
+	 *            The parameter to be given to the resource (query string).
 	 * @return The Scoreflex view on screen.
 	 */
-	public static ScoreflexView showDeveloperGames(Activity activity, String developerId, Scoreflex.RequestParams params) {
-		return showFullScreenView(activity, "/web/developers/"+developerId+"/games", params);
+	public static ScoreflexView showDeveloperGames(Activity activity,
+			String developerId, Scoreflex.RequestParams params) {
+		return showFullScreenView(activity, "/web/developers/" + developerId
+				+ "/games", params);
 	}
 
 	/**
-	 * Shows the details of the game (gameId). Endpoint: <code>/web/games/:id</code>
-	 * @param activity The activity that will host the view.
-	 * @param gameId The identifier the game.
-	 * @param params The parameter to be given to the resource (query string).
+	 * Shows the details of the game (gameId). Endpoint:
+	 * <code>/web/games/:id</code>
+	 *
+	 * @param activity
+	 *            The activity that will host the view.
+	 * @param gameId
+	 *            The identifier the game.
+	 * @param params
+	 *            The parameter to be given to the resource (query string).
 	 * @return The Scoreflex view on screen.
 	 */
-	public static ScoreflexView showGameDetails(Activity activity, String gameId, Scoreflex.RequestParams params) {
-		return showFullScreenView(activity, "/web/games/"+gameId, params);
+	public static ScoreflexView showGameDetails(Activity activity,
+			String gameId, Scoreflex.RequestParams params) {
+		return showFullScreenView(activity, "/web/games/" + gameId, params);
 	}
 
 	/**
-	 * Shows the players of the game (gameId). Endpoint: <code>/web/games/:id/players</code>.
-	 * @param activity The activity that will host the view.
-	 * @param gameId The identifier the game.
-	 * @param params The parameter to be given to the resource (query string).
+	 * Shows the players of the game (gameId). Endpoint:
+	 * <code>/web/games/:id/players</code>.
+	 *
+	 * @param activity
+	 *            The activity that will host the view.
+	 * @param gameId
+	 *            The identifier the game.
+	 * @param params
+	 *            The parameter to be given to the resource (query string).
 	 * @return The Scoreflex view on screen.
 	 */
-	public static ScoreflexView showGamePlayers(Activity activity, String gameId, Scoreflex.RequestParams params) {
-		return showFullScreenView(activity, "/web/games/"+gameId+"/players", params);
+	public static ScoreflexView showGamePlayers(Activity activity,
+			String gameId, Scoreflex.RequestParams params) {
+		return showFullScreenView(activity,
+				"/web/games/" + gameId + "/players", params);
 	}
 
 	/**
-	 * Shows a leaderboard (leaderboardId). Endpoint: <code>/web/leaderboards/:leaderboardId</code>.
-	 * @param activity The activity that will host the view.
-	 * @param leaderboardId The identifier of the leaderboard.
-	 * @param params The parameter to be given to the resource (query string).
+	 * Shows a leaderboard (leaderboardId). Endpoint:
+	 * <code>/web/leaderboards/:leaderboardId</code>.
+	 *
+	 * @param activity
+	 *            The activity that will host the view.
+	 * @param leaderboardId
+	 *            The identifier of the leaderboard.
+	 * @param params
+	 *            The parameter to be given to the resource (query string).
 	 * @return The Scoreflex view on screen.
 	 */
-	public static ScoreflexView showLeaderboard(Activity activity, String leaderboardId, Scoreflex.RequestParams params) {
-		return showFullScreenView(activity, "/web/leaderboards/"+leaderboardId, params);
+	public static ScoreflexView showLeaderboard(Activity activity,
+			String leaderboardId, Scoreflex.RequestParams params) {
+		return showFullScreenView(activity, "/web/leaderboards/"
+				+ leaderboardId, params);
 	}
 
 	/**
-	 * Shows the overview of the leaderboard (leaderboardId). Endpoint: <code>/web/leaderboards/:leaderboardId/overview</code>
-	 * @param activity The activity that will host the view.
-	 * @param leaderboardId The identifier of the leaderboard.
-	 * @param params The parameter to be given to the resource (query string).
+	 * Shows the overview of the leaderboard (leaderboardId). Endpoint:
+	 * <code>/web/leaderboards/:leaderboardId/overview</code>
+	 *
+	 * @param activity
+	 *            The activity that will host the view.
+	 * @param leaderboardId
+	 *            The identifier of the leaderboard.
+	 * @param params
+	 *            The parameter to be given to the resource (query string).
 	 * @return The Scoreflex view on screen.
 	 */
-	public static ScoreflexView showLeaderboardOverview(Activity activity, String leaderboardId, Scoreflex.RequestParams params) {
-		return showFullScreenView(activity, "/web/leaderboards/"+leaderboardId+"/overview", params);
+	public static ScoreflexView showLeaderboardOverview(Activity activity,
+			String leaderboardId, Scoreflex.RequestParams params) {
+		return showFullScreenView(activity, "/web/leaderboards/"
+				+ leaderboardId + "/overview", params);
 	}
 
-
 	/**
-	 * Shows the challenges list of the current player. Endpoint: <code>/web/challenges</code>.
-	 * @param activity The activity that will host the view.
-	 * @param params The parameter to be given to the resource (query string).
+	 * Shows the challenges list of the current player. Endpoint:
+	 * <code>/web/challenges</code>.
+	 *
+	 * @param activity
+	 *            The activity that will host the view.
+	 * @param params
+	 *            The parameter to be given to the resource (query string).
 	 * @return The Scoreflex view on screen.
 	 */
-	public static ScoreflexView showChallenges(Activity activity, Scoreflex.RequestParams params) {
+	public static ScoreflexView showChallenges(Activity activity,
+			Scoreflex.RequestParams params) {
 		return showFullScreenView(activity, "/web/challenges", params);
 	}
 
-
 	/**
 	 * Shows the search form. Endpoint: <code>/web/search</code>
-	 * @param activity The activity that will host the view.
-	 * @param params The parameter to be given to the resource (query string).
+	 *
+	 * @param activity
+	 *            The activity that will host the view.
+	 * @param params
+	 *            The parameter to be given to the resource (query string).
 	 * @return The Scoreflex view on screen.
 	 */
-	public static ScoreflexView showSearch(Activity activity, Scoreflex.RequestParams params) {
+	public static ScoreflexView showSearch(Activity activity,
+			Scoreflex.RequestParams params) {
 		return showFullScreenView(activity, "/web/search", params);
 	}
 
@@ -749,24 +862,63 @@ public class Scoreflex {
 	 * Shows a Scoreflex panel on the provided activity.
 	 *
 	 * @param activity
-	 *          The activity that will host the view.
+	 *            The activity that will host the view.
 	 * @param leaderboardId
-	 *          The leaderboard id of the rankbox that you want to show.
+	 *            The leaderboard id of the rankbox that you want to show.
 	 * @param gravity
-	 *          Chooses if the view should be up are down of the screen.
+	 *            Chooses if the view should be up are down of the screen.
 	 * @param params
-	 *          The parameter to be given to the resource (query string).
+	 *            The parameter to be given to the resource (query string).
 	 */
 	public static ScoreflexView showRanksPanel(Activity activity,
 			String leaderboardId, int gravity, Scoreflex.RequestParams params) {
+		return showRanksPanel(activity, leaderboardId, gravity, params, false);
+	}
+
+	/**
+	 * Shows a Scoreflex panel on the provided activity.
+	 *
+	 * @param activity
+	 *            The activity that will host the view.
+	 * @param leaderboardId
+	 *            The leaderboard id of the rankbox that you want to show.
+	 * @param gravity
+	 *            Chooses if the view should be up are down of the screen.
+	 * @param params
+	 *            The parameter to be given to the resource (query string).
+	 * @param openAsActivity
+	 * 			  Tell wether or not the full view (when the rank panel is clicked)
+	 *            should be opened as a new activity
+	 */
+	public static ScoreflexView showRanksPanel(final Activity activity,
+			String leaderboardId, int gravity, Scoreflex.RequestParams params, boolean openAsActivity) {
 		// Resource
 		String resource = String.format(Locale.getDefault(),
 				"/web/scores/%s/ranks", leaderboardId);
 
 		// Get the leaderboard & display
-		ScoreflexView leaderboardView = Scoreflex.view(activity, resource, params,
-				false);
+		ScoreflexView leaderboardView = Scoreflex.view(activity, resource,
+				params, false);
 		attachView(activity, leaderboardView, gravity);
+		if (openAsActivity) {
+			leaderboardView.setScoreflexViewListener(new ScoreflexViewListener(){
+
+				@Override
+				public void onViewClosed() {
+
+				}
+
+				@Override
+				public boolean handleOpenNewFullscreenView(String fullUrlString) {
+					Intent intent = new Intent(activity, ScoreflexActivity.class);
+					intent.putExtra(ScoreflexActivity.INTENT_SHOW_EXTRA_KEY, ScoreflexActivity.INTENT_EXTRA_SHOW_ABSTRACT_URL);
+					intent.putExtra(ScoreflexActivity.INTENT_EXTRA_ABSTRACT_URL, fullUrlString);
+					activity.startActivity(intent);
+					return true;
+				}
+
+			});
+		}
 		return leaderboardView;
 	}
 
@@ -774,22 +926,24 @@ public class Scoreflex {
 	 * Attach the given view above the activity's view hierarchy.
 	 *
 	 * @param activity
-	 *          The activity that will host the view.
+	 *            The activity that will host the view.
 	 * @param view
-	 *          The view to attach.
+	 *            The view to attach.
 	 * @param gravity
-	 *          Chooses if the view should be up are down of the screen.
+	 *            Chooses if the view should be up are down of the screen.
 	 */
 
 	private static void attachView(Activity activity, View view, int gravity) {
 		ViewGroup contentView = (ViewGroup) activity.getWindow().getDecorView()
 				.findViewById(android.R.id.content);
-		// final float scale = activity.getResources().getDisplayMetrics().density;
+		// final float scale =
+		// activity.getResources().getDisplayMetrics().density;
 
 		FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(
 				ViewGroup.LayoutParams.MATCH_PARENT,
 				getDensityIndependantPixel(activity.getResources()
-						.getDimensionPixelSize(R.dimen.scoreflex_panel_height)), gravity);
+						.getDimensionPixelSize(R.dimen.scoreflex_panel_height)),
+				gravity);
 		view.setLayoutParams(layoutParams);
 		view.setVisibility(View.GONE);
 		contentView.addView(view);
@@ -802,9 +956,9 @@ public class Scoreflex {
 	 * Build a view that displays Scoreflex content.
 	 *
 	 * @param activity
-	 *          The activity that will host the view.
+	 *            The activity that will host the view.
 	 * @param resource
-	 *          The REST resource corresponding to that view.
+	 *            The REST resource corresponding to that view.
 	 * @return A view that you can attach to your view hierarchy.
 	 */
 	protected static ScoreflexView view(Activity activity, String resource) {
@@ -815,11 +969,11 @@ public class Scoreflex {
 	 * Builds a view that displays Scoreflex content.
 	 *
 	 * @param activity
-	 *          The activity that will host the view.
+	 *            The activity that will host the view.
 	 * @param resource
-	 *          The REST resource corresponding to that view.
+	 *            The REST resource corresponding to that view.
 	 * @param params
-	 *          The request parameters.
+	 *            The request parameters.
 	 * @return A view that you can attach to your view hierarchy.
 	 */
 	protected static ScoreflexView view(Activity activity, String resource,
@@ -845,11 +999,11 @@ public class Scoreflex {
 	 * Builds a fullscreen view to Scoreflex content and returns it.
 	 *
 	 * @param activity
-	 *          The activity that will host the view.
+	 *            The activity that will host the view.
 	 * @param resource
-	 *          The REST resource corresponding to that view.
+	 *            The REST resource corresponding to that view.
 	 * @param params
-	 *          The request parameters.
+	 *            The request parameters.
 	 * @return A view that you can attach to your view hierarchy.
 	 */
 	public static ScoreflexView getFullscreenView(Activity activity,
@@ -861,15 +1015,15 @@ public class Scoreflex {
 	 * Builds a panel view to Scoreflex content and returns it.
 	 *
 	 * @param activity
-	 *          The activity that will host the view.
+	 *            The activity that will host the view.
 	 * @param resource
-	 *          The REST resource corresponding to that view.
+	 *            The REST resource corresponding to that view.
 	 * @param params
-	 *          The request parameters.
+	 *            The request parameters.
 	 * @return A view that you can attach to your view hierarchy.
 	 */
-	public static ScoreflexView getPanelView(Activity activity, String resource,
-			Scoreflex.RequestParams params) {
+	public static ScoreflexView getPanelView(Activity activity,
+			String resource, Scoreflex.RequestParams params) {
 		return view(activity, resource, params, false);
 	}
 
@@ -877,13 +1031,13 @@ public class Scoreflex {
 	 * Builds a view that displays Scoreflex content.
 	 *
 	 * @param activity
-	 *          The activity that will host the view.
+	 *            The activity that will host the view.
 	 * @param resource
-	 *          The REST resource corresponding to that view.
+	 *            The REST resource corresponding to that view.
 	 * @param params
-	 *          The request parameters.
+	 *            The request parameters.
 	 * @param forceFullScreen
-	 *          Set wether the view should be full screen.
+	 *            Set wether the view should be full screen.
 	 * @return A view that you can attach to your view hierarchy.
 	 */
 	protected static ScoreflexView view(Activity activity, String resource,
@@ -907,27 +1061,42 @@ public class Scoreflex {
 	}
 
 	/**
-	 * Handles Scoreflex activity results. This method MUST be called from your Activity's
-	 * onActivityResult method in order to handle facebook / google login.
-	 * Your onActivityResult should look like this :
+	 * build a view in with the given url
+	 * @param activity the activity that will host the view
+	 * @param url the url to show
+	 * @param forceFullscreen Set wether the view should be full screen.
+	 * @return  A view that you can attach to your view hierarchy.
+	 */
+	protected static ScoreflexView view(Activity activity, String url,
+			boolean forceFullscreen) {
+		ScoreflexView result = new ScoreflexView(activity);
+		result.setFullUrl(url, forceFullscreen, false);
+		return result;
+	}
+
+	/**
+	 * Handles Scoreflex activity results. This method MUST be called from your
+	 * Activity's onActivityResult method in order to handle facebook / google
+	 * login. Your onActivityResult should look like this :
+	 *
 	 * <pre>
 	 * <code>
 	 * 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-	 *		super.onActivityResult(requestCode, resultCode, data);
-	 *		Scoreflex.onActivityResult(this, requestCode, resultCode, data);
-	 *	}
+	 * 	super.onActivityResult(requestCode, resultCode, data);
+	 * 	Scoreflex.onActivityResult(this, requestCode, resultCode, data);
+	 * }
 	 *
 	 * </code>
 	 * </pre>
 	 *
 	 * @param activity
-	 *          The current activity that received the result.
+	 *            The current activity that received the result.
 	 * @param requestCode
-	 *          The requestCode the activity received.
+	 *            The requestCode the activity received.
 	 * @param responseCode
-	 *          The responseCode the activity received.
+	 *            The responseCode the activity received.
 	 * @param intent
-	 *          The intent the activity received.
+	 *            The intent the activity received.
 	 */
 	public static void onActivityResult(Activity activity, int requestCode,
 			int responseCode, Intent intent) {
@@ -935,7 +1104,8 @@ public class Scoreflex {
 		if (requestCode == FILECHOOSER_RESULTCODE && mScoreflexView != null) {
 			ScoreflexView view = mScoreflexView.get();
 			if (view != null) {
-				view.onActivityResult(activity, requestCode, responseCode, intent);
+				view.onActivityResult(activity, requestCode, responseCode,
+						intent);
 				return;
 			}
 		}
@@ -949,18 +1119,20 @@ public class Scoreflex {
 	 * A helper method that submits a score.
 	 *
 	 * @param leaderboardId
-	 *          The leaderboad id to submit the score to.
+	 *            The leaderboad id to submit the score to.
 	 * @param score
-	 *          The score of the player.
+	 *            The score of the player.
 	 * @param params
-	 *          Other parameters that will be used for the api call.
+	 *            Other parameters that will be used for the api call.
 	 * @param responseHandler
-	 *          A response handler that will be called if the request is sent
-	 *          immediatly otherwise, will never get called (@see
-	 *          {@link #postEventually(String, RequestParams, ResponseHandler)}).
+	 *            A response handler that will be called if the request is sent
+	 *            immediatly otherwise, will never get called (@see
+	 *            {@link #postEventually(String, RequestParams, ResponseHandler)}
+	 *            ).
 	 */
 	public static void submitScore(String leaderboardId, long score,
-			Scoreflex.RequestParams params, Scoreflex.ResponseHandler responseHandler) {
+			Scoreflex.RequestParams params,
+			Scoreflex.ResponseHandler responseHandler) {
 		if (params == null) {
 			params = new Scoreflex.RequestParams();
 		}
@@ -970,7 +1142,8 @@ public class Scoreflex {
 	}
 
 	protected static void submitScore(String leaderboardId,
-			Scoreflex.RequestParams params, Scoreflex.ResponseHandler responseHandler) {
+			Scoreflex.RequestParams params,
+			Scoreflex.ResponseHandler responseHandler) {
 		final String scoreResource = "/scores/" + leaderboardId;
 		// RequestParams params = new RequestParams();
 		// params.put("score", Long.toString(score));
@@ -983,16 +1156,16 @@ public class Scoreflex {
 	 * rank panel for the current player.
 	 *
 	 * @param activity
-	 *          The activity that will host the view.
+	 *            The activity that will host the view.
 	 * @param leaderboardId
-	 *          The leaderboad id to submit the score to.
+	 *            The leaderboad id to submit the score to.
 	 * @param score
-	 *          The score of the player.
+	 *            The score of the player.
 	 * @param params
-	 *          Other parameters that will be used for the api call and the
-	 *          rankbox display.
+	 *            Other parameters that will be used for the api call and the
+	 *            rankbox display.
 	 * @param gravity
-	 *          Chooses if the view should be up are down of the screen.
+	 *            Chooses if the view should be up are down of the screen.
 	 * @return the Scoreflex view call close() to hide it.
 	 */
 	public static ScoreflexView submitScoreAndShowRanksPanel(
@@ -1006,14 +1179,15 @@ public class Scoreflex {
 
 		final RequestParams finalParams = params;
 
-		ScoreflexView rankbox = Scoreflex.showRanksPanel(activity, leaderboardId,
-				gravity, finalParams);
+		ScoreflexView rankbox = Scoreflex.showRanksPanel(activity,
+				leaderboardId, gravity, finalParams);
 
 		submitScore(leaderboardId, params, new Scoreflex.ResponseHandler() {
 
 			@Override
 			public void onFailure(Throwable e, Response errorResponse) {
-				Log.d("Scoreflex", "Could not submit score, Rankbox wont be shown");
+				Log.d("Scoreflex",
+						"Could not submit score, Rankbox wont be shown");
 			}
 
 			@Override
@@ -1043,23 +1217,23 @@ public class Scoreflex {
 		return ScoreflexRestClient.getAccessToken();
 	}
 
-
 	/**
 	 * A helper method that submits a turn to a challenge instance.
 	 *
 	 * @param challengeInstanceId
-	 *          The challenge instance id.
+	 *            The challenge instance id.
 	 * @param turn
-	 *          The turn data.
+	 *            The turn data.
 	 * @param responseHandler
-	 *          A response handler if the request is sent immediatly otherwise,
-	 *          will never get called (@see
-	 *          {@link #postEventually(String, RequestParams, ResponseHandler)}).
+	 *            A response handler if the request is sent immediatly
+	 *            otherwise, will never get called (@see
+	 *            {@link #postEventually(String, RequestParams, ResponseHandler)}
+	 *            ).
 	 */
-	public static void submitTurn(String challengeInstanceId, RequestParams turn,
-			Scoreflex.ResponseHandler responseHandler) {
-		final String turnResource = "/challenges/instances/" + challengeInstanceId
-				+ "/turns";
+	public static void submitTurn(String challengeInstanceId,
+			RequestParams turn, Scoreflex.ResponseHandler responseHandler) {
+		final String turnResource = "/challenges/instances/"
+				+ challengeInstanceId + "/turns";
 		JSONObject body = new JSONObject();
 		try {
 			Set<String> parameters = turn.getParamNames();
@@ -1079,19 +1253,22 @@ public class Scoreflex {
 	}
 
 	/**
-	 * A helper method that submits turn data and directly show challenge detail.
+	 * A helper method that submits turn data and directly show challenge
+	 * detail.
 	 *
 	 * @param activity
-	 *          The activity that will host the view.
+	 *            The activity that will host the view.
 	 * @param challengeInstanceId
-	 *          The challenge instance id.
+	 *            The challenge instance id.
 	 * @param turn
-	 *          The turn data.
+	 *            The turn data.
 	 */
-	public static void submitTurnAndShowChallengeDetail(final Activity activity,
-			final String challengeInstanceId, RequestParams turn) {
+	public static void submitTurnAndShowChallengeDetail(
+			final Activity activity, final String challengeInstanceId,
+			RequestParams turn) {
 
-		final String resource = "/web/challenges/instances/" + challengeInstanceId;
+		final String resource = "/web/challenges/instances/"
+				+ challengeInstanceId;
 
 		submitTurn(challengeInstanceId, turn, new Scoreflex.ResponseHandler() {
 
@@ -1122,12 +1299,12 @@ public class Scoreflex {
 
 		public static final String TAG = "RequestParams";
 
-		public RequestParams(Parcel in) throws JSONException  {
+		public RequestParams(Parcel in) throws JSONException {
 			JSONObject json = new JSONObject(in.readString());
 			Iterator<?> it = json.keys();
 			String key;
 			while (it.hasNext()) {
-				key = (String)it.next();
+				key = (String) it.next();
 				this.put(key, json.optString(key));
 			}
 		}
@@ -1140,11 +1317,11 @@ public class Scoreflex {
 		}
 
 		/**
-		 * Constructs a new RequestParams instance containing the key/value string
-		 * params from the specified map.
+		 * Constructs a new RequestParams instance containing the key/value
+		 * string params from the specified map.
 		 *
 		 * @param source
-		 *          The source key/value string map to add.
+		 *            The source key/value string map to add.
 		 */
 		public RequestParams(Map<String, String> source) {
 			super(source);
@@ -1155,10 +1332,10 @@ public class Scoreflex {
 		 * initial key/value string param.
 		 *
 		 * @param keysAndValues
-		 *          A sequence of keys and values. Objects are automatically
-		 *          converted to Strings (including the value {@code null}).
+		 *            A sequence of keys and values. Objects are automatically
+		 *            converted to Strings (including the value {@code null}).
 		 * @throws IllegalArgumentException
-		 *           If the number of arguments isn't even.
+		 *             If the number of arguments isn't even.
 		 */
 		public RequestParams(Object... keysAndValues) {
 			super(keysAndValues);
@@ -1169,9 +1346,9 @@ public class Scoreflex {
 		 * initial key/value string param.
 		 *
 		 * @param key
-		 *          The key name for the intial param.
+		 *            The key name for the intial param.
 		 * @param value
-		 *          The value string for the initial param.
+		 *            The value string for the initial param.
 		 */
 		public RequestParams(String key, String value) {
 			super(key, value);
@@ -1191,8 +1368,8 @@ public class Scoreflex {
 		}
 
 		/**
-		 * Returns the value for the given param. If the given param is encountered
-		 * multiple times, the first occurrence is returned.
+		 * Returns the value for the given param. If the given param is
+		 * encountered multiple times, the first occurrence is returned.
 		 *
 		 * @param paramName
 		 * @return
@@ -1234,7 +1411,7 @@ public class Scoreflex {
 		public JSONObject toJSONObject() {
 			JSONObject result = new JSONObject();
 			java.util.List<org.apache.http.message.BasicNameValuePair> params = getParamsList();
-			for (org.apache.http.message.BasicNameValuePair parameter : params ) { 
+			for (org.apache.http.message.BasicNameValuePair parameter : params) {
 				try {
 					result.put(parameter.getName(), parameter.getValue());
 				} catch (JSONException e) {
@@ -1249,22 +1426,23 @@ public class Scoreflex {
 			destination.writeString(toJSONObject().toString());
 		}
 
-		public static final Parcelable.Creator<Scoreflex.RequestParams> CREATOR =
-				new Parcelable.Creator<Scoreflex.RequestParams>() {
+		public static final Parcelable.Creator<Scoreflex.RequestParams> CREATOR = new Parcelable.Creator<Scoreflex.RequestParams>() {
 
-				public RequestParams createFromParcel(Parcel in) {
-					try {
-						return new RequestParams(in);
-					} catch (JSONException e) {
-						Log.e(TAG, "Error while unserializing JSON from a Scoreflex.RequestParams", e);
-						return null;
-					}
+			public RequestParams createFromParcel(Parcel in) {
+				try {
+					return new RequestParams(in);
+				} catch (JSONException e) {
+					Log.e(TAG,
+							"Error while unserializing JSON from a Scoreflex.RequestParams",
+							e);
+					return null;
 				}
+			}
 
-				public RequestParams[] newArray(int size) {
-					return new RequestParams[size];
-				}
-			};
+			public RequestParams[] newArray(int size) {
+				return new RequestParams[size];
+			}
+		};
 	}
 
 	/**
@@ -1425,8 +1603,8 @@ public class Scoreflex {
 
 	/**
 	 * Gets the current language. If language was specified using {@link
-	 * Scoreflex.setLang(String)}, this value is returned. Otherwise it is guessed
-	 * from the system.
+	 * Scoreflex.setLang(String)}, this value is returned. Otherwise it is
+	 * guessed from the system.
 	 *
 	 * @return The locale in use.
 	 */
@@ -1477,10 +1655,10 @@ public class Scoreflex {
 	 * affect the responses of the REST server as well as Scoreflex web content.
 	 *
 	 * @param lang
-	 *          Valid values are available in
-	 *          {@link Scoreflex.VALID_LANGUAGE_CODES}.
+	 *            Valid values are available in
+	 *            {@link Scoreflex.VALID_LANGUAGE_CODES}.
 	 * @throws IllegalArgumentException
-	 *           If the lang is not a valid language.
+	 *             If the lang is not a valid language.
 	 */
 	public static void setLang(String lang) throws IllegalArgumentException {
 		for (int i = 0; i < VALID_LANGUAGE_CODES.length; i++) {
@@ -1496,7 +1674,8 @@ public class Scoreflex {
 	/**
 	 * Sets the location of the user. If you are collecting user location, this
 	 * setting will allow the SDK to forward user location to the Scoreflex REST
-	 * server when appropriate and present the user location specific information.
+	 * server when appropriate and present the user location specific
+	 * information.
 	 *
 	 * @param location
 	 */
@@ -1525,7 +1704,8 @@ public class Scoreflex {
 			Location locations[] = {
 					locationManager
 							.getLastKnownLocation(LocationManager.NETWORK_PROVIDER),
-					locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER),
+					locationManager
+							.getLastKnownLocation(LocationManager.GPS_PROVIDER),
 					locationManager
 							.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER), };
 
@@ -1571,14 +1751,15 @@ public class Scoreflex {
 
 	/**
 	 * Method to be called when the back button is pressed (hardware) to handle
-	 * history in a scoreflexView.
-	 * Call it in the activity's back button pressed method as follow:
+	 * history in a scoreflexView. Call it in the activity's back button pressed
+	 * method as follow:
+	 *
 	 * <pre>
 	 * <code>
 	 * public void onBackPressed() {
 	 * 	if (Scoreflex.backButtonPressed() == false) {
-	 *		super.onBackPressed();
-	 *	}
+	 * 	super.onBackPressed();
+	 * }
 	 * }
 	 * </code>
 	 * </pre>
@@ -1606,16 +1787,17 @@ public class Scoreflex {
 	}
 
 	private static boolean checkPlayService(Activity activity) {
-		return  ScoreflexGcmWrapper.isGooglePlayServiceAvailable(activity);
+		return ScoreflexGcmWrapper.isGooglePlayServiceAvailable(activity);
 	}
 
 	/**
-	 * If network is available, preload a view with the specified ressource and hold a reference on it until the view is shown or freed.
+	 * If network is available, preload a view with the specified ressource and
+	 * hold a reference on it until the view is shown or freed.
 	 *
 	 * @param activity
-	 *          The activity that will host the view.
+	 *            The activity that will host the view.
 	 * @param resource
-	 *          The ressource to preload.
+	 *            The ressource to preload.
 	 */
 	public static void preloadResource(Activity activity, String resource) {
 		if (activity == null) {
@@ -1670,7 +1852,8 @@ public class Scoreflex {
 
 	private static void clearPreloadedView() {
 		synchronized (mPreloadedViews) {
-			for (Entry<String, ScoreflexView> entry : mPreloadedViews.entrySet()) {
+			for (Entry<String, ScoreflexView> entry : mPreloadedViews
+					.entrySet()) {
 				entry.getValue().close();
 			}
 			mPreloadedViews.clear();
@@ -1689,7 +1872,7 @@ public class Scoreflex {
 	 * Free the specified preloaded ressource from memory.
 	 *
 	 * @param resource
-	 *          The ressource to free (all preloaded resource if null).
+	 *            The ressource to free (all preloaded resource if null).
 	 */
 	public static void freePreloadedResources(String resource) {
 		if (null == mPreloadedViews) {
@@ -1705,13 +1888,13 @@ public class Scoreflex {
 
 	/**
 	 * Helper method that will register a device for google cloud messages
-	 * notification and register the device token to Scoreflex. This method must be
-	 * called after the initialize.
+	 * notification and register the device token to Scoreflex. This method must
+	 * be called after the initialize.
 	 *
 	 * @param senderId
-	 *          Google Cloud Message sender id to register to.
+	 *            Google Cloud Message sender id to register to.
 	 * @param activity
-	 *          The current activity.
+	 *            The current activity.
 	 */
 	public static void registerForPushNotification(Activity activity) {
 		if (checkPlayService(activity)) {
@@ -1720,9 +1903,12 @@ public class Scoreflex {
 	}
 
 	/**
-	 * Method to call on your onCreate method to handle the Scoreflex notification, it must be added to the Activity implementation of the class you gave to
-	 * {@link #onBroadcastReceived(Context, Intent, int, Class)} (must be called after Scoreflex.initialize().
-	 * As follow:
+	 * Method to call on your onCreate method to handle the Scoreflex
+	 * notification, it must be added to the Activity implementation of the
+	 * class you gave to
+	 * {@link #onBroadcastReceived(Context, Intent, int, Class)} (must be called
+	 * after Scoreflex.initialize(). As follow:
+	 *
 	 * <pre>
 	 * <code>
 	 * protected void onCreate(Bundle savedInstance) {
@@ -1730,10 +1916,11 @@ public class Scoreflex {
 	 * }
 	 * </code>
 	 * </pre>
+	 *
 	 * @param activity
-	 *          The current activity.
+	 *            The current activity.
 	 * @param intent
-	 *          The intent the activity received.
+	 *            The intent the activity received.
 	 * @return <code>true</code> if handled, <code>false</code> otherwise.
 	 */
 	public static boolean onCreateMainActivity(Activity activity, Intent intent) {
@@ -1748,10 +1935,8 @@ public class Scoreflex {
 				if (NOTIFICATION_TYPE_CHALLENGE_INVITATION == code
 						|| NOTIFICATION_TYPE_YOUR_TURN_IN_CHALLENGE == code
 						|| NOTIFICATION_TYPE_CHALLENGE_ENDED == code) {
-					showFullScreenView(
-							activity,
-							"/web/challenges/instances/"
-									+ data.getString("challengeInstanceId"), null);
+					showFullScreenView(activity, "/web/challenges/instances/"
+							+ data.getString("challengeInstanceId"), null);
 				} else if (NOTIFICATION_TYPE_FRIEND_JOINED_GAME == code) {
 					showFullScreenView(activity,
 							"/web/players/" + data.getString("friendId"), null);
@@ -1759,9 +1944,10 @@ public class Scoreflex {
 					Scoreflex.RequestParams params = new RequestParams();
 					params.put("friendsOnly", "true");
 					params.put("focus", data.getString("friendId"));
-					showFullScreenView(activity,
-							"/web/leaderboards/" + data.getString("leaderboardId"),
-							params);
+					showFullScreenView(
+							activity,
+							"/web/leaderboards/"
+									+ data.getString("leaderboardId"), params);
 				} else if (NOTIFICATION_TYPE_PLAYER_LEVEL_CHANGED == code) {
 					showFullScreenView(activity, "/web/players/me", null);
 				}
@@ -1804,30 +1990,34 @@ public class Scoreflex {
 	}
 
 	/**
-	 * Method to be called in your Google Cloud Message Broadcast receiver to handle scoreflex
-	 * cloud messages and show the appropiate notification. Implement your onBroadcastReceived as follow :
+	 * Method to be called in your Google Cloud Message Broadcast receiver to
+	 * handle scoreflex cloud messages and show the appropiate notification.
+	 * Implement your onBroadcastReceived as follow :
 	 *
 	 * <pre>
 	 * <code>
 	 * public void onReceive(Context context, Intent intent) {
 	 * 	if (Scoreflex.onBroadcastReceived(context, intent, R.drawable.icon, GoblinsAttackActivity.class)) {
-	 *		return;
-	 *	}
-	 *	// do your own handling here
+	 * 	return;
+	 * }
+	 * // do your own handling here
 	 * }
 	 * </code>
 	 * </pre>
-	 * For more information about Google Cloud Message visit: {@linkplain <a href="http://developer.android.com/google/gcm/index.html">http://developer.android.com/google/gcm/index.html</a>}.
+	 *
+	 * For more information about Google Cloud Message visit:
+	 * {@linkplain <a href="http://developer.android.com/google/gcm/index.html">http://developer.android.com/google/gcm/index.html</a>}
+	 * .
 	 *
 	 * @param context
-	 *          The current context.
+	 *            The current context.
 	 * @param intent
-	 *          The received intent.
+	 *            The received intent.
 	 * @param iconResource
-	 *          The icon you want to show in the notification.
+	 *            The icon you want to show in the notification.
 	 * @param activityClass
-	 *          The activity class you want to start when the user touches the.
-	 *          notification
+	 *            The activity class you want to start when the user touches
+	 *            the. notification
 	 * @return <code>true</code> if handled, <code>false</code> otherwise.
 	 */
 	public static boolean onBroadcastReceived(Context context, Intent intent,
@@ -1837,7 +2027,8 @@ public class Scoreflex {
 	}
 
 	/**
-	 * Returns the time interval between {@link #startPlayingSession()} and {@link #stopPlayingSession()} have been called.
+	 * Returns the time interval between {@link #startPlayingSession()} and
+	 * {@link #stopPlayingSession()} have been called.
 	 *
 	 * @return The current playing session time of the player in milliseconds.
 	 */
@@ -1852,12 +2043,13 @@ public class Scoreflex {
 	@SuppressLint("NewApi")
 	private static Point getScreenSize() {
 		final Point size = new Point();
-		WindowManager w = (WindowManager) getApplicationContext().getSystemService(
-				Context.WINDOW_SERVICE);
+		WindowManager w = (WindowManager) getApplicationContext()
+				.getSystemService(Context.WINDOW_SERVICE);
 		Display d = w.getDefaultDisplay();
 
 		try {
-			Method getSizeMethod = d.getClass().getDeclaredMethod("getSize", Point.class);
+			Method getSizeMethod = d.getClass().getDeclaredMethod("getSize",
+					Point.class);
 			getSizeMethod.invoke(d, size);
 		} catch (Exception e) {
 			size.x = d.getWidth();
@@ -1869,7 +2061,8 @@ public class Scoreflex {
 	/**
 	 * Retuns whether Scoreflex is reachable or not.
 	 *
-	 * @return <code>true</code> if Scoreflex is reachable <code>false</code> otherwise
+	 * @return <code>true</code> if Scoreflex is reachable <code>false</code>
+	 *         otherwise
 	 */
 	public static boolean isReachable() {
 		return sIsReachable;
@@ -1881,8 +2074,8 @@ public class Scoreflex {
 					Scoreflex.INTENT_CONNECTIVITY_CHANGED);
 			connectivityChangedIntent.putExtra(
 					Scoreflex.INTENT_CONNECTIVITY_EXTRA_CONNECTIVITY, state);
-			LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(
-					connectivityChangedIntent);
+			LocalBroadcastManager.getInstance(getApplicationContext())
+					.sendBroadcast(connectivityChangedIntent);
 		}
 		sIsReachable = state;
 	}
@@ -1903,37 +2096,54 @@ public class Scoreflex {
 	}
 
 	/**
-	 * Sends a google interactive post inviting a user (or a list of users) to install the game
+	 * Sends a google interactive post inviting a user (or a list of users) to
+	 * install the game
 	 *
-	 * @param activity the current activity
-	 * @param text the message that will be prefilled in the invitation
-	 * @param friendIds a list of friend you want to invite
-	 * @param url the url your want to share on the interactive post button
-	 * @param deeplinkPath the deeplink that your application will receive on launch
+	 * @param activity
+	 *            the current activity
+	 * @param text
+	 *            the message that will be prefilled in the invitation
+	 * @param friendIds
+	 *            a list of friend you want to invite
+	 * @param url
+	 *            the url your want to share on the interactive post button
+	 * @param deeplinkPath
+	 *            the deeplink that your application will receive on launch
 	 */
-	public static void sendGoogleInvitation(Activity activity, String text,List<String> friendIds, String url, String deeplinkPath) {
-		ScoreflexGoogleWrapper.sendInvitation(activity, text, friendIds, url, deeplinkPath);
+	public static void sendGoogleInvitation(Activity activity, String text,
+			List<String> friendIds, String url, String deeplinkPath) {
+		ScoreflexGoogleWrapper.sendInvitation(activity, text, friendIds, url,
+				deeplinkPath);
 	}
 
 	/**
 	 * Share a link on google plus
-	 * @param activity the current activity
-	 * @param text the message that will be prefilled in the invitation
-	 * @param url the url your want to share
+	 *
+	 * @param activity
+	 *            the current activity
+	 * @param text
+	 *            the message that will be prefilled in the invitation
+	 * @param url
+	 *            the url your want to share
 	 */
 	public static void shareOnGoogle(Activity activity, String text, String url) {
 		ScoreflexGoogleWrapper.shareUrl(activity, text, url);
 	}
 
-
 	/**
 	 * Post on the facebook feed of the current logged user
-	 * @param activity the current activity
-	 * @param title the title of the link
-	 * @param text the message that will be prefilled in the invitation
-	 * @param url the url your want to share
+	 *
+	 * @param activity
+	 *            the current activity
+	 * @param title
+	 *            the title of the link
+	 * @param text
+	 *            the message that will be prefilled in the invitation
+	 * @param url
+	 *            the url your want to share
 	 */
-	public static void shareOnFacebook(Activity activity, String title, String text, String url) {
+	public static void shareOnFacebook(Activity activity, String title,
+			String text, String url) {
 		try {
 			ScoreflexFacebookWrapper.shareUrl(activity, title, text, url);
 		} catch (Exception e) {
@@ -1942,24 +2152,35 @@ public class Scoreflex {
 	}
 
 	/**
-	 * Sends a facebook app request inviting a user (or a list of users) to install the game
+	 * Sends a facebook app request inviting a user (or a list of users) to
+	 * install the game
 	 *
-	 * @param activity the current activity
-	 * @param text the message that will be prefilled in the invitation
-	 * @param friendIds a list of friend you want to invite
-	 * @param suggestedFriendIds the suggested friend (appears in the invitation dialog)
-	 * @param data any data you want to attach to the invitation (deeplink)
+	 * @param activity
+	 *            the current activity
+	 * @param text
+	 *            the message that will be prefilled in the invitation
+	 * @param friendIds
+	 *            a list of friend you want to invite
+	 * @param suggestedFriendIds
+	 *            the suggested friend (appears in the invitation dialog)
+	 * @param data
+	 *            any data you want to attach to the invitation (deeplink)
 	 */
-	public static void sendFacebookInvitation(Activity activity, String text, List<String> friendIds, List<String> suggestedFriendIds, String data)  {
+	public static void sendFacebookInvitation(Activity activity, String text,
+			List<String> friendIds, List<String> suggestedFriendIds, String data) {
 		try {
-			ScoreflexFacebookWrapper.sendInvitation(activity, text, friendIds, suggestedFriendIds, data, new SocialShareCallback() {
+			ScoreflexFacebookWrapper.sendInvitation(activity, text, friendIds,
+					suggestedFriendIds, data, new SocialShareCallback() {
 
-				@Override
-				public void OnSuccessShare(List<String> invitedFriends) {
-					String concatenatedFriends = "Facebook%3A"+TextUtils.join(",Facebook%3A", invitedFriends);
-					Scoreflex.postEventually("/social/invitations/" + concatenatedFriends, null, null);
-				}
-			});
+						@Override
+						public void OnSuccessShare(List<String> invitedFriends) {
+							String concatenatedFriends = "Facebook%3A"
+									+ TextUtils.join(",Facebook%3A",
+											invitedFriends);
+							Scoreflex.postEventually("/social/invitations/"
+									+ concatenatedFriends, null, null);
+						}
+					});
 		} catch (FacebookException e) {
 			e.printStackTrace();
 		}

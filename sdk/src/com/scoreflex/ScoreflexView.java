@@ -409,10 +409,10 @@ public class ScoreflexView extends FrameLayout {
 
 
 	/**
-	 * Sets the listener that will be called during the lifecycle of the view  
+	 * Sets the listener that will be called during the lifecycle of the view
 	 * @param listener the listener
 	 */
-	public void setScoreflexViewListener(ScoreflexViewListener listener) { 
+	public void setScoreflexViewListener(ScoreflexViewListener listener) {
 		mScoreflexViewHandler = listener;
 	}
 
@@ -441,7 +441,7 @@ public class ScoreflexView extends FrameLayout {
 				public void onAnimationEnd(Animation arg0) {
 					ViewGroup parentGroup = (ViewGroup) parent;
 					parentGroup.removeView(ScoreflexView.this);
-					if (mScoreflexViewHandler != null) { 
+					if (mScoreflexViewHandler != null) {
 						mScoreflexViewHandler.onViewClosed();
 						mScoreflexViewHandler = null;
 					}
@@ -462,7 +462,7 @@ public class ScoreflexView extends FrameLayout {
 		} else if (null != parent && parent instanceof ViewGroup) {
 			ViewGroup parentGroup = (ViewGroup) parent;
 			parentGroup.removeView(this);
-			if (mScoreflexViewHandler != null) { 
+			if (mScoreflexViewHandler != null) {
 				mScoreflexViewHandler.onViewClosed();
 				mScoreflexViewHandler = null;
 			}
@@ -1480,6 +1480,11 @@ public class ScoreflexView extends FrameLayout {
 			}
 
 			String modeString = dataJson.optString("mode");
+			boolean isFullscreen = "full".equals(modeString);
+			if (isFullscreen && mScoreflexViewHandler != null && mScoreflexViewHandler.handleOpenNewFullscreenView(urlString)) {
+				return true;
+			}
+
 			openFullUrl(urlString, "full".equals(modeString), true);
 
 			return true;
@@ -1539,11 +1544,19 @@ public class ScoreflexView extends FrameLayout {
 	/**
 	 * A simple interface to get notified when a scoreflex view is closed
 	 */
-	public interface ScoreflexViewListener { 
+	public interface ScoreflexViewListener {
 		/**
 		 * this method is called when the ScoreflexView is closed.
 		 */
 		public void onViewClosed();
+
+		/**
+		 * If you want to overload the opening of a new view
+		 * @param fullUrlString the full string of the url to open
+		 * @return true if you want to overload the opening of a new view false otherwise
+		 */
+
+		public boolean handleOpenNewFullscreenView(String fullUrlString);
 	}
 
 	private class WebContentState extends UserInterfaceState {
