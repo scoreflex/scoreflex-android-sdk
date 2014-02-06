@@ -206,6 +206,17 @@ public class Scoreflex {
 	public static final String INTENT_SCOREFLEX_INTIALIZED = "scoreflexInitialized";
 
 	/**
+	 * Local intent broadcasted when the Scoreflex sdk could not be initialized
+	 */
+	public static final String INTENT_SCOREFLEX_INTIALIZE_FAILED = "scoreflexInitializeFailed";
+
+	/**
+	 * The extra key for the scoreflex initialisation failed reason in a 
+	 *  {@link #INTENT_SCOREFLEX_INTIALIZE_FAILED} intent.
+	 */
+	public static final String INTENT_SCOREFLEX_INTIALIZE_FAILED_EXTRA_REASON = "scoreflexInitializeFailedReason";
+
+	/**
 	 * Local intent broadcasted when a resource has been successfully preloaded.
 	 */
 	public static final String INTENT_RESOURCE_PRELOADED = "scoreflexResourcePreloaded";
@@ -243,7 +254,7 @@ public class Scoreflex {
 	 */
 	public static final String INTENT_PLAY_LEVEL_EXTRA_LEADERBOARD_ID = "leaderboardId";
 
-	private static ConnectivityReceiver sConectivityReceiver = new ConnectivityReceiver();
+	private static ConnectivityReceiver sConnectivityReceiver = new ConnectivityReceiver();
 
 	protected static final String DEFAULT_LANGUAGE_CODE = "en";
 	protected static final String[] VALID_LANGUAGE_CODES = { "af", "ar", "be",
@@ -316,6 +327,13 @@ public class Scoreflex {
 							.fetchAnonymousAccessTokenIfNeeded(new ResponseHandler() {
 								@Override
 								public void onFailure(Throwable e, Response errorResponse) {
+									if (errorResponse != null) {
+										Intent broadcast = new Intent(INTENT_SCOREFLEX_INTIALIZE_FAILED);
+										JSONParcelable parcelable = new JSONParcelable(errorResponse.getJSONObject());
+										broadcast.putExtra(INTENT_SCOREFLEX_INTIALIZE_FAILED_EXTRA_REASON, parcelable);
+										LocalBroadcastManager.getInstance(
+												Scoreflex.getApplicationContext()).sendBroadcast(broadcast);
+									}
 								}
 
 								@Override
@@ -332,6 +350,13 @@ public class Scoreflex {
 						Scoreflex.get("/network/ping", null, new ResponseHandler() {
 							@Override
 							public void onFailure(Throwable e, Response errorResponse) {
+								if (errorResponse != null) {
+									Intent broadcast = new Intent(INTENT_SCOREFLEX_INTIALIZE_FAILED);
+									JSONParcelable parcelable = new JSONParcelable(errorResponse.getJSONObject());
+									broadcast.putExtra(INTENT_SCOREFLEX_INTIALIZE_FAILED_EXTRA_REASON, parcelable);
+									LocalBroadcastManager.getInstance(
+											Scoreflex.getApplicationContext()).sendBroadcast(broadcast);
+								}
 							}
 
 							@Override
@@ -1759,7 +1784,7 @@ public class Scoreflex {
 		IntentFilter filter = new IntentFilter();
 		filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
 		try {
-			context.registerReceiver(sConectivityReceiver, filter);
+			context.registerReceiver(sConnectivityReceiver, filter);
 		} catch (Exception e) {
 
 		}
@@ -1772,7 +1797,7 @@ public class Scoreflex {
 	 */
 	public static void unregisterNetworkReceiver(Context context) {
 		try {
-			context.unregisterReceiver(sConectivityReceiver);
+			context.unregisterReceiver(sConnectivityReceiver);
 		} catch (Exception e) {
 
 		}
