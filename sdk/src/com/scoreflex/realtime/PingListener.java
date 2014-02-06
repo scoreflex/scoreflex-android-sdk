@@ -30,7 +30,7 @@ public interface PingListener {
    * <br>
    * This callback is called on the main thread.
    *
-   * @see Session#ping(PingListener, int)
+   * @see Session#ping
    *
    * @param latency The latency in milliseconds to receive the ping reply.
    */
@@ -41,7 +41,7 @@ public interface PingListener {
    * <br>
    * This callback is called on the main thread.
    *
-   * @see Session#ping(PingListener, int)
+   * @see Session#ping
    */
   public void onPang();
 }

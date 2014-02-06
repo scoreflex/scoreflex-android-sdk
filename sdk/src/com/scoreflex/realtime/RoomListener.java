@@ -53,7 +53,7 @@ public interface RoomListener {
    * <br>
    * This callback is called on the main thread.
    *
-   * @see Session#createRoom(String, RoomConfig, RealtimeMap, RealtimeMap)
+   * @see Session#createRoom
    *
    * @param status_code A status code indication the result of the operation.
    * @param room The room that was created. If an error occurred, the room is
@@ -106,7 +106,7 @@ public interface RoomListener {
    * <br>
    * This callback is called on the main thread.
    *
-   * @see Session#joinRoom(String, RoomConfig, RealtimeMap)
+   * @see Session#joinRoo
    *
    * @param status_code A status code indication the result of the operation.
    * @param room The room that was joined. If an error occurred, the room is
@@ -133,7 +133,7 @@ public interface RoomListener {
    * <br>
    * This callback is called on the main thread.
    *
-   * @see Session#leaveRoom()
+   * @see Session#leaveRoom
    *
    * @param status_code A status code indication the result of the operation.
    * @param room_id The room's ID which was left.
@@ -189,9 +189,9 @@ public interface RoomListener {
    * <br>
    * This callback is called on the main thread.
    *
-   * @see Session#startMatch()
-   * @see Session#stopMatch()
-   * @see Session#resetMatch()
+   * @see Session#startMatch
+   * @see Session#stopMatch
+   * @see Session#resetMatch
    *
    * @param status_code A status code indication the result of the operation.
    * @param room The room.
@@ -208,7 +208,7 @@ public interface RoomListener {
    * <br>
    * This callback is called on the main thread.
    *
-   * @see Session#setRoomProperty(String, Object)
+   * @see Session#setRoomProperty
    *
    * @param room The room.
    * @param from The participant that performs the operation.
@@ -236,7 +236,7 @@ public interface RoomListener {
    * <br>
    * This callback is called on the main thread.
    *
-   * @see Session#setRoomProperty(String, Object)
+   * @see Session#setRoomProperty
    *
    * @param status_code A status code indication the result of the operation.
    * @param room The room.

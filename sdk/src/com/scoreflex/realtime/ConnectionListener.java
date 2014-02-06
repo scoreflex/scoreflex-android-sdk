@@ -26,9 +26,9 @@ package com.scoreflex.realtime;
 public interface ConnectionListener {
   /**
    * This method is called asynchronously after a call to {@link
-   * Session#connect(ConnectionListener)} or {@link Session#reconnect()} if the
-   * connection is successfully established. It can also be called when during
-   * an automatic reconnection.
+   * Session#connect} or {@link Session#reconnect} if the connection is
+   * successfully established. It can also be called when during an automatic
+   * reconnection.
    *
    * <p>After this callback, the connection's state is {@link
    * ConnectionState#CONNECTED} and the player can try to create/join/leave
@@ -37,8 +37,8 @@ public interface ConnectionListener {
    * This callback is called on the main thread.
    * </p>
    *
-   * @see Session#connect(ConnectionListener)
-   * @see Session#reconnect()
+   * @see Session#connect
+   * @see Session#reconnect
    *
    * @param session_info a {@link RealtimeMap} containing information about the
    * player's session.
@@ -52,10 +52,9 @@ public interface ConnectionListener {
    * Possible status codes are:
    *
    * <ul>
-   *
    *   <li>{@link Session#STATUS_NETWORK_ERROR} A network error occurred. The
-   *   player will need to reconnect by calling {@link
-   *   Session#connect(ConnectionListener)} or {@link Session#reconnect()}</li>
+   *   player will need to reconnect by calling {@link Session#connect} or
+   *   {@link Session#reconnect()}</li>
    *   <li>{@link Session#STATUS_PERMISSION_DENIED} The player does not have
    *   permissions to use the realtime service.</li>
    *   <li>{@link Session#STATUS_INVALID_MESSAGE} An malformed message was sent
@@ -108,8 +107,8 @@ public interface ConnectionListener {
    * <ul>
    *   <li>{@link Session#STATUS_NETWORK_ERROR} A network error occurred. If
    *   automatic reconnection was configured (see {@link
-   *   Session#setReconnectFlag(boolean)}), when a network error is detected,
-   *   the connection will be automatically reopened.</li>
+   *   Session#setReconnectFlag}), when a network error is detected, the
+   *   connection will be automatically reopened.</li>
    *   <li>{@link Session#STATUS_NEW_SERVER_LOCATION} The server requests the
    *   client to reconnect on a specific host.</li>
    * </ul>

@@ -38,8 +38,7 @@ public enum ConnectionState
 
   /**
    * The connection is disconnected. The player should call {@link
-   * Session#connect(ConnectionListener)} or {@link Session#reconnect()} to open
-   * a new connection.
+   * Session#connect} or {@link Session#reconnect} to open a new connection.
    */
   DISCONNECTED
 }

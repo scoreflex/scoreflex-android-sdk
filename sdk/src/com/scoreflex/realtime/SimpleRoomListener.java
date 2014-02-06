@@ -28,7 +28,7 @@ public class SimpleRoomListener implements RoomListener {
   /**
    * Called when a player attempts to create a realtime room.
    *
-   * @see RoomListener#onRoomCreated(int, Room)
+   * @see RoomListener#onRoomCreated
    */
   public void onRoomCreated(int status_code, Room room) {
   }
@@ -36,7 +36,7 @@ public class SimpleRoomListener implements RoomListener {
   /**
    * Called when a realtime room is closed.
    *
-   * @see RoomListener#onRoomClosed(int, String)
+   * @see RoomListener#onRoomClosed
    */
   public void onRoomClosed(int status_code, String room_id) {
   }
@@ -44,7 +44,7 @@ public class SimpleRoomListener implements RoomListener {
   /**
    * Called when a client attempts to join realtime room.
    *
-   * @see RoomListener#onRoomJoined(int, Room)
+   * @see RoomListener#onRoomJoined
    */
   public void onRoomJoined(int status_code, Room room) {
   }
@@ -52,7 +52,7 @@ public class SimpleRoomListener implements RoomListener {
   /**
    * Called when a client attempts to leave a realtime room.
    *
-   * @see RoomListener#onRoomLeft(int, String)
+   * @see RoomListener#onRoomLeft
    */
   public void onRoomLeft(int status_code, String room_id) {
   }
@@ -60,7 +60,7 @@ public class SimpleRoomListener implements RoomListener {
   /**
    * Called when a participant joins a room.
    *
-   * @see RoomListener#onPeerJoined(Room, Participant)
+   * @see RoomListener#onPeerJoined
    */
   public void onPeerJoined(Room room, Participant peer) {
   }
@@ -68,7 +68,7 @@ public class SimpleRoomListener implements RoomListener {
   /**
    * Called when a participant leave a room.
    *
-   * @see RoomListener#onPeerLeft(Room, String)
+   * @see RoomListener#onPeerLeft
    */
   public void onPeerLeft(Room room, String peer_id) {
   }
@@ -76,7 +76,7 @@ public class SimpleRoomListener implements RoomListener {
   /**
    * Called when the match's state of a room change.
    *
-   * @see RoomListener#onMatchStateChanged(int, Room, MatchState)
+   * @see RoomListener#onMatchStateChanged
    */
   public void onMatchStateChanged(int status_code, Room room,
                                   MatchState new_state) {
@@ -85,7 +85,7 @@ public class SimpleRoomListener implements RoomListener {
   /**
    * Called when a property of a room change.
    *
-   * @see RoomListener#onRoomPropertyChanged(Room, String, String)
+   * @see RoomListener#onRoomPropertyChanged
    */
   public void onRoomPropertyChanged(Room room, Participant from, String key) {
   }
@@ -93,7 +93,7 @@ public class SimpleRoomListener implements RoomListener {
   /**
    * Called when an attempt to change a room's property failed.
    *
-   * @see RoomListener#onSetRoomPropertyFailed(int, Room, String)
+   * @see RoomListener#onSetRoomPropertyFailed
    */
   public void onSetRoomPropertyFailed(int status_code, Room room, String key) {
   }

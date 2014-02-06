@@ -21,7 +21,7 @@ package com.scoreflex.realtime;
 
 /**
  * Message received in a realtime room. The room's participants receive it in
- * the callback {@link MessageReceivedListener#onMessageReceived(Message)}.
+ * the callback {@link MessageReceivedListener#onMessageReceived}.
  */
 public class Message {
   private final String      room_id;

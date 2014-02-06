@@ -25,8 +25,7 @@ import java.util.Collections;
 
 /**
  * A realtime room with its configuration, properties and participants. Such
- * rooms can be created by calling {@link Session#createRoom(String, RoomConfig,
- * RealtimeMap)}.
+ * rooms can be created by calling {@link Session#createRoom}.
  */
 public class Room {
   private final String                   id;

@@ -82,21 +82,21 @@ public final class Session extends Thread {
    * The maximum serialized size allowed for a payload in the unreliable
    * messages.
    *
-   * @see RealtimeMap#getSerializedSize()
+   * @see RealtimeMap#getSerializedSize
    */
   public static final int MAX_UNRELIABLE_PAYLOAD_SIZE = 1300;
 
   /**
    * The maximum serialized size allowed for a payload in the reliable messages.
    *
-   * @see RealtimeMap#getSerializedSize()
+   * @see RealtimeMap#getSerializedSize
    */
   public static final int MAX_RELIABLE_PAYLOAD_SIZE = 2048;
 
   /**
    * The maximum serliazed size allowed for the room's property list.
    *
-   * @see RealtimeMap#getSerializedSize()
+   * @see RealtimeMap#getSerializedSize
    */
   public static final int MAX_ROOM_PROPERTIES_SIZE = 1500;
 
@@ -116,34 +116,33 @@ public final class Session extends Thread {
   public static final int STATUS_NETWORK_ERROR              =  2;
 
   /**
-   * The status code used in {@link ConnectionListener#onConnectionClosed(int)}
-   *   when the player's session is closed on the server side.
+   * The status code used in {@link ConnectionListener#onConnectionClosed} when
+   * the player's session is closed on the server side.
    */
   public static final int STATUS_SESSION_CLOSED             =  3;
 
   /**
-   * The status code used used in {@link
-   * ConnectionListener#onConnectionClosed(int)} when the current connection is
-   * closed by a new one.
+   * The status code used used in {@link ConnectionListener#onConnectionClosed}
+   * when the current connection is closed by a new one.
    */
   public static final int STATUS_REPLACED_BY_NEW_CONNECTION =  4;
 
   /**
-   * The status code used in {@link ConnectionListener#onReconnecting(int)} when
-   *   the server requests the client to reconnect on a specific host.
+   * The status code used in {@link ConnectionListener#onReconnecting} when the
+   *   server requests the client to reconnect on a specific host.
    */
   public static final int STATUS_NEW_SERVER_LOCATION        =  5;
 
   /**
-   * The status code used in {@link ConnectionListener#onConnectionFailed(int)}
-   * and {@link MessageSentListener#onMessageSent(int, int)} when a malformed
-   * message is sent by the player.
+   * The status code used in {@link ConnectionListener#onConnectionFailed} and
+   * {@link MessageSentListener#onMessageSent} when a malformed message is sent
+   * by the player.
    */
   public static final int STATUS_INVALID_MESSAGE            =  6;
 
   /**
-   * The status code used in {@link ConnectionListener#onConnectionFailed(int)}
-   * when an unknown message was sent to the server.
+   * The status code used in {@link ConnectionListener#onConnectionFailed} when
+   * an unknown message was sent to the server.
    */
   public static final int STATUS_PROTOCOL_ERROR             =  7;
 
@@ -154,8 +153,8 @@ public final class Session extends Thread {
   public static final int STATUS_PERMISSION_DENIED          =  8;
 
   /**
-   * The status code used in {@link ConnectionListener#onConnectionFailed(int)}
-   * when the player has already a opened session on another device.
+   * The status code used in {@link ConnectionListener#onConnectionFailed} when
+   * the player has already a opened session on another device.
    */
   public static final int STATUS_ALREADY_CONNECTED          =  9;
 
@@ -174,47 +173,45 @@ public final class Session extends Thread {
   public static final int STATUS_ROOM_NOT_JOINED            = 11;
 
   /**
-   * The status code used in {@link RoomListener#onRoomCreated(int, Room)} when
-   * the player attempts to create a room with the same ID than an existing one.
+   * The status code used in {@link RoomListener#onRoomCreated} when the player
+   * attempts to create a room with the same ID than an existing one.
    */
   public static final int STATUS_ROOM_ALREADY_CREATED       = 12;
 
   /**
-   * The status code used {@link RoomListener#onRoomClosed(int, String)} when
-   * the the room is closed normally by an external way.
+   * The status code used {@link RoomListener#onRoomClosed} when the the room is
+   * closed normally by an external way.
    */
   public static final int STATUS_ROOM_CLOSED                = 13;
 
   /**
-   * The status code used {@link RoomListener#onRoomJoined(int, Room)} when the
-   * player attempts to join a unknown room.
+   * The status code used {@link RoomListener#onRoomJoined} when the player
+   * attempts to join a unknown room.
    */
   public static final int STATUS_ROOM_NOT_FOUND             = 14;
 
   /**
-   * The status code used in {@link RoomListener#onRoomJoined(int, Room)} when
-   * the player attempts to join a room which the maximum number of participants
-   * allowed was reached.
+   * The status code used in {@link RoomListener#onRoomJoined} when the player
+   * attempts to join a room which the maximum number of participants allowed
+   * was reached.
    */
   public static final int STATUS_ROOM_FULL                  = 15;
 
   /**
-   * The status code used in {@link RoomListener#onRoomCreated(int, Room)} when
-   * the player uses an invalid configuration to create a room.
+   * The status code used in {@link RoomListener#onRoomCreated} when the player
+   * uses an invalid configuration to create a room.
    */
   public static final int STATUS_INVALID_DATA               = 16;
 
   /**
-   * The status code used in {@link RoomListener#onMatchStateChanged(int, Room,
-   * MatchState)} when the player attempts to do an invalid change of the
-   * match's state.
+   * The status code used in {@link RoomListener#onMatchStateChanged} when the
+   * player attempts to do an invalid change of the match's state.
    */
   public static final int STATUS_BAD_STATE                  = 17;
 
   /**
-   * The status code used in {@link MessageSentListener#onMessageSent(int, int)}
-   * when the player attempts to send a reliable message to a unknown
-   * participant.
+   * The status code used in {@link MessageSentListener#onMessageSent} when the
+   * player attempts to send a reliable message to a unknown participant.
    */
   public static final int STATUS_PEER_NOT_FOUND             = 18;
 
@@ -303,7 +300,7 @@ public final class Session extends Thread {
    * @throws IllegalStateException if the realtime session is not initialized
    * yet.
    */
-  public static String getServerHost() {
+  public static String getServerAddr() {
     checkInstance();
     return session.host;
   }
@@ -330,10 +327,10 @@ public final class Session extends Thread {
    * <br><br>
    * Default value: <code>true</code>.
    *
-   * @see ConnectionListener#onReconnecting(int)
-   * @see ConnectionListener#onConnectionFailed(int)
-   * @see #setMaxRetries(int)
-   * @see #setReconnectTimeout(int)
+   * @see ConnectionListener#onReconnecting
+   * @see ConnectionListener#onConnectionFailed
+   * @see #setMaxRetries
+   * @see #setReconnectTimeout
    *
    * @param flag <code>true</code> to enable the automatic reconnection,
    * <code>false</code> otherwise.
@@ -367,7 +364,7 @@ public final class Session extends Thread {
    * <br><br>
    * Default value: 1000ms.
    *
-   * @see #setReconnectFlag(boolean)
+   * @see #setReconnectFlag
    *
    * @param timeout The milliseconds to wait before an automatic reconnection.
    *
@@ -400,7 +397,7 @@ public final class Session extends Thread {
    * <br><br>
    * Default value: 3.
    *
-   * @see #setReconnectFlag(boolean)
+   * @see #setReconnectFlag
    *
    * @param n The maximum number of consecutive reconnection failures.
    *
@@ -566,9 +563,8 @@ public final class Session extends Thread {
    * Connects the session to the Scoreflex realtime service.
    * <br>
    * This method will return immediatly, and will call {@link
-   * ConnectionListener#onConnected(RealtimeMap)} or {@link
-   * ConnectionListener#onConnectionFailed(int)} depending of the operation's
-   * result.
+   * ConnectionListener#onConnected} or {@link
+   * ConnectionListener#onConnectionFailed} depending of the operation's result.
    *
    * @param listener The {@link ConnectionListener} to use to notify the player
    * of the connection's state changes.
@@ -597,7 +593,7 @@ public final class Session extends Thread {
    *
    * @throws IllegalStateException if the realtime session is not initialized
    * yet.
-   * @throws IllegalArgumentException if the listner is <code>null</code>
+   * @throws IllegalArgumentException if the listener is <code>null</code>
    */
   public static void reconnect() {
     checkInstance();
@@ -690,8 +686,8 @@ public final class Session extends Thread {
 
   /**
    * Sends a ping requests to the server. If a reply is received before the
-   * timeout is reached, {@link PingListener#onPong(long)} is called. If the
-   * requests timed out, {@link PingListener#onPang()} is called.
+   * timeout is reached, {@link PingListener#onPong} is called. If the requests
+   * timed out, {@link PingListener#onPang} is called.
    *
    * @param listener The listener to use to notify the player of the request
    * result.
@@ -758,8 +754,8 @@ public final class Session extends Thread {
   }
   /**
    * Creates a realtime room. The result of this operation will be notified by
-   * the callback {@link RoomListener#onRoomCreated(int, Room)} to the given
-   * {@link RoomListener} in {@link RoomConfig}.
+   * the callback {@link RoomListener#onRoomCreated} to the given {@link
+   * RoomListener} in {@link RoomConfig}.
    *
    * @param id The room's ID.
    * @param config The room's configuration.
@@ -770,7 +766,7 @@ public final class Session extends Thread {
    * @throws IllegalArgumentException if the room's id or the room's
    * configuration are <code>null</code>
    * @throws IllegalArgumentException if the serialized size of the room's
-   * property list exceeds {@link MAX_ROOM_PROPERTIES_SIZE}.
+   * property list exceeds {@link #MAX_ROOM_PROPERTIES_SIZE}.
    */
   public static void createRoom(final String id, final RoomConfig config,
                                 final RealtimeMap room_props) {
@@ -820,7 +816,7 @@ public final class Session extends Thread {
 
   /**
    * Joins a realtime room. The result of this operation will be notified by the
-   * callback {@link RoomListener#onRoomJoined(int, Room)} to the given {@link
+   * callback {@link RoomListener#onRoomJoined} to the given {@link
    * RoomListener}.
    *
    * @param id The room's ID.
@@ -879,8 +875,8 @@ public final class Session extends Thread {
 
   /**
    * Leaves the current room. The result of this operation will be notified by
-   * the callback {@link RoomListener#onRoomLeft(int, String)} to the given
-   * {@link RoomListener} set when the player has created or joined the room.
+   * the callback {@link RoomListener#onRoomLeft} to the given {@link
+   * RoomListener} set when the player has created or joined the room.
    *
    * @throws IllegalStateException if the realtime session is not initialized
    * yet or if no room is joined.
@@ -929,8 +925,8 @@ public final class Session extends Thread {
   /**
    * Sets the match's state to {@link MatchState#RUNNING}. The result of this
    * operation will be notified by the callback {@link
-   * RoomListener#onMatchStateChanged(int, Room, MatchState)} to the given {@link
-   * RoomListener} set when the player has created or joined the room.
+   * RoomListener#onMatchStateChanged} to the given {@link RoomListener} set
+   * when the player has created or joined the room.
    * <br>
    * The current match's state should be {@link MatchState#READY} to have a
    * chance to succeed.
@@ -984,8 +980,8 @@ public final class Session extends Thread {
   /**
    * Sets the match's state to {@link MatchState#FINISHED}. The result of this
    * operation will be notified by the callback {@link
-   * RoomListener#onMatchStateChanged(int, Room, MatchState)} to the given {@link
-   * RoomListener} set when the player has created or joined the room.
+   * RoomListener#onMatchStateChanged} to the given {@link RoomListener} set
+   * when the player has created or joined the room.
    * <br>
    * The current match's state should be {@link MatchState#RUNNING} to have a
    * chance to succeed.
@@ -1039,8 +1035,8 @@ public final class Session extends Thread {
   /**
    * Sets the match's state to {@link MatchState#PENDING}. The result of this
    * operation will be notified by the callback {@link
-   * RoomListener#onMatchStateChanged(int, Room, MatchState)} to the given {@link
-   * RoomListener} set when the player has created or joined the room.
+   * RoomListener#onMatchStateChanged} to the given {@link RoomListener} set
+   * when the player has created or joined the room.
    * <br>
    * The current match's state should be {@link MatchState#FINISHED} to have a
    * chance to succeed.
@@ -1094,8 +1090,8 @@ public final class Session extends Thread {
   /**
    * Sets or Updates a room's property given its key. The result of this
    * operation will be notified by the callback {@link
-   * RoomListener#onRoomPropertyChanged(Room, Participant, String)} to the given
-   * {@link RoomListener} set when the player has created or joined the room.
+   * RoomListener#onRoomPropertyChanged} to the given {@link RoomListener} set
+   * when the player has created or joined the room.
    * <br>
    * If the value is <code>null</code>, the property will be removed.
    *
@@ -1107,7 +1103,7 @@ public final class Session extends Thread {
    * @throws IllegalArgumentException if the property's key is <code>null</code>
    * or if the value's type is inappropriate.
    * @throws IllegalArgumentException if the serialized size of the updated
-   * room's properties exceeds MAX_ROOM_PROPERTIES_SIZE.
+   * room's properties exceeds {@link #MAX_ROOM_PROPERTIES_SIZE}.
    */
   public static void setRoomProperty(final String key, final Object value) {
     checkInstance();
@@ -1307,7 +1303,7 @@ public final class Session extends Thread {
    * @param payload The message's data to sent.
    *
    * @return The ID of the message sent, which will be returned in the callback
-   * {@link MessageSentListener#onMessageSent(int, int)} or {@link
+   * {@link MessageSentListener#onMessageSent} or {@link
    * #STATUS_SESSION_NOT_CONNECTED} if the player's session is not connected on
    * the service, {@link #STATUS_NETWORK_ERROR} if a network error occurs,
    * {@link #STATUS_INVALID_DATA} if an unexpected error occurs.

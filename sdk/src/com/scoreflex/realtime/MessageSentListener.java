@@ -43,7 +43,7 @@ public interface MessageSentListener {
    * <br>
    * This callback is called on the main thread.
    *
-   * @see Session#sendReliableMessage(MessageSentListener, String, int, Map)
+   * @see Session#sendReliableMessage
    *
    * @param status_code A status code indicating the result of the operation.
    * @param msg_id The ID of the reliable message that was sent.
