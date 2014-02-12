@@ -162,10 +162,12 @@ public class ScoreflexGcmClient {
 
     	JSONObject customData = new JSONObject(customDataJson);
         JSONObject data = customData.getJSONObject(SCOREFLEX_NOTIFICATION_EXTRA_KEY);
-			if (data.getInt("code") < Scoreflex.NOTIFICATION_TYPE_CHALLENGE_INVITATION) {
-				return false;
-			}
-			String targetPlayerId = data.optString("targetPlayerId");
+        JSONObject sfxData = data.optJSONObject("data");
+
+            if (data.getInt("code") < Scoreflex.NOTIFICATION_TYPE_CHALLENGE_INVITATION) {
+                return false;
+            }
+            String targetPlayerId = sfxData.optString("targetPlayerId");
 			String loggedPlayerId = ScoreflexRestClient.getPlayerId(context);
 
 			if (!targetPlayerId.equals(loggedPlayerId)) {
@@ -229,13 +231,13 @@ public class ScoreflexGcmClient {
 	  } catch (NameNotFoundException e) {
 	  	Log.e("Scoreflex", "Could not get com.scoreflex.push.SenderId meta data from your manifest did you add : <meta-data android:name=\"com.scoreflex.push.SenderId\" android:value=\"@string/push_sender_id\"/>");
 	  } catch (NullPointerException e) {
-	  	Log.e("Scoreflex", "Could not get com.scoreflex.push.SenderId meta data from your manifest did you add : <meta-data android:name=\"com.scoreflex.push.SenderId\" android:value=\"@string/push_sender_id\"/>"); 
+	  	Log.e("Scoreflex", "Could not get com.scoreflex.push.SenderId meta data from your manifest did you add : <meta-data android:name=\"com.scoreflex.push.SenderId\" android:value=\"@string/push_sender_id\"/>");
 	  }
-	  
-	  if (pushSenderId == null)  { 
+
+	  if (pushSenderId == null)  {
 	  	return;
 	  }
-	  
+
 	  if (TextUtils.isEmpty(regid)) {
 	  	registerInBackground(pushSenderId, context);
 	  } else {
