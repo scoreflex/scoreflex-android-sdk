@@ -188,32 +188,35 @@ public class ScoreflexGcmClient {
 	}
 
 	private static void registerInBackground(final String senderId, final Context activity) {
-    new AsyncTask<Object, Object, Object>() {
-        @Override
-        protected Object doInBackground(Object... arg0) {
-            String msg = "";
-            try {
-                String regid = ScoreflexGcmWrapper.register(Scoreflex.getApplicationContext(), senderId);
-                if (regid == null) {
-                	return null;
-                }
-                msg = "Device registered, registration ID=" + regid;
+        Handler handler = new Handler(Looper.getMainLooper());
+        handler.post(new Runnable() {
+            public void run() {
+                    new AsyncTask<Object, Object, Object>() {
+                        @Override
+                        protected Object doInBackground(Object... arg0) {
+                            String msg = "";
+                            try {
+                                String regid = ScoreflexGcmWrapper.register(Scoreflex.getApplicationContext(), senderId);
+                                if (regid == null) {
+                                    return null;
+                                }
+                                msg = "Device registered, registration ID=" + regid;
+                                storeRegistrationId(regid, activity);
+                                storeRegistrationIdToScoreflex(regid);
+                            } catch (IOException ex) {
+                                msg = "Error :" + ex.getMessage();
+                            }
+                            return msg;
+                        }
 
-                storeRegistrationId(regid, activity);
-                storeRegistrationIdToScoreflex(regid);
-            } catch (IOException ex) {
-                msg = "Error :" + ex.getMessage();
+                        @Override
+                        protected void onPostExecute(Object msg) {
+
+                    }
+                }.execute(null, null, null);
             }
-            return msg;
-        }
-
-        @Override
-        protected void onPostExecute(Object msg) {
-
-        }
-    }.execute(null, null, null);
-	}
-
+        });
+    }
 
 	/**
 	 * Start the registration process for GCM.
