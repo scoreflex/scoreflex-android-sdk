@@ -356,7 +356,6 @@ class ScoreflexRestClient {
 					request.getHandler().onSuccess(arg0, new Scoreflex.Response(arg1));
 				}
 			};
-
 		}
 
 		String url = ScoreflexUriHelper.getAbsoluteUrl(request.getResource());

@@ -47,6 +47,9 @@ class ScoreflexRequestParamsDecorator {
 		// Always add location
 		addParameterIfNotPresent(params, "location", Scoreflex.getLocation());
 
+		// Always add the sdk version
+		addParameterIfNotPresent(params, "sdkVersion", Scoreflex.SDK_VERSION);
+
 		// Add the SID for web resources
 		if (resource.startsWith("/web"))
 			params.put("sid", ScoreflexRestClient.getSID());
