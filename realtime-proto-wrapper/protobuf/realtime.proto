@@ -327,9 +327,10 @@ message ResetMatch {
 
 message MatchStateChanged {
   enum StatusCode {
-    SUCCESS         = 0;
-    ROOM_NOT_JOINED = 1;
-    BAD_STATE       = 2;
+    SUCCESS           = 0;
+    ROOM_NOT_JOINED   = 1;
+    BAD_STATE         = 2;
+    PERMISSION_DENIED = 3;
   }
 
   required string     room_id     = 1;
