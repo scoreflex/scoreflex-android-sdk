@@ -1209,8 +1209,7 @@ public final class Session extends Thread {
    *
    * @return {@link #STATUS_SUCCESS} on a successful attempt, {@link
    * #STATUS_SESSION_NOT_CONNECTED} if the player's session is not connected on
-   * the service, {@link #STATUS_NETWORK_ERROR} if a network error occurs or
-   * {@link #STATUS_INVALID_DATA} if an unexpected error occurs.
+   * the service, {@link #STATUS_NETWORK_ERROR} if a network error occurs.
    *
    * @throws IllegalStateException if the realtime session is not initialized
    * yet or if no room is joined.
@@ -1301,7 +1300,9 @@ public final class Session extends Thread {
   }
   /**
    * Sends a reliable message to a participant in the room. The caller will
-   * receive a callback to report the status of the send message operation.
+   * receive a callback to report the status of the send message operation. The
+   * maximum payload size supported, once serialized, is {@link
+   * #MAX_RELIABLE_PAYLOAD_SIZE} bytes.
    *
    * @param listener the {@link MessageSentListener} used to notify the player
    * of the operation's result.
@@ -1312,8 +1313,7 @@ public final class Session extends Thread {
    * @return The ID of the message sent, which will be returned in the callback
    * {@link MessageSentListener#onMessageSent} or {@link
    * #STATUS_SESSION_NOT_CONNECTED} if the player's session is not connected on
-   * the service, {@link #STATUS_NETWORK_ERROR} if a network error occurs,
-   * {@link #STATUS_INVALID_DATA} if an unexpected error occurs.
+   * the service, {@link #STATUS_NETWORK_ERROR} if a network error occurs.
    *
    * @throws IllegalStateException if the realtime session is not initialized
    * yet or if no room is joined.
@@ -2040,7 +2040,6 @@ public final class Session extends Thread {
         synchronized (this) {
           current_room = Room.builder()
             .setId(r.getRoomId())
-            .setSession(this)
             .setMatchState(state)
             .setConfig(protoMapToRealtimeMap(r.getConfigList()))
             .setProperties(protoMapToRealtimeMap(r.getPropertiesList()))
@@ -2164,6 +2163,12 @@ public final class Session extends Thread {
                             STATUS_BAD_STATE, current_room,
                             MatchState.UNKNOWN);
         break;
+
+      case PERMISSION_DENIED:
+        onMatchStateChanged(room_listeners.get(current_room.getId()),
+                            STATUS_PERMISSION_DENIED, current_room,
+                            MatchState.UNKNOWN);
+        break;
     }
   }
   private void handleOutMessage(Proto.RoomPropertyUpdated msg) {
@@ -2233,6 +2238,7 @@ public final class Session extends Thread {
     RealtimeMap rtmap = new RealtimeMap();
 
     for (Proto.MapEntry entry: pmap) {
+      // FIXME: NULL should be inserted
       Object value = mapEntrytoObject(entry);
       if (value != null)
         rtmap.put(entry.getName(), value);

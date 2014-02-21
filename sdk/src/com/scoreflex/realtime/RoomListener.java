@@ -187,6 +187,10 @@ public interface RoomListener {
    *   <li>{@link Session#STATUS_BAD_STATE} The attempt to change the match's
    *   state failed because the player tries to do an invalid change (e.g. the
    *   match cannot be stopped if it is not running).</li>
+   *   <li>{@link Session#STATUS_PERMISSION_DENIED} The attempt to change the
+   *   match's state failed because the player does not have permissions to
+   *   change it.</li>
+   *
    * </ul>
    * <br>
    * This callback is called on the main thread.
