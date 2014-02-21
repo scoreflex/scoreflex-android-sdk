@@ -31,6 +31,10 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONArray;
+
 import com.scoreflex.Scoreflex;
 
 /**
@@ -38,12 +42,15 @@ import com.scoreflex.Scoreflex;
  * and handles connections with the Scoreflex's realtime service.
  */
 public final class Session extends Thread {
+  private static enum SessionState { UNINITIALIZED, INITIALIZING, INITIALIZED };
+
   private static Session session = new Session();
 
   private Handler               main_handler;
   private Handler               local_handler;
-  private Boolean               is_initialized = false;
-  private Boolean               is_started     = false;
+  private String                player_id     = null;
+  private SessionState          session_state = SessionState.UNINITIALIZED;
+  private Boolean               is_started    = false;
 
   private ConnectionListener    connection_listener;
   private ConnectionState       connection_status;
@@ -228,41 +235,52 @@ public final class Session extends Thread {
   private static void checkInstance() {
     if (!isInitialized())
       throw new IllegalStateException("Realtime session not initialized yet");
+    if (Scoreflex.getPlayerId() != session.player_id)
+      throw new IllegalStateException("Current player has changed. Re-initialize realtime session");
   }
 
   /**
    * Initializes the realtime session. This method should be called only
-   * once. The Scoreflex SDK should be initialized first (see {@link
-   * Scoreflex#initialize}).
+   * once. The Scoreflex SDK should be initialized first.
    *
-   * @param host The server address which to connect.
-   * @param port The port number the server is listening on.
+   * @see Scoreflex#initialize
+   *
+   * @param listener The listener used to handle the initialization result.
    *
    * @throws IllegalStateException if the Scoreflex SDK is not initialized or if
    * the realtime session was already initialized.
+   * @throws IllegalArgumentException if the listener is <code>null</code>.
    */
-  public static void initialize(String host, int port) {
+  public static void initialize(final SessionInitializedListener listener) {
     if (!Scoreflex.isInitialized())
       throw new IllegalStateException("Scoreflex SDK is not initialized");
 
     synchronized (session) {
-      if (isInitialized())
+      if (session.session_state == SessionState.INITIALIZED)
         throw new IllegalStateException("Realtime session already initialized");
+      if (session.session_state == SessionState.INITIALIZING)
+        throw new IllegalStateException("Realtime session initialization already started");
+      if (listener == null)
+            throw new IllegalArgumentException("Session listener cannot be null");
 
       try {
-        session.start();
-        while (session.is_started == false)
-          session.wait();
+        if (session.is_started == false ) {
+          session.start();
+          while (session.is_started == false)
+            session.wait();
+        }
       }
       catch (InterruptedException e) {
       }
 
+      session.player_id           = Scoreflex.getPlayerId();
+      session.session_state       = SessionState.INITIALIZING;
       session.connection_listener = null;
       session.connection_status   = ConnectionState.DISCONNECTED;
       session.connection          = null;
       session.udp_connection      = null;
-      session.host                = host;
-      session.port                = port;
+      session.host                = null;
+      session.port                = -1;
       session.reconnect_flag      = true;
       session.reconnect_timeout   = 1000;
       session.max_retries         = 3;
@@ -284,7 +302,55 @@ public final class Session extends Thread {
       session.rcv_message_listeners = new HashMap<String,  MessageReceivedListener>();
       session.snd_message_listeners = new HashMap<Integer, MessageSentListener>();
 
-      session.is_initialized = true;
+      Scoreflex.get("/realtime/serviceInfo", null,  new Scoreflex.ResponseHandler() {
+        @Override
+        public void onFailure(Throwable e, Scoreflex.Response error) {
+          session.session_state = SessionState.UNINITIALIZED;
+          if (e instanceof org.apache.http.client.HttpResponseException) {
+            int code = ((org.apache.http.client.HttpResponseException)e).getStatusCode();
+            listener.onFailure((code == 403) ?
+                               STATUS_PERMISSION_DENIED :
+                               STATUS_INTERNAL_ERROR);
+          }
+          else if (e instanceof java.io.IOException) {
+            listener.onFailure(STATUS_NETWORK_ERROR);
+          }
+          else {
+            listener.onFailure(STATUS_INTERNAL_ERROR);
+          }
+        }
+
+        @Override
+        public void onSuccess(Scoreflex.Response response) {
+          try {
+            JSONObject json       = response.getJSONObject();
+            JSONObject servers    = json.getJSONObject("servers");
+            JSONObject tcp_server = servers.getJSONArray("tcp").getJSONObject(0);
+            session.host          = tcp_server.getString("host");
+            session.port          = tcp_server.getInt("port");
+            session.session_state = SessionState.INITIALIZED;
+            listener.onSuccess();
+          }
+          catch (JSONException e) {
+            session.session_state = SessionState.UNINITIALIZED;
+            listener.onFailure(STATUS_INTERNAL_ERROR);
+          }
+        }
+      });
+    }
+  }
+
+  /**
+   * Deinitialize the realtime session.
+   */
+  public static void deinitialize() {
+    synchronized (session) {
+      if (isInitialized()) {
+        if (isConnected())
+          disconnect();
+        session.player_id     = null;
+        session.session_state = SessionState.UNINITIALIZED;
+      }
     }
   }
 
@@ -295,7 +361,7 @@ public final class Session extends Thread {
    * <code>false</code> otherwise.
    */
   public static boolean isInitialized() {
-    return session.is_initialized;
+    return (session.session_state == SessionState.INITIALIZED);
   }
 
 
@@ -630,7 +696,7 @@ public final class Session extends Thread {
     connection_status = ConnectionState.CONNECTING;
 
     Proto.Connect.Builder builder = Proto.Connect.newBuilder()
-      .setPlayerId(Scoreflex.getPlayerId())
+      .setPlayerId(player_id)
       .setGameId(Scoreflex.getClientId())
       .setAccessToken(Scoreflex.getAccessToken());
     if (session_id != null) {
@@ -799,10 +865,6 @@ public final class Session extends Thread {
                     null);
       return;
     }
-
-    room_listeners.put(id, config.getRoomListener());
-    rcv_message_listeners.put(id, config.getMessageListener());
-
     Proto.CreateRoom msg = Proto.CreateRoom.newBuilder()
       .setRoomId(id)
       .addAllRoomConfig(realtimeMapToProtoMap(config.getRoomConfig()))
@@ -815,6 +877,9 @@ public final class Session extends Thread {
       onRoomCreated(config.getRoomListener(), STATUS_NETWORK_ERROR, null);
       return;
     }
+
+    room_listeners.put(id, config.getRoomListener());
+    rcv_message_listeners.put(id, config.getMessageListener());
 
     last_msgid++;
     inmsg_queue.put(last_msgid, inmsg);
@@ -861,9 +926,6 @@ public final class Session extends Thread {
       return;
     }
 
-    room_listeners.put(id, room_listener);
-    rcv_message_listeners.put(id, message_listener);
-
     Proto.JoinRoom msg = Proto.JoinRoom.newBuilder()
       .setRoomId(id)
       .build();
@@ -874,6 +936,9 @@ public final class Session extends Thread {
       onRoomJoined(room_listener, STATUS_NETWORK_ERROR, null);
       return;
     }
+
+    room_listeners.put(id, room_listener);
+    rcv_message_listeners.put(id, message_listener);
 
     last_msgid++;
     inmsg_queue.put(last_msgid, inmsg);
@@ -1329,7 +1394,7 @@ public final class Session extends Thread {
     checkInstance();
     if (listener == null)
       throw new IllegalArgumentException("Room listener cannot be null");
-    if (peer_id == null || peer_id.equals(Scoreflex.getPlayerId()))
+    if (peer_id == null || peer_id.equals(session.player_id))
       throw new IllegalArgumentException("Invalid participant's id");
     if (payload.getSerializedSize() > MAX_RELIABLE_PAYLOAD_SIZE)
       throw new IllegalArgumentException("Serialized size of the payload exceeds MAX_RELIABLE_PAYLOAD_SIZE");
@@ -1367,17 +1432,14 @@ public final class Session extends Thread {
       return STATUS_SESSION_NOT_CONNECTED;
     }
 
-    Proto.RoomMessage.Builder builder = Proto.RoomMessage.newBuilder()
+    Proto.RoomMessage msg = Proto.RoomMessage.newBuilder()
       .setRoomId(room_id)
       .setTimestamp((int)getMmTime())
       .setTag(tag)
       .setIsReliable(true)
-      .addAllPayload(realtimeMapToProtoMap(payload));
-    if (peer_id != null) {
-      builder.setToId(peer_id);
-    }
-
-    Proto.RoomMessage msg = builder.build();
+      .addAllPayload(realtimeMapToProtoMap(payload))
+      .setToId(peer_id)
+      .build();
     Proto.InMessage inmsg =
       InMessageBuilder.build(last_msgid+1, last_reliable_id, true, msg);
 
@@ -1636,6 +1698,13 @@ public final class Session extends Thread {
   }
 
   private void onMessageReceived(Proto.OutMessage msg) {
+    // Skip messages if the player has changed and disconnect the session
+    if (Scoreflex.getPlayerId() != player_id) {
+      doDisconnect();
+      onConnectionClosed(STATUS_SESSION_CLOSED);
+      return;
+    }
+
     ackReliableMessages(msg.getAckid());
 
     if (msg.getMsgid() == 0) {
@@ -1950,14 +2019,15 @@ public final class Session extends Thread {
             break;
         }
 
-        current_room = Room.builder()
-          .setId(r.getRoomId())
-          .setSession(this)
-          .setMatchState(state)
-          .setConfig(protoMapToRealtimeMap(r.getConfigList()))
-          .setProperties(protoMapToRealtimeMap(r.getPropertiesList()))
-          .setParticipants(participants)
-          .build();
+        synchronized (this) {
+          current_room = Room.builder()
+            .setId(r.getRoomId())
+            .setMatchState(state)
+            .setConfig(protoMapToRealtimeMap(r.getConfigList()))
+            .setProperties(protoMapToRealtimeMap(r.getPropertiesList()))
+            .setParticipants(participants)
+            .build();
+        }
 
         onRoomCreated(room_listeners.get(r.getRoomId()),
                       STATUS_SUCCESS, current_room);
