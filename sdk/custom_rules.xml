@@ -36,7 +36,6 @@
             </doclet>
             <fileset dir="src" defaultexcludes="yes">
                 <include name="com/scoreflex/*"/>
-                <include name="com/scoreflex/realtime/*"/>
                 <exclude name="com/scoreflex/R.java"/>
             </fileset>
         </javadoc>
