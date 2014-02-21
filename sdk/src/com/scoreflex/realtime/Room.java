@@ -29,7 +29,6 @@ import java.util.Collections;
  */
 public class Room {
   private final String                   id;
-  private final Session                  session;
   private       MatchState               state;
   private       RealtimeMap              config;
   private       RealtimeMap              properties;
@@ -39,9 +38,8 @@ public class Room {
   private final Map<String, Participant> participantsView;
 
   protected static class Builder {
-    private String                   id;
-    private Session                  session;
-    private MatchState                state;
+    private String           id;
+    private MatchState       state;
     private RealtimeMap      config;
     private RealtimeMap      properties;
     private Map<String, Participant> participants;
@@ -51,11 +49,6 @@ public class Room {
 
     protected Builder setId(String id) {
       this.id = id;
-      return this;
-    }
-
-    protected Builder setSession(Session session) {
-      this.session = session;
       return this;
     }
 
@@ -90,7 +83,6 @@ public class Room {
 
   private Room(Builder builder) {
     this.id               = builder.id;
-    this.session          = builder.session;
     this.state            = builder.state;
     this.config           = builder.config;
     this.properties       = builder.properties;
