@@ -22,8 +22,7 @@ package com.scoreflex.realtime;
 /**
  * Describes the connection's state of the realtime session.
  */
-public enum ConnectionState
-{
+public enum ConnectionState {
   /**
    * The connection is connecting. The player should wait until the connection
    * is fully connected.

@@ -257,6 +257,9 @@ public class RealtimeMap extends AbstractMap<String,Object> {
 
   /**
    * Return whether this map is empty.
+   *
+   * @return <code>true</code> if the map is empty, <code>false</code>
+   * otherwise.
    */
   public boolean isEmpty() {
     return map.isEmpty();

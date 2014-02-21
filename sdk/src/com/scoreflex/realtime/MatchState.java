@@ -34,8 +34,7 @@ package com.scoreflex.realtime;
  * When a match is in the {@link #FINISHED} state, it should be reset before
  * starting a new match by calling {@link Session#resetMatch}.</p>
  */
-public enum MatchState
-{
+public enum MatchState {
   /**
    * The match is not started yet. The minimum number of participants required
    * to start a match is not reached yet.
