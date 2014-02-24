@@ -1,0 +1,369 @@
+/*
+ * Licensed to Scoreflex (www.scoreflex.com) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. Scoreflex licenses this
+ * file to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+package realtime.proto;
+option java_package = "com.scoreflex.realtime";
+option java_outer_classname = "Proto";
+option optimize_for = LITE_RUNTIME;
+
+// ====================================================================
+message MapEntry {
+  enum Type {
+    VOID   = 0;
+    INT32  = 1;
+    UINT32 = 2;
+    SINT32 = 3;
+
+    INT64  = 4;
+    UINT64 = 5;
+    SINT64 = 6;
+
+    DOUBLE = 7;
+    BOOL   = 8;
+    STRING = 9;
+    BYTES  = 10;
+  }
+
+  required Type   type = 1;
+  required string name = 2;
+
+  optional int32  int32_val  = 11;
+  optional uint32 uint32_val = 12;
+  optional sint32 sint32_val = 13;
+  optional int64  int64_val  = 14;
+  optional uint64 uint64_val = 15;
+  optional sint64 sint64_val = 16;
+  optional double double_val = 17;
+  optional bool   bool_val   = 18;
+  optional string string_val = 19;
+  optional bytes  bytes_val  = 20;
+}
+
+
+// ====================================================================
+message InMessage {
+  enum Type {
+    CONNECT      = 1;
+    DISCONNECT   = 2;
+    PING         = 3;
+    PONG         = 4;
+
+    CREATE_ROOM         = 5;
+    JOIN_ROOM           = 6;
+    LEAVE_ROOM          = 7;
+    START_MATCH         = 8;
+    STOP_MATCH          = 9;
+    RESET_MATCH         = 10;
+    ROOM_MESSAGE        = 11;
+    SET_ROOM_PROPERTY   = 12;
+  }
+
+  required Type   type        = 1;
+  required uint32 msgid       = 2;
+  optional uint32 ackid       = 3 [ default = 0 ];
+  optional bool   is_reliable = 4 [ default = false ];
+
+  optional Connect    connect    = 10;
+  optional Disconnect disconnect = 11;
+  optional Ping       ping       = 12;
+  optional Pong       pong       = 13;
+
+  optional CreateRoom        create_room         = 14;
+  optional JoinRoom          join_room           = 15;
+  optional LeaveRoom         leave_room          = 16;
+  optional StartMatch        start_match         = 17;
+  optional StopMatch         stop_match          = 18;
+  optional ResetMatch        reset_match         = 19;
+  optional RoomMessage       room_message        = 20;
+  optional SetRoomProperty   set_room_property   = 21;
+}
+
+
+
+// ====================================================================
+message OutMessage {
+  enum Type {
+    CONNECTED         = 1;
+    CONNECTION_CLOSED = 2;
+    CONNECTION_FAILED = 3;
+
+    SYNC = 5;
+    PING = 6;
+    PONG = 7;
+    ACK  = 8;
+
+    ROOM_CREATED            = 9;
+    ROOM_CLOSED             = 10;
+    ROOM_JOINED             = 11;
+    ROOM_LEFT               = 12;
+    PEER_JOINED_ROOM        = 13;
+    PEER_LEFT_ROOM          = 14;
+    MATCH_STATE_CHANGED     = 15;
+    ROOM_MESSAGE            = 16;
+    ROOM_PROPERTY_UPDATED   = 17;
+  }
+
+  required Type   type        = 1;
+  required uint32 msgid       = 2;
+  optional uint32 ackid       = 3 [ default = 0 ];
+  optional bool   is_reliable = 4 [ default = false ];
+
+  optional Connected        connected         = 10;
+  optional ConnectionClosed connection_closed = 11;
+  optional ConnectionFailed connection_failed = 12;
+
+  optional Sync sync = 13;
+  optional Ping ping = 14;
+  optional Pong pong = 15;
+  optional Ack  ack  = 16;
+
+  optional RoomCreated           room_created            = 17;
+  optional RoomClosed            room_closed             = 18;
+  optional RoomJoined            room_joined             = 19;
+  optional RoomLeft              room_left               = 20;
+  optional PeerJoinedRoom        peer_joined_room        = 21;
+  optional PeerLeftRoom          peer_left_room          = 22;
+  optional MatchStateChanged     match_state_changed     = 23;
+  optional RoomMessage           room_message            = 24;
+  optional RoomPropertyUpdated   room_property_updated   = 25;
+}
+
+
+// ====================================================================
+message Connect {
+  required string player_id    = 1;
+  required string game_id      = 2;
+  required string access_token = 3;
+  optional string session_id   = 4;
+}
+
+message Disconnect {
+}
+
+
+message Connected {
+  required uint32   mm_time    = 1;
+  required string   session_id = 2;
+  repeated MapEntry info       = 3;
+  optional uint32   udp_port   = 4 [ default = 0 ];
+}
+
+message ConnectionClosed {
+  enum StatusCode {
+    SESSION_CLOSED             = 1;
+    REPLACED_BY_NEW_CONNECTION = 2;
+    UNRESPONSIVE_CLIENT        = 3;
+    NEW_SERVER_LOCATION        = 4;
+  }
+
+  required StatusCode status   = 1;
+  optional string     hostname = 2;
+  optional uint32     port     = 3;
+}
+
+message ConnectionFailed {
+  enum StatusCode {
+    INTERNAL_ERROR    = 1;
+    INVALID_MESSAGE   = 2;
+    PROTOCOL_ERROR    = 3;
+    NETWORK_ERROR     = 4;
+    CONNECT_TIMEOUT   = 5;
+    PERMISSION_DENIED = 6;
+    ALREADY_CONNECTED = 7;
+  }
+
+  required StatusCode status = 1;
+}
+
+
+// ====================================================================
+message Sync {
+  required uint32 mm_time = 1;
+  required uint32 latency = 2;
+}
+
+message Ping {
+  required uint32 id        = 1;
+  required uint32 timestamp = 2;
+}
+
+message Pong {
+  required uint32 id        = 1;
+  required uint32 timestamp = 2;
+}
+
+message Ack {
+  enum StatusCode {
+    SUCCESS         = 0;
+    INTERNAL_ERROR  = 1;
+    ROOM_NOT_JOINED = 2;
+    PEER_NOT_FOUND  = 3;
+    INVALID_MESSAGE = 4;
+  }
+
+  required uint32     msgid  = 1;
+  optional StatusCode status = 2 [ default = SUCCESS ];
+}
+
+// ====================================================================
+enum MatchState {
+  PENDING  = 1;
+  READY    = 2;
+  RUNNING  = 3;
+  FINISHED = 4;
+}
+
+message Room {
+  required string     room_id     = 1;
+  optional MatchState match_state = 2;
+
+  repeated MapEntry  config     = 10;
+  repeated MapEntry  properties = 11;
+  repeated string    players    = 12;
+}
+
+message CreateRoom {
+  required string room_id = 1;
+
+  repeated MapEntry room_config       = 10;
+  repeated MapEntry room_properties   = 11;
+}
+
+message JoinRoom {
+  required string room_id = 1;
+}
+
+message LeaveRoom {
+  required string room_id = 1;
+}
+
+message RoomCreated {
+  enum StatusCode {
+    SUCCESS           = 0;
+    INTERNAL_ERROR    = 1;
+    PERMISSION_DENIED = 2;
+    ALREADY_CREATED   = 3;
+    INVALID_DATA      = 4;
+  }
+
+  required Room       room   = 1;
+  optional StatusCode status = 2 [ default = SUCCESS ];
+}
+
+message RoomClosed {
+  enum StatusCode {
+    INTERNAL_ERROR = 1;
+    ROOM_CLOSED    = 2;
+    EMPTY_ROOM     = 3;
+  }
+
+  required string     room_id = 1;
+  required StatusCode status  = 2;
+}
+
+message RoomJoined {
+  enum StatusCode {
+    SUCCESS           = 0;
+    INTERNAL_ERROR    = 1;
+    ROOM_NOT_FOUND    = 2;
+    PERMISSION_DENIED = 3;
+    ROOM_FULL         = 4;
+    NO_DROP_IN_MATCH  = 5;
+  }
+
+  required Room       room   = 1;
+  optional StatusCode status = 2 [ default = SUCCESS ];
+}
+
+message RoomLeft {
+  enum StatusCode {
+    SUCCESS         = 0;
+    INTERNAL_ERROR  = 1;
+    ROOM_NOT_JOINED = 2;
+  }
+
+  required string     room_id = 1;
+  optional StatusCode status  = 2 [ default = SUCCESS ];
+}
+
+
+message PeerJoinedRoom {
+  required string room_id   = 1;
+  required string player_id = 2;
+}
+
+message PeerLeftRoom {
+  required string room_id   = 1;
+  required string player_id = 2;
+}
+
+message StartMatch {
+  required string room_id = 1;
+}
+
+message StopMatch {
+  required string room_id = 1;
+}
+
+message ResetMatch {
+  required string room_id = 1;
+}
+
+message MatchStateChanged {
+  enum StatusCode {
+    SUCCESS           = 0;
+    ROOM_NOT_JOINED   = 1;
+    BAD_STATE         = 2;
+    PERMISSION_DENIED = 3;
+  }
+
+  required string     room_id     = 1;
+  optional MatchState match_state = 2;
+  optional StatusCode status      = 3 [ default = SUCCESS ];
+}
+
+
+// ====================================================================
+message RoomMessage {
+  required string room_id     = 1;
+  required uint32 timestamp   = 2;
+  optional string from_id     = 3;
+  optional string to_id       = 4;
+  optional bool   is_reliable = 5 [ default = false ];
+  optional uint32 tag         = 6 [ default = 0 ];
+
+  repeated MapEntry payload = 10;
+}
+
+message SetRoomProperty {
+  required string   room_id  = 1;
+  required MapEntry property = 2;
+}
+
+message RoomPropertyUpdated {
+  enum StatusCode {
+    SUCCESS         = 0;
+    ROOM_NOT_JOINED = 1;
+  }
+
+  required string     room_id   = 1;
+  required string     player_id = 2;
+  required MapEntry   property  = 3;
+  optional StatusCode status    = 4 [ default = SUCCESS ];
+}
