@@ -558,7 +558,6 @@ public final class Session extends Thread {
    * yet.
    */
   public static ConnectionState getConnectionState() {
-    checkInstance();
     return session.connection_status;
   }
 
@@ -572,7 +571,6 @@ public final class Session extends Thread {
    * yet.
    */
   public static boolean isConnected() {
-    checkInstance();
     return (session.connection_status == ConnectionState.CONNECTED);
   }
 
