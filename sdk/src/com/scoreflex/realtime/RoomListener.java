@@ -238,6 +238,8 @@ public interface RoomListener {
    *   <li>{@link Session#STATUS_ROOM_NOT_JOINED} The attempt to change the
    *   room's property failed because the player is not a room's
    *   participant.</li>
+   *   <li>{@link Session#STATUS_UPDATE_FORBIDDEN} The attempt to change the
+   *   room's property failed because the update is forbidden.</li>
    * </ul>
    * <br>
    * This callback is called on the main thread.

@@ -228,6 +228,12 @@ public final class Session extends Thread {
    */
   public static final int STATUS_PEER_NOT_FOUND             = 19;
 
+  /**
+   * The status code used in {@link RoomListener#onSetRoomPropertyFailed} when
+   * the player attempts to change a room's property while it is forbidden.
+   */
+  public static final int STATUS_UPDATE_FORBIDDEN           = 20;
+
   private Session() {
   }
 
@@ -2258,6 +2264,10 @@ public final class Session extends Thread {
       case ROOM_NOT_JOINED:
         onSetRoomPropertyFailed(room_listeners.get(current_room.getId()),
                                 STATUS_ROOM_NOT_JOINED, current_room, name);
+        break;
+      case UPDATE_FORBIDDEN:
+        onSetRoomPropertyFailed(room_listeners.get(current_room.getId()),
+                                STATUS_UPDATE_FORBIDDEN, current_room, name);
         break;
     }
   }
