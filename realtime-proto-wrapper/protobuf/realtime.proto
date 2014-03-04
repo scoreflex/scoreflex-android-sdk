@@ -358,8 +358,9 @@ message SetRoomProperty {
 
 message RoomPropertyUpdated {
   enum StatusCode {
-    SUCCESS         = 0;
-    ROOM_NOT_JOINED = 1;
+    SUCCESS          = 0;
+    ROOM_NOT_JOINED  = 1;
+    UPDATE_FORBIDDEN = 2;
   }
 
   required string     room_id   = 1;
