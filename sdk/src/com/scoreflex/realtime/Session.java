@@ -206,10 +206,9 @@ public final class Session extends Thread {
 
   /**
    * The status code used in {@link RoomListener#onRoomJoined} when the player
-   * attempts to join a room during a running match whereas the drpop-in-match
-   * option is disabled.
+   * attempts to join a room with a state that does not match its join strategy.
    */
-  public static final int STATUS_NO_DROP_IN_MATCH           = 16;
+  public static final int STATUS_STRATEGY_MISMATCH          = 16;
 
   /**
    * The status code used in {@link RoomListener#onRoomCreated} when the player
@@ -2137,10 +2136,10 @@ public final class Session extends Thread {
                      STATUS_ROOM_NOT_FOUND, null);
         break;
 
-      case NO_DROP_IN_MATCH:
+      case STRATEGY_MISMATCH:
         rcv_message_listeners.remove(r.getRoomId());
         onRoomJoined(room_listeners.remove(r.getRoomId()),
-                     STATUS_NO_DROP_IN_MATCH, null);
+                     STATUS_STRATEGY_MISMATCH, null);
         break;
 
       case ROOM_FULL:

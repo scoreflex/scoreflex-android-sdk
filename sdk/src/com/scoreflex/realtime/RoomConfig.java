@@ -42,7 +42,7 @@ public class RoomConfig {
     private       Integer                 tick_time;
     private       Boolean                 auto_start;
     private       Boolean                 auto_stop;
-    private       Boolean                 drop_in_match;
+    private       String                  join_strategy;
 
 
     private Builder(RoomListener listener) {
@@ -109,14 +109,15 @@ public class RoomConfig {
     }
 
     /**
-     * Sets the drop-in-match flag for the room. This is an optional parameter.
+     * Sets the join-strategy value for the room. This is an optional parameter.
      * <br>
-     * This option is set to <code>true</code> by default.
+     * This option is unset by default.
      *
-     * @param b The drop-in-match flag value.
+     * @param s The strategy value. It can be <code>beforeFirstStart</code>,
+     * <code>beforeStart</code> or <code>anymore</code>.
      */
-    public Builder setDropInMatch(boolean b) {
-      drop_in_match = b;
+    public Builder setJoinStrategy(String s) {
+      join_strategy = s;
       return this;
     }
 
@@ -161,17 +162,17 @@ public class RoomConfig {
     this.room_config   = new RealtimeMap();
 
     if (builder.max_participants != null)
-      this.room_config.put("max_players", builder.max_participants);
+      this.room_config.put("maxPlayers", builder.max_participants);
     if (builder.min_participants != null)
-      this.room_config.put("min_players", builder.min_participants);
+      this.room_config.put("minPlayers", builder.min_participants);
     if (builder.tick_time != null)
-      this.room_config.put("tick_time", builder.tick_time);
+      this.room_config.put("tickTime", builder.tick_time);
     if (builder.auto_start != null)
-      this.room_config.put("auto_start", builder.auto_start);
+      this.room_config.put("autoStart", builder.auto_start);
     if (builder.auto_stop != null)
-      this.room_config.put("auto_stop", builder.auto_stop);
-    if (builder.drop_in_match != null)
-      this.room_config.put("drop_in_match", builder.drop_in_match);
+      this.room_config.put("autoStop", builder.auto_stop);
+    if (builder.join_strategy != null)
+      this.room_config.put("joinStrategy", builder.join_strategy);
 
     this.message_listener = builder.message_listener;
   }
