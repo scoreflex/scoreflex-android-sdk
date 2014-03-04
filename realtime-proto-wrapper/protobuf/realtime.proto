@@ -279,12 +279,12 @@ message RoomClosed {
 
 message RoomJoined {
   enum StatusCode {
-    SUCCESS           = 0;
-    INTERNAL_ERROR    = 1;
-    ROOM_NOT_FOUND    = 2;
-    PERMISSION_DENIED = 3;
-    ROOM_FULL         = 4;
-    NO_DROP_IN_MATCH  = 5;
+    SUCCESS            = 0;
+    INTERNAL_ERROR     = 1;
+    ROOM_NOT_FOUND     = 2;
+    PERMISSION_DENIED  = 3;
+    ROOM_FULL          = 4;
+    STRATEGY_MISMATCH  = 5;
   }
 
   required Room       room   = 1;
