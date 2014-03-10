@@ -87,6 +87,7 @@ public class Scoreflex {
 	private static int sDefaultGravity = Gravity.BOTTOM;
 	private static WeakReference<ScoreflexView> mScoreflexView;
 	private static HashMap<String, ScoreflexView> mPreloadedViews;
+	// public static boolean showDebug = true;
 
 	protected static final String API_VERSION = "v1";
 	protected static final String SDK_VERSION = "Android-1.0.0.0";
@@ -1953,6 +1954,9 @@ public class Scoreflex {
 				String resource = null;
 				Scoreflex.RequestParams parameters = null;
 				int code = notification.getInt("code");
+				Scoreflex.RequestParams trackParams = new Scoreflex.RequestParams();
+				trackParams.put("code", Integer.toString(code));
+				Scoreflex.postEventually("/notifications/track", trackParams, null);
 				if (NOTIFICATION_TYPE_CHALLENGE_INVITATION == code
 						|| NOTIFICATION_TYPE_YOUR_TURN_IN_CHALLENGE == code
 						|| NOTIFICATION_TYPE_CHALLENGE_ENDED == code) {
