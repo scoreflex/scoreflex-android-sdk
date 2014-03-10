@@ -336,6 +336,9 @@ class ScoreflexRestClient {
 				@Override
 				public void onFailure(Throwable arg0, JSONObject arg1) {
 					if (arg1 != null) {
+						if (Scoreflex.showDebug) {
+							Log.d("Scoreflex", "Requesting Error: " + arg1);
+						}
 						Scoreflex.setNetworkAvailable(true);
 						request.getHandler().onFailure(arg0, new Scoreflex.Response(arg1));
 					} else {
@@ -359,6 +362,9 @@ class ScoreflexRestClient {
 		}
 
 		String url = ScoreflexUriHelper.getAbsoluteUrl(request.getResource());
+		if (Scoreflex.showDebug) {
+			Log.d("Scoreflex", "requesting url["+request.getMethod()+"]: "+ url + "?" + request.getParams().getURLEncodedString());
+		}
 		// TODO: support other contentTypes such as "application/json"
 		String contentType = "application/x-www-form-urlencoded";
 		switch (request.getMethod()) {
