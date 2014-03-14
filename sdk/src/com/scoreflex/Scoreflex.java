@@ -90,7 +90,7 @@ public class Scoreflex {
 	// public static boolean showDebug = true;
 
 	protected static final String API_VERSION = "v1";
-	protected static final String SDK_VERSION = "Android-1.0.0.0";
+	protected static final String SDK_VERSION = "Android-1.0.0.2";
 
 	private static final String PRODUCTION_API_URL = "https://api.scoreflex.com/"
 			+ API_VERSION;
