@@ -87,10 +87,10 @@ public class Scoreflex {
 	private static int sDefaultGravity = Gravity.BOTTOM;
 	private static WeakReference<ScoreflexView> mScoreflexView;
 	private static HashMap<String, ScoreflexView> mPreloadedViews;
-	// public static boolean showDebug = true;
+  public static boolean showDebug = false;
 
 	protected static final String API_VERSION = "v1";
-	protected static final String SDK_VERSION = "Android-1.0.0.2";
+	protected static final String SDK_VERSION = "Unity-Android-1.0.0.2";
 
 	private static final String PRODUCTION_API_URL = "https://api.scoreflex.com/"
 			+ API_VERSION;

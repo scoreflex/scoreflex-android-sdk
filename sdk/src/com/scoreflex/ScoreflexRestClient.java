@@ -590,8 +590,7 @@ class ScoreflexRestClient {
 		SharedPreferences.Editor editor = preferences.edit();
 		if (null == playerId)
 			editor.remove(PLAYER_ID_PREF_NAME);
-		else
-			editor.putString(PLAYER_ID_PREF_NAME, playerId);
+		editor.putString(PLAYER_ID_PREF_NAME, playerId);
 		editor.commit();
 
 	}
