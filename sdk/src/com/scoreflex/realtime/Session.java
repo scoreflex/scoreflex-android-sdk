@@ -135,35 +135,29 @@ public final class Session extends Thread {
   public static final int STATUS_REPLACED_BY_NEW_CONNECTION =  4;
 
   /**
-   * The status code used in {@link ConnectionListener#onReconnecting} when the
-   *   server requests the client to reconnect on a specific host.
-   */
-  public static final int STATUS_NEW_SERVER_LOCATION        =  5;
-
-  /**
    * The status code used in {@link ConnectionListener#onConnectionFailed} and
    * {@link MessageSentListener#onMessageSent} when a malformed message is sent
    * by the player.
    */
-  public static final int STATUS_INVALID_MESSAGE            =  6;
+  public static final int STATUS_INVALID_MESSAGE            =  5;
 
   /**
    * The status code used in {@link ConnectionListener#onConnectionFailed} when
    * an unknown message was sent to the server.
    */
-  public static final int STATUS_PROTOCOL_ERROR             =  7;
+  public static final int STATUS_PROTOCOL_ERROR             =  6;
 
   /**
    * The status code used in callbacks when the player does not have permissions
    * to perform an operation.
    */
-  public static final int STATUS_PERMISSION_DENIED          =  8;
+  public static final int STATUS_PERMISSION_DENIED          =  7;
 
   /**
    * The status code used in {@link ConnectionListener#onConnectionFailed} when
    * the player has already a opened session on another device.
    */
-  public static final int STATUS_ALREADY_CONNECTED          =  9;
+  public static final int STATUS_ALREADY_CONNECTED          =  8;
 
 
   /**
@@ -171,68 +165,68 @@ public final class Session extends Thread {
    * attempts to perform an operation while his session is not connected on the
    * service.
    */
-  public static final int STATUS_SESSION_NOT_CONNECTED      = 10;
+  public static final int STATUS_SESSION_NOT_CONNECTED      = 9;
 
   /**
    * The status code used in {@link RoomListener} callbacks when the player
    * attempts to perform an operation on a room that he did not joined first.
    */
-  public static final int STATUS_ROOM_NOT_JOINED            = 11;
+  public static final int STATUS_ROOM_NOT_JOINED            = 10;
 
   /**
    * The status code used in {@link RoomListener#onRoomCreated} when the player
    * attempts to create a room with the same ID than an existing one.
    */
-  public static final int STATUS_ROOM_ALREADY_CREATED       = 12;
+  public static final int STATUS_ROOM_ALREADY_CREATED       = 11;
 
   /**
    * The status code used {@link RoomListener#onRoomClosed} when the the room is
    * closed normally by an external way.
    */
-  public static final int STATUS_ROOM_CLOSED                = 13;
+  public static final int STATUS_ROOM_CLOSED                = 12;
 
   /**
    * The status code used {@link RoomListener#onRoomJoined} when the player
    * attempts to join a unknown room.
    */
-  public static final int STATUS_ROOM_NOT_FOUND             = 14;
+  public static final int STATUS_ROOM_NOT_FOUND             = 13;
 
   /**
    * The status code used in {@link RoomListener#onRoomJoined} when the player
    * attempts to join a room which the maximum number of participants allowed
    * was reached.
    */
-  public static final int STATUS_ROOM_FULL                  = 15;
+  public static final int STATUS_ROOM_FULL                  = 14;
 
   /**
    * The status code used in {@link RoomListener#onRoomJoined} when the player
    * attempts to join a room with a state that does not match its join strategy.
    */
-  public static final int STATUS_STRATEGY_MISMATCH          = 16;
+  public static final int STATUS_STRATEGY_MISMATCH          = 15;
 
   /**
    * The status code used in {@link RoomListener#onRoomCreated} when the player
    * uses an invalid configuration to create a room.
    */
-  public static final int STATUS_INVALID_DATA               = 17;
+  public static final int STATUS_INVALID_DATA               = 16;
 
   /**
    * The status code used in {@link RoomListener#onMatchStateChanged} when the
    * player attempts to do an invalid change of the match's state.
    */
-  public static final int STATUS_BAD_STATE                  = 18;
+  public static final int STATUS_BAD_STATE                  = 17;
 
   /**
    * The status code used in {@link MessageSentListener#onMessageSent} when the
    * player attempts to send a reliable message to a unknown participant.
    */
-  public static final int STATUS_PEER_NOT_FOUND             = 19;
+  public static final int STATUS_PEER_NOT_FOUND             = 18;
 
   /**
    * The status code used in {@link RoomListener#onSetRoomPropertyFailed} when
    * the player attempts to change a room's property while it is forbidden.
    */
-  public static final int STATUS_UPDATE_FORBIDDEN           = 20;
+  public static final int STATUS_UPDATE_FORBIDDEN           = 19;
 
   private Session() {
   }
@@ -1952,17 +1946,6 @@ public final class Session extends Thread {
           retries = 0;
           onConnectionFailed(STATUS_NETWORK_ERROR);
         }
-        break;
-      case NEW_SERVER_LOCATION:
-        host    = msg.getHostname();
-        port    = msg.getPort();
-        retries = 0;
-        ping_listeners.clear();
-
-        if (isSessionConnected()) {
-          onReconnecting(STATUS_NEW_SERVER_LOCATION);
-        }
-        doConnect();
         break;
     }
   }

@@ -109,8 +109,6 @@ public interface ConnectionListener {
    *   automatic reconnection was configured (see {@link
    *   Session#setReconnectFlag}), when a network error is detected, the
    *   connection will be automatically reopened.</li>
-   *   <li>{@link Session#STATUS_NEW_SERVER_LOCATION} The server requests the
-   *   client to reconnect on a specific host.</li>
    * </ul>
    * <br> This callback is
    * called on the main thread.
