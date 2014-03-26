@@ -169,7 +169,6 @@ message ConnectionClosed {
     SESSION_CLOSED             = 1;
     REPLACED_BY_NEW_CONNECTION = 2;
     UNRESPONSIVE_CLIENT        = 3;
-    NEW_SERVER_LOCATION        = 4;
   }
 
   required StatusCode status   = 1;
